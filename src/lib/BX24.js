@@ -1,3 +1,5 @@
+import qs from 'qs';
+
 export default {
     setAuth(auth) {
         this.auth = auth;
@@ -5,11 +7,10 @@ export default {
 
     async request(method, data) {
         data.auth = this.auth.access_token;
+        console.log(data);
 
-        const body = new URLSearchParams({
-            ...data,
-            auth: this.auth.access_token
-        });
+        // URLSearchParams doesn't support nested objects, use qs
+        const body = qs.stringify(data);
 
         return await fetch(`https://${this.auth.domain}/rest/${method}.json`, {
             method: 'post',

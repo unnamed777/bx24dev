@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import App from './App'
-import router from './router'
+// import router from './router'
 
 /* eslint-disable no-new */
-new Vue({
+window.app = new Vue({
   el: '#app',
   //router,
   render: h => h(App),

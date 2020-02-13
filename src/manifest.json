@@ -8,8 +8,7 @@
     "128": "icons/icon_128.png"
   },
   "browser_action": {
-    "default_title": "bx24dev",
-    "default_popup": "popup/popup.html"
+    "default_title": "bx24dev"
   },
   "background": {
     "scripts": [
