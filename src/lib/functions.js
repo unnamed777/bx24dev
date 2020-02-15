@@ -8,6 +8,7 @@ export function prepareCrmEntityFields(crmFields) {
             code: key,
             label: field.formLabel || field.title,
             type: field.type,
+            sort: field.sort,
             multiple: field.isMultiple ? '●' : '',
             required: field.isRequired ? '●' : '',
         });
@@ -23,4 +24,4 @@ export function prepareCrmEntityFields(crmFields) {
         ],
         items
     };
-};
+}

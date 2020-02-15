@@ -10,7 +10,7 @@ import {prepareCrmEntityFields} from '../../../../lib/functions';
 export default {
     data() {
         return {
-            fields: {},
+            fields: [],
             items: [],
         };
     },

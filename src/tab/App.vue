@@ -45,6 +45,7 @@ import messageListener from '../lib/MessageListener';
 import EntityList from './components/EntityList.vue';
 import TableList from './components/TableList.vue';
 import SidebarMenu from './components/SidebarMenu.vue';
+import CrmDealList from './components/modules/Crm/DealList.vue';
 import CrmDealFields from './components/modules/Crm/DealFields.vue';
 import CrmDealStages from './components/modules/Crm/DealStages.vue';
 import CrmLeadFields from './components/modules/Crm/LeadFields.vue';
@@ -66,6 +67,10 @@ export default {
                     action: this.testCall,
                 },
                 {
+                    label: 'Refresh auth',
+                    action: this.refreshAuth,
+                },
+                {
                     label: 'entity.list',
                     action: this.showEntityList,
                 },
@@ -75,6 +80,10 @@ export default {
                         {
                             label: 'Лиды',
                             children: [
+                                {
+                                    label: 'Список',
+                                    action: this.onClickSetModule('CrmLeadList'),
+                                },
                                 {
                                     label: 'Поля',
                                     action: this.onClickSetModule('CrmLeadFields'),
@@ -88,6 +97,10 @@ export default {
                         {
                             label: 'Сделки',
                             children: [
+                                {
+                                    label: 'Список',
+                                    action: this.onClickSetModule('CrmDealList'),
+                                },
                                 {
                                     label: 'Поля',
                                     action: this.onClickSetModule('CrmDealFields'),
@@ -121,6 +134,7 @@ export default {
         EntityList,
         TableList,
         SidebarMenu,
+        CrmDealList,
         CrmDealFields,
         CrmDealStages,
         CrmLeadFields,
@@ -194,6 +208,7 @@ export default {
         async selectApp(appId) {
             this.activeAppId = appId;
             BX24.setAuth(await this.getAuth());
+            this.activeModule = 'CrmDealList';
         },
 
         async getAuth() {
@@ -258,8 +273,7 @@ export default {
         },
 
         onClickSetModule(module) {
-            console.log(module);
-            return () => { console.log(module); this.activeModule = module; };
+            return () => { this.activeModule = module; };
         },
     },
 
