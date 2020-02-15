@@ -7,12 +7,12 @@ const { VueLoaderPlugin } = require('vue-loader');
 const { version } = require('./package.json');
 
 const config = {
-  mode: process.env.NODE_ENV,
+  mode: 'development',//process.env.NODE_ENV,
   context: __dirname + '/src',
   entry: {
     'background': './background.js',
     'popup/popup': './popup/popup.js',
-    'options/options': './options/options.js',
+    //'options/options': './options/options.js',
     'tab/index': './tab/index.js',
   },
   output: {
@@ -27,7 +27,7 @@ const config = {
     rules: [
       {
         test: /\.vue$/,
-        loaders: 'vue-loader',
+        loader: 'vue-loader',
       },
       {
         test: /\.js$/,
@@ -40,11 +40,7 @@ const config = {
       },
       {
         test: /\.scss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-      },
-      {
-        test: /\.sass$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader?indentedSyntax'],
+        use: [/*MiniCssExtractPlugin.loader, */'vue-style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg|ico)$/,
@@ -52,15 +48,6 @@ const config = {
         options: {
           name: '[name].[ext]',
           outputPath: '/images/',
-          emitFile: false,
-        },
-      },
-      {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          outputPath: '/fonts/',
           emitFile: false,
         },
       },

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App'
-import router from './router'
+//import router from './router'
 
 browser.tabs.create({
     url: '/tab/index.html',
@@ -9,6 +9,6 @@ browser.tabs.create({
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
-    router,
+    //router,
     render: h => h(App),
 });

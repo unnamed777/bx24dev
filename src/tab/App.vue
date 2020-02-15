@@ -1,18 +1,3 @@
-<!--<template>
-  <div>
-    <router-view></router-view>
-  </div>
-</template>
-
-<script>
-export default {
-  data () {
-    return {}
-  }
-}
-</script>
-
--->
 <template>
 <div class="container-fluid" style="height: calc(100%);">
     <div class="row">
@@ -32,15 +17,7 @@ export default {
                 </div>
             </div>
 
-            <div class="nav flex-column" v-if="activeAppId !== null">
-                <a class="nav-link" href="#" v-on:click.prevent="refreshAuth">Refresh auth</a>
-                <a class="nav-link" href="#" v-on:click.prevent="testCall">test</a>
-                <a class="nav-link" href="#" v-on:click.prevent="showEntityList">entity.list</a>
-                <a class="nav-link" href="#" v-on:click.prevent="crmLeadFields">crm.lead.fields</a>
-                <a class="nav-link" href="#" v-on:click.prevent="crmDealFields">crm.deal.fields</a>
-                <a class="nav-link" href="#" v-on:click.prevent="crmStatusTypes">crm: справочник / типы</a>
-                <a class="nav-link" href="#" v-on:click.prevent="crmDealStages">crm: справочник / стадии сделок</a>
-            </div>
+            <SidebarMenu v-bind:items="menu" v-if="activeAppId !== null"/>
         </div>
         <div class="col-10 pt-3">
             <div class="row mb-3" v-if="activeAppId !== null && breadcrumb.length > 0">
@@ -56,51 +33,24 @@ export default {
                 </div>
             </div>
             <EntityList v-if="activeModule === 'entityList'" v-bind:items="entityList"></EntityList>
-            <FieldList v-if="activeModule === 'crmDealFields'" v-bind:items="crmDealFields"></FieldList>
-            <FieldList v-if="activeModule === 'crmLeadFields'" v-bind:items="crmLeadFields"></FieldList>
-            <table-list v-if="activeModule === 'tableList'" v-bind:fields="moduleData.fields" v-bind:items="moduleData.items"></table-list>
+            <TableList v-if="activeModule === 'tableList'" v-bind:fields="moduleData.fields" v-bind:items="moduleData.items"/>
+            <Template v-bind:is="activeModule" v-if="activeModule"/>
         </div>
     </div>
 </div>
 </template>
 <script>
 import BX24 from '../lib/BX24';
-import EntityList from './EntityList.vue';
-import FieldList from './FieldList.vue';
-import TableList from './TableList.vue';
-
-const messageListener = {
-    init() {
-        this.subscribers = {};
-
-        browser.runtime.onMessage.addListener(this.onMessage.bind(this));
-    },
-
-    onMessage(message) {
-        if (message.type) {
-            this.notify(message);
-        }
-    },
-
-    subscribe(type, callback) {
-        if (!this.subscribers[type]) {
-            this.subscribers[type] = [];
-        }
-
-        this.subscribers[type].push(callback);
-        return this.subscribers[type].length - 1;
-    },
-
-    notify({type, payload}) {
-        if (!this.subscribers[type]) {
-            return;
-        }
-
-        this.subscribers[type].forEach(func => func({type, payload}));
-    }
-};
-
-messageListener.init();
+import messageListener from '../lib/MessageListener';
+import EntityList from './components/EntityList.vue';
+import TableList from './components/TableList.vue';
+import SidebarMenu from './components/SidebarMenu.vue';
+import CrmDealFields from './components/modules/Crm/DealFields.vue';
+import CrmDealStages from './components/modules/Crm/DealStages.vue';
+import CrmLeadFields from './components/modules/Crm/LeadFields.vue';
+import CrmLeadStatuses from './components/modules/Crm/LeadStatuses.vue';
+import CrmStatusTypes from './components/modules/Crm/StatusTypes.vue';
+import CrmSources from './components/modules/Crm/Sources.vue';
 
 export default {
     data() {
@@ -110,16 +60,77 @@ export default {
             activeModule: null,
             breadcrumb: [],
             moduleData: {},
+            menu: [
+                {
+                    label: 'test',
+                    action: this.testCall,
+                },
+                {
+                    label: 'entity.list',
+                    action: this.showEntityList,
+                },
+                {
+                    label: 'CRM',
+                    children: [
+                        {
+                            label: 'Лиды',
+                            children: [
+                                {
+                                    label: 'Поля',
+                                    action: this.onClickSetModule('CrmLeadFields'),
+                                },
+                                {
+                                    label: 'Статусы',
+                                    action: this.onClickSetModule('CrmLeadStatuses'),
+                                }
+                            ]
+                        },
+                        {
+                            label: 'Сделки',
+                            children: [
+                                {
+                                    label: 'Поля',
+                                    action: this.onClickSetModule('CrmDealFields'),
+                                },
+                                {
+                                    label: 'Стадии',
+                                    action: this.onClickSetModule('CrmDealStages'),
+                                }
+                            ]
+                        },
+                        {
+                            label: 'Справочники',
+                            children: [
+                                {
+                                    label: 'Типы',
+                                    action: this.onClickSetModule('CrmStatusTypes'),
+                                },
+                                {
+                                    label: 'Источники',
+                                    action: this.onClickSetModule('CrmSources'),
+                                },
+                            ]
+                        },
+                    ]
+                }
+            ]
         }
     },
 
     components: {
         EntityList,
-        FieldList,
         TableList,
+        SidebarMenu,
+        CrmDealFields,
+        CrmDealStages,
+        CrmLeadFields,
+        CrmLeadStatuses,
+        CrmStatusTypes,
+        CrmSources,
     },
 
     async mounted() {
+        messageListener.init();
         messageListener.subscribe('refreshAuth', this.onRefreshAuth.bind(this));
 
         // We'll try to pre-select an app from a tab where the extension has been called
@@ -246,67 +257,16 @@ export default {
             BX24.setAuth(payload);
         },
 
-        async crmLeadFields() {
-            this.crmLeadFields = await BX24.call('crm.lead.fields');
-            this.activeModule = 'crmLeadFields';
-            this.breadcrumb = ['CRM', 'Лид', 'Поля'];
-            console.log(this.crmLeadFields);
-        },
-
-        async crmDealFields() {
-            this.crmDealFields = await BX24.call('crm.deal.fields');
-            this.activeModule = 'crmDealFields';
-            this.breadcrumb = ['CRM', 'Сделка', 'Поля'];
-            console.log(this.crmDealFields);
-        },
-
-        async crmStatusTypes() {
-            let result = await BX24.call('crm.status.entity.types');
-
-            this.breadcrumb = ['CRM', 'Справочники', 'Типы'];
-
-            this.moduleData = {
-                fields: [
-                    {code: 'ID', label: 'ID'},
-                    {code: 'NAME', label: 'Сущность'},
-                ],
-                items: result
-            };
-
-            this.activeModule = 'tableList';
-            console.log(this.moduleData);
-        },
-
-        async crmDealStages() {
-            let result = await BX24.call('crm.status.list', {
-                order: {'SORT': 'ASC'},
-                filter: {
-                    'ENTITY_ID': 'DEAL_STAGE'
-                }
-            });
-
-            console.log(result);
-
-            this.breadcrumb = ['CRM', 'Справочники', 'Стадии сделки'];
-
-            this.moduleData = {
-                fields: [
-                    {code: 'ID', label: 'ID'},
-                    {code: 'STATUS_ID', label: 'STATUS_ID'},
-                    {code: 'NAME', label: 'Название'},
-                    {code: 'SORT', label: 'Сортировка'},
-                ],
-                items: result
-            };
-
-            this.activeModule = 'tableList';
+        onClickSetModule(module) {
+            console.log(module);
+            return () => { console.log(module); this.activeModule = module; };
         },
     },
 
 }
 </script>
 
-<style>
+<style lang="scss">
 html, body {
     height: 100%;
 }
@@ -323,15 +283,10 @@ html, body {
     position: sticky;
     top: 0;
     z-index: 1000;
-    height: calc(100vh/* - 4rem*/);
+    //height: calc(100vh/* - 4rem*/);
+    height: 100%;
+    min-height: 100vh;
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
 
-.sidebar .nav-link {
-    color: #333;
-}
-
-.sidebar .nav-link:hover {
-    color: #000;
-}
 </style>
