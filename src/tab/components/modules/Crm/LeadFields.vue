@@ -1,5 +1,5 @@
 <template>
-<TableList v-bind:fields="fields" v-bind:items="items"/>
+<TableList :columns="columns" v-bind:items="items"/>
 </template>
 
 <script>
@@ -10,7 +10,7 @@ import {prepareCrmEntityFields} from '../../../../lib/functions';
 export default {
     data() {
         return {
-            fields: {},
+            columns: [],
             items: [],
         };
     },
@@ -21,7 +21,7 @@ export default {
         let rawFields = await BX24.call('crm.lead.fields');
         this.$parent.$data.breadcrumb = ['CRM', 'Лиды', 'Поля'];
         let data = prepareCrmEntityFields(rawFields);
-        this.fields = data.fields;
+        this.columns = data.columns;
         this.items = data.items;
     }
 };

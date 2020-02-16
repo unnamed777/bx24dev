@@ -1,16 +1,17 @@
 <template>
-<TableList v-bind:fields="fields" v-bind:items="items"/>
+<TableList :columns="columns" :items="items"/>
 </template>
 
 <script>
 import BX24 from '../../../../lib/BX24';
 import TableList from '../../TableList.vue';
+import Deal from 'lib/models/Crm/Deal';
 import {prepareCrmEntityFields} from '../../../../lib/functions';
 
 export default {
     data() {
         return {
-            fields: [],
+            columns: [],
             items: [],
         };
     },
@@ -18,10 +19,10 @@ export default {
         TableList,
     },
     async mounted() {
-        let rawFields = await BX24.call('crm.deal.fields');
+        let rawFields = await Deal.getFields();
         this.$parent.$data.breadcrumb = ['CRM', 'Сделка', 'Поля'];
         let data = prepareCrmEntityFields(rawFields);
-        this.fields = data.fields;
+        this.columns = data.columns;
         this.items = data.items;
     }
 };

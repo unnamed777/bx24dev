@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const path = require('path');
 const ejs = require('ejs');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
@@ -20,6 +21,11 @@ const config = {
     filename: '[name].js',
   },
   resolve: {
+    modules: [
+      path.resolve(__dirname, './src'),
+      path.resolve(__dirname, './src/tab'),
+      'node_modules',
+    ],
     extensions: ['.js', '.vue'],
   },
   devtool: 'source-map',

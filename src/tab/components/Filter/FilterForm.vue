@@ -1,17 +1,23 @@
 <template>
-<form>
+<form v-on:submit.prevent>
     <FilterItem
         v-for="(filterItem, index) of filter"
         v-model="filter[index]"
         v-bind:fields="fields"
         v-bind:key="index"
     />
-    <div>{{ filter }}</div>
+    <div class="form-group row">
+        <div class="col-12 d-flex justify-content-end">
+            <button type="button" class="btn btn-primary" v-on:click="send">Показать</button>
+        </div>
+  </div>
+    <div class="mb-4">{{ filter }}</div>
 </form>
 </template>
 
 <script>
 import FilterItem from './FilterItem.vue';
+import isNil from 'lodash/isnil';
 
 export default {
     components: {
@@ -44,6 +50,20 @@ export default {
     methods: {
         addNewItem() {
             this.filter.push({code: null, value: null});
+        },
+
+        send() {
+            const resultFilter = {};
+
+            for (let item of this.filter) {
+                if (isNil(item.code) || item.code === '' || isNil(item.value) || item.value === '') {
+                    continue;
+                }
+
+                resultFilter[item.code] = item.value;
+            }
+
+            this.$emit('submit', resultFilter);
         }
     }
 };

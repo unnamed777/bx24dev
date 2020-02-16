@@ -15,7 +15,7 @@ export function prepareCrmEntityFields(crmFields) {
     }
 
     return {
-        fields: [
+        columns: [
             {code: 'code', label: 'Код'},
             {code: 'label', label: 'Название'},
             {code: 'type', label: 'Тип'},
@@ -24,4 +24,12 @@ export function prepareCrmEntityFields(crmFields) {
         ],
         items
     };
+}
+
+/**
+ * @param {Object} field
+ * @returns {String}
+ */
+export function getFieldLabel(field) {
+    return field.formLabel || field.title;
 }

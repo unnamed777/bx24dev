@@ -1,5 +1,5 @@
 <template>
-<TableList v-bind:fields="fields" v-bind:items="items"/>
+<TableList :columns="columns" :items="items"/>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ import TableList from '../../TableList.vue';
 export default {
     data() {
         return {
-            fields: {},
+            columns: [],
             items: [],
         };
     },
@@ -27,7 +27,7 @@ export default {
         console.log(result);
         this.$parent.$data.breadcrumb = ['CRM', 'Справочники', 'Типы'];
 
-        this.fields = [
+        this.columns = [
             {code: 'ID', label: 'ID'},
             {code: 'NAME', label: 'Сущность'},
             {code: 'SORT', label: 'Сортировка'},

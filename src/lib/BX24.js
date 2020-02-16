@@ -21,5 +21,10 @@ export default {
     async call(method, data = {}) {
         let result = await this.request(method, data);
         return result.result;
+    },
+
+    async fetch(method, data = {}) {
+        let result = await this.request(method, data);
+        return result.result;
     }
 }

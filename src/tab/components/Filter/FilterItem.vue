@@ -7,7 +7,7 @@
         <template v-else>
             <select class="form-control" v-model="code">
                 <option></option>
-                <option v-for="field in fieldsSorted" v-bind:value="field.code">{{ field.label }}</option>
+                <option v-for="field in fieldsSorted" v-bind:value="field.code">{{ field.label }} ({{ field.code }})</option>
             </select>
         </template>
     </label>
