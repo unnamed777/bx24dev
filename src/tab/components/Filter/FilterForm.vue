@@ -30,7 +30,7 @@ export default {
 
     data() {
         return {
-            filter: [{code: null, value: null}],
+            filter: [{code: null}],
         };
     },
 
@@ -38,7 +38,7 @@ export default {
         filter() {
             const lastItem = this.filter[this.filter.length - 1];
 
-            if (lastItem.code !== null || (lastItem.value !== null && lastItem.value !== '')) {
+            if (!isNil(lastItem.code) || (!isNil(lastItem.value) && lastItem.value !== '')) {
                 this.addNewItem();
             }
         }
@@ -49,7 +49,7 @@ export default {
 
     methods: {
         addNewItem() {
-            this.filter.push({code: null, value: null});
+            this.filter.push({code: null});
         },
 
         send() {
@@ -60,7 +60,13 @@ export default {
                     continue;
                 }
 
-                resultFilter[item.code] = item.value;
+                let operator = '';
+
+                if (item.operator !== '=') {
+                    operator = item.operator;
+                }
+
+                resultFilter[operator + item.code] = item.value;
             }
 
             this.$emit('submit', resultFilter);
