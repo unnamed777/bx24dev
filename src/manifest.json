@@ -23,5 +23,6 @@
     "<all_urls>",
     "webNavigation",
     "tabs"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https://localhost:*; object-src 'self';"
 }

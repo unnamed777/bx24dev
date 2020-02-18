@@ -153,12 +153,10 @@ export default {
 
         let tabs = await browser.tabs.query({currentWindow: true});
         const apps = [];
-        const regExp = /bitrix24\.ru\/marketplace\/app\//gi;
-        const appFrameRegExp = /\?DOMAIN=.*APP_SID=/gi;
         let appIdToSelect = null;
 
         for (let tab of tabs) {
-            if (regExp.test(tab.url) === false) {
+            if (/bitrix24\.ru\/marketplace\/app\//i.test(tab.url) === false) {
                 continue;
             }
 
@@ -166,8 +164,9 @@ export default {
             let appFound = false;
             let frame;
 
+            // Check app frame
             for (frame of frames) {
-                if (appFrameRegExp.test(frame.url) !== false) {
+                if (/\?DOMAIN=.*APP_SID=/gi.test(frame.url) !== false) {
                     appFound = true;
                     break;
                 }
@@ -303,4 +302,27 @@ html, body {
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
 
+.form-control:focus {
+    border-color: #000;
+    box-shadow: none !important;
+}
+
+.filter-item {
+    $el: &;
+
+    &__add-value-wrapper {
+        position: absolute;
+        left: 100%;
+        bottom: 0.5rem;
+        display: none;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    &:hover {
+        #{$el}__add-value-wrapper {
+            display: block;
+        }
+    }
+}
 </style>

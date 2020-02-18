@@ -1,5 +1,5 @@
 <template>
-<div class="form-group row">
+<div class="filter-item form-group row">
     <label class="col-6">
         <template>
             <select class="form-control form-control-sm" v-model="code">
@@ -11,26 +11,24 @@
             <a href="#" v-on:click.prevent="editMode = true">{{ fields[code].label }}</a>
         </template>-->
     </label>
-    <div class="col-6">
-        <div class="input-group">
-            <div class="input-group-prepend" v-show="code">
-                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">{{ this.operator }}</button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#" v-on:click="operator = '='">=</a>
-                    <a class="dropdown-item" href="#" v-on:click="operator = '<'">&lt;</a>
-                    <a class="dropdown-item" href="#" v-on:click="operator = '<='">&lt;=</a>
-                    <a class="dropdown-item" href="#" v-on:click="operator = '>'">&gt;</a>
-                    <a class="dropdown-item" href="#" v-on:click="operator = '>='">&gt;=</a>
-                </div>
-            </div>
-            <input type="text" class="form-control form-control-sm" v-model="value" v-bind:disabled="!code">
-        </div>
+    <div class="col-6 position-relative">
+        <template v-if="code">
+            <component :is="valueComponent" v-model="complexValue" :field="fields[code]" :disabled="!code" />
+        </template>
+        <div class="filter-item__add-value-wrapper"><a href="#" class="btn btn-sm btn-light">+</a></div>
     </div>
 </div>
 </template>
 
 <script>
+import DefaultValue from './DefaultValue.vue';
+import EnumValue from './EnumValue.vue';
+
 export default {
+    components: {
+        DefaultValue,
+        EnumValue,
+    },
     model: {
         prop: 'item',
         event: 'change',
@@ -55,6 +53,36 @@ export default {
     computed: {
         fieldsSorted() {
             return Object.values(this.fields).sort((a, b) => a.sort - b.sort);
+        },
+
+        complexValue: {
+            get() {
+                return {
+                    value: this.value,
+                    operator: this.operator,
+                };
+            },
+
+            set(newValue) {
+                this.value = newValue.value;
+                this.operator = newValue.operator;
+            }
+        },
+
+        valueComponent() {
+            let result;
+
+            if (!this.fields[this.code]) {
+                return null;
+            }
+
+            if (this.fields[this.code].type === 'enumeration') {
+                result = 'EnumValue';
+            } else {
+                result = 'DefaultValue';
+            }
+
+            return result;
         }
     },
 
@@ -71,7 +99,6 @@ export default {
     },
 
     mounted() {
-        $(this.$el.querySelector('.dropdown-toggle')).dropdown();
     },
 
     methods: {

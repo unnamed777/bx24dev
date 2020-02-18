@@ -1,4 +1,5 @@
-import BX24 from "lib/BX24";
+import BX24 from 'lib/BX24';
+import {getFieldLabel} from 'lib/functions';
 
 export default class Deal {
     static get fieldsEndpoint() {
@@ -17,7 +18,8 @@ export default class Deal {
         this.rawFields = await BX24.fetch(this.fieldsEndpoint);
 
         for (let fieldCode of Object.keys(this.rawFields)) {
-            this.rawFields[fieldCode].field = fieldCode;
+            this.rawFields[fieldCode].code = fieldCode;
+            this.rawFields[fieldCode].label = getFieldLabel(this.rawFields[fieldCode]);
         }
 
         return this.rawFields;

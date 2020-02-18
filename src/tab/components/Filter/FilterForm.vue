@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import FilterItem from './FilterItem.vue';
+import FilterItem from './Item.vue';
 import isNil from 'lodash/isnil';
 
 export default {
@@ -41,6 +41,10 @@ export default {
             if (!isNil(lastItem.code) || (!isNil(lastItem.value) && lastItem.value !== '')) {
                 this.addNewItem();
             }
+        },
+
+        fields() {
+            console.log(this.fields);
         }
     },
 

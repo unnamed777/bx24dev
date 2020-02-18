@@ -6,7 +6,7 @@
         </div>
     </div>
     <div v-if="items.length > 0">
-            <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
+        <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
         <div style="max-width: 100%; overflow-x: scroll;">
             <TableList :columns="columns" :items="items" />
         </div>
@@ -60,17 +60,16 @@ export default {
     },
 
     async mounted() {
-        this.rawFields = await Deal.getFields();
-        this.$parent.$data.breadcrumb = ['CRM', 'Сделки', 'Список'];
+        this.fields = await Deal.getFields();
+        /*this.$parent.$data.breadcrumb = ['CRM', 'Сделки', 'Список'];
         let data = prepareCrmEntityFields(this.rawFields);
 
         const fields = {};
 
         for (let field of data.items) {
             fields[field.code] = field;
-        }
-
-        this.fields = fields;
+        }*/
+        //this.fields = fields;
     },
 
     methods: {
