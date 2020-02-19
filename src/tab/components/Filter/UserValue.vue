@@ -23,25 +23,22 @@ export default {
 
     data() {
         return {
-            operator: this.complexValue.operator,
             value: this.complexValue.value,
         };
     },
 
     computed: {
         options() {
-            return this.field && this.field.items ? this.field.items.map(item => ({
-                value: item.ID,
-                label: `[${item.ID}] ${item.VALUE}`,
+            return this.extra && this.extra.users ? this.extra.users.map(user => ({
+                value: user.ID,
+                label: `[${user.ID}] ${user.FULL_NAME}`,
             })) : [];
-        },
-
+        }
     },
 
     watch: {
         complexValue() {
             this.value = this.complexValue.value;
-            this.operator = this.complexValue.operator;
         },
 
         operator() {
@@ -60,7 +57,6 @@ export default {
         notify() {
             this.$emit('change', {
                 value: this.value,
-                operator: this.operator,
             });
         }
     }

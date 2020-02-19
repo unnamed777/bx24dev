@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="row" v-if="fieldsLoaded">
+    <div class="row">
         <div class="col-5">
             <FilterForm :fields="fields" v-on:submit="onSubmit" />
         </div>
@@ -15,9 +15,8 @@
 </template>
 
 <script>
-import BX24 from 'lib/BX24';
-import {prepareCrmEntityFields, getFieldLabel} from 'lib/functions';
-import Deal from 'lib/models/Crm/Deal';
+import {getFieldLabel} from 'lib/functions';
+import Lead from 'lib/models/Crm/Lead';
 import FilterForm from 'components/Filter/FilterForm.vue';
 import TableList from 'components/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
@@ -35,7 +34,6 @@ export default {
             items: [],
             visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STAGE_ID'],
             //columns: [],
-            fieldsLoaded: false,
         };
     },
 
@@ -61,20 +59,15 @@ export default {
     },
 
     async mounted() {
-        this.fields = await Deal.getFields();
-        this.fieldsLoaded = true;
-        this.$parent.$data.breadcrumb = ['CRM', 'Сделки', 'Список'];
+        this.fields = await Lead.getFields();
+        this.$parent.$data.breadcrumb = ['CRM', 'Лиды', 'Список'];
     },
 
     methods: {
-        endpoint() {
-            return 'crm.deal.list';
-        },
-
         async onSubmit(filter) {
             console.log('Filter', filter);
 
-            this.items = (await Deal.load({
+            this.items = (await Lead.load({
                 order: {'ID': 'ASC'},
                 filter,
                 _limit: 100

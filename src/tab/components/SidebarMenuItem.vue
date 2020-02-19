@@ -31,7 +31,6 @@ export default {
     },
     methods: {
         toggle() {
-            console.log(111);
             this.expanded = !this.expanded;
         }
     }

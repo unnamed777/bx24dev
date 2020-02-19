@@ -13,9 +13,17 @@
     </label>
     <div class="col-6 position-relative">
         <template v-if="code">
-            <component :is="valueComponent" v-model="complexValue" :field="fields[code]" :disabled="!code" />
+            <component
+                :is="valueComponent.name"
+                v-for="(complexValue, index) of values"
+                v-model="values[index]"
+                :field="fields[code]"
+                :extra="valueComponent.extra"
+                :disabled="!code"
+                class="mb-2"
+            />
+            <div class="filter-item__add-value-wrapper"><a href="#" @click.prevent="addValue">добавить</a></div>
         </template>
-        <div class="filter-item__add-value-wrapper"><a href="#" class="btn btn-sm btn-light">+</a></div>
     </div>
 </div>
 </template>
@@ -23,11 +31,14 @@
 <script>
 import DefaultValue from './DefaultValue.vue';
 import EnumValue from './EnumValue.vue';
+import UserValue from './UserValue.vue';
+import zipWith from 'lodash/zipwith';
 
 export default {
     components: {
         DefaultValue,
         EnumValue,
+        UserValue,
     },
     model: {
         prop: 'item',
@@ -40,13 +51,14 @@ export default {
             default: () => { return {}; },
         },
         item: Object,
+        // @todo Move to a Store
+        users: Array,
     },
 
     data() {
         return {
             code: null,
-            value: null,
-            operator: '=',
+            values: [{operator: '=', value: null}]
         };
     },
 
@@ -55,34 +67,35 @@ export default {
             return Object.values(this.fields).sort((a, b) => a.sort - b.sort);
         },
 
-        complexValue: {
-            get() {
-                return {
-                    value: this.value,
-                    operator: this.operator,
-                };
-            },
-
-            set(newValue) {
-                this.value = newValue.value;
-                this.operator = newValue.operator;
-            }
-        },
-
         valueComponent() {
-            let result;
+            let component;
+            let extra = {};
 
             if (!this.fields[this.code]) {
                 return null;
             }
 
-            if (this.fields[this.code].type === 'enumeration') {
-                result = 'EnumValue';
-            } else {
-                result = 'DefaultValue';
+            switch (this.fields[this.code].type) {
+                case 'enumeration':
+                    component = 'EnumValue';
+                    break;
+
+                case 'user':
+                    component = 'UserValue';
+                    extra = {
+                        users: this.users
+                    };
+                    break;
+
+                default:
+                    component = 'DefaultValue';
+                    break;
             }
 
-            return result;
+            return {
+                name: component,
+                extra: extra,
+            };
         }
     },
 
@@ -91,9 +104,12 @@ export default {
             this.notify();
         },
         value() {
-            this.notify();
+            //this.notify();
         },
         operator() {
+            //this.notify();
+        },
+        values(newValue) {
             this.notify();
         }
     },
@@ -105,9 +121,13 @@ export default {
         notify() {
             this.$emit('change', {
                 code: this.code,
-                value: this.value,
-                operator: this.operator,
+                // Maybe I need to make a deep copy
+                values: this.values,
             });
+        },
+
+        addValue() {
+            this.values.push({operator: '=', value: null});
         }
     }
 };

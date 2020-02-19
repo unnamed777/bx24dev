@@ -48,6 +48,7 @@ import SidebarMenu from './components/SidebarMenu.vue';
 import CrmDealList from './components/modules/Crm/DealList.vue';
 import CrmDealFields from './components/modules/Crm/DealFields.vue';
 import CrmDealStages from './components/modules/Crm/DealStages.vue';
+import CrmLeadList from './components/modules/Crm/LeadList.vue';
 import CrmLeadFields from './components/modules/Crm/LeadFields.vue';
 import CrmLeadStatuses from './components/modules/Crm/LeadStatuses.vue';
 import CrmStatusTypes from './components/modules/Crm/StatusTypes.vue';
@@ -137,6 +138,7 @@ export default {
         CrmDealList,
         CrmDealFields,
         CrmDealStages,
+        CrmLeadList,
         CrmLeadFields,
         CrmLeadStatuses,
         CrmStatusTypes,
@@ -312,11 +314,17 @@ html, body {
 
     &__add-value-wrapper {
         position: absolute;
-        left: 100%;
-        bottom: 0.5rem;
+        top: 100%;
+        left: 15px;
+        right: 15px;
         display: none;
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
+        line-height: 1em;
+        opacity: 0.5;
+        font-size: 70%;
+
+        &:hover {
+            opacity: 1;
+        }
     }
 
     &:hover {

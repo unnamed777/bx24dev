@@ -20,6 +20,7 @@ export default {
 
     props: {
         complexValue: Object,
+        extra: Object,
     },
 
     data() {
