@@ -86,6 +86,12 @@ export default {
                         continue;
                     }
 
+                    let value = complexValue.value;
+
+                    if (value === 'NULL') {
+                        value = '';
+                    }
+
                     let operator = '';
 
                     if (complexValue.operator && complexValue.operator !== '=') {
@@ -100,12 +106,12 @@ export default {
                                 resultFilter[key] = [resultFilter[key]];
                             }
 
-                            resultFilter[key].push(complexValue.value);
+                            resultFilter[key].push(value);
                         } else {
-                            resultFilter[operator + item.code] = complexValue.value;
+                            resultFilter[operator + item.code] = value;
                         }
                     } else {
-                        resultFilter[operator + item.code] = complexValue.value;
+                        resultFilter[operator + item.code] = value;
                     }
                 }
             }

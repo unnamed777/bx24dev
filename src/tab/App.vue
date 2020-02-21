@@ -20,18 +20,14 @@
             <SidebarMenu v-bind:items="menu" v-if="activeAppId !== null"/>
         </div>
         <div class="col-10 pt-3">
-            <div class="row mb-3" v-if="activeAppId !== null && breadcrumb.length > 0">
-                <div class="col">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb bg-light">
-                            <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
-                                <template v-if="index === breadcrumb.length - 1">{{ item }}</template>
-                                <template v-else><a href="#">{{ item }}</a></template>
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
+            <nav aria-label="breadcrumb"  v-if="activeAppId !== null && breadcrumb.length > 0">
+                <ol class="breadcrumb bg-light">
+                    <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
+                        <template v-if="index === breadcrumb.length - 1">{{ item }}</template>
+                        <template v-else><a href="#">{{ item }}</a></template>
+                    </li>
+                </ol>
+            </nav>
             <EntityList v-if="activeModule === 'entityList'" v-bind:items="entityList"></EntityList>
             <TableList v-if="activeModule === 'tableList'" v-bind:fields="moduleData.fields" v-bind:items="moduleData.items"/>
             <Template v-bind:is="activeModule" v-if="activeModule"/>

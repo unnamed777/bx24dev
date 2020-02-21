@@ -2,9 +2,9 @@
 <div class="filter-item-value input-group">
     <!-- add disabled -->
     <div class="input-group-prepend">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">{{ this.operator }}</button>
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">{{ operators[operator] }}</button>
         <div class="dropdown-menu">
-            <a class="dropdown-item" href="#" v-for="op of operators" v-on:click="operator = op">{{ op }}</a>
+            <a class="dropdown-item" href="#" v-for="(label, op) of operators" v-on:click="operator = op">{{ label }}</a>
         </div>
     </div>
     <input type="text" class="form-control form-control-sm" v-model="value">
@@ -27,7 +27,14 @@ export default {
         return {
             operator: this.complexValue.operator,
             value: this.complexValue.value,
-            operators: ['=', '<', '<=', '>', '>='],
+            operators: {
+                '': '=',
+                '!': '!=',
+                '<': '<',
+                '<=': '<=',
+                '>': '>',
+                '>=': '>='
+            },
         };
     },
 

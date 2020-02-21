@@ -32,7 +32,7 @@ export default {
         return {
             fields: {},
             items: [],
-            visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STAGE_ID'],
+            visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STATUS_ID'],
             //columns: [],
         };
     },

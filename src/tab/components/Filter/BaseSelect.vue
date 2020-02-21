@@ -1,5 +1,5 @@
 <template>
-<select class="form-control form-control-sm mb-2" v-model="currentValue">
+<select class="form-control form-control-sm" v-model="currentValue">
     <option v-for="option of options" :value="option.value">{{ option.label }}</option>
 </select>
 </template>
@@ -16,22 +16,16 @@ export default {
         value: [String, Number],
     },
 
-    data() {
-        return {
-            currentValue: this.value,
-        };
-    },
+    computed: {
+        currentValue: {
+            get() {
+                return this.value;
+            },
 
-    watch: {
-        currentValue() {
-            this.notify();
+            set(newValue) {
+                this.$emit('change', newValue);
+            }
         }
     },
-
-    methods: {
-        notify() {
-            this.$emit('change', this.currentValue);
-        }
-    }
 }
 </script>

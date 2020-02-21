@@ -1,5 +1,5 @@
 <template>
-<BaseSelect :options="options" v-model="value" />
+<BaseSelect :options="options" v-model="value" class="mb-2" />
 </template>
 
 <script>

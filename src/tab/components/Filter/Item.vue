@@ -4,7 +4,7 @@
         <template>
             <select class="form-control form-control-sm" v-model="code">
                 <option></option>
-                <option v-for="field in fieldsSorted" v-bind:value="field.code">{{ field.label }} ({{ field.code }})</option>
+                <option v-for="field in fieldsSorted" v-bind:value="field.code" :key="field.code">{{ field.label }} ({{ field.code }})</option>
             </select>
         </template>
         <!--<template v-else>
@@ -17,6 +17,7 @@
                 :is="valueComponent.name"
                 v-for="(complexValue, index) of values"
                 v-model="values[index]"
+                :key="index"
                 :field="fields[code]"
                 :extra="valueComponent.extra"
                 :disabled="!code"
@@ -58,7 +59,7 @@ export default {
     data() {
         return {
             code: null,
-            values: [{operator: '=', value: null}]
+            values: [{operator: '', value: null}]
         };
     },
 
@@ -127,7 +128,7 @@ export default {
         },
 
         addValue() {
-            this.values.push({operator: '=', value: null});
+            this.values.push({operator: '', value: null});
         }
     }
 };
