@@ -1,4 +1,4 @@
-import AbstractEntity from 'lib/models/AbstractEntity';
+import AbstractEntity from 'lib/entities/AbstractEntity';
 
 export default class Lead extends AbstractEntity {
     static get fieldsEndpoint() {

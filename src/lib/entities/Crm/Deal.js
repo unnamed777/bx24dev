@@ -1,5 +1,5 @@
 import BX24 from 'lib/BX24';
-import AbstractEntity from 'lib/models/AbstractEntity';
+import AbstractEntity from 'lib/entities/AbstractEntity';
 import {getFieldLabel} from 'lib/functions';
 
 export default class Deal extends AbstractEntity {

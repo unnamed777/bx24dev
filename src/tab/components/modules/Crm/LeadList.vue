@@ -16,7 +16,7 @@
 
 <script>
 import {getFieldLabel} from 'lib/functions';
-import Lead from 'lib/models/Crm/Lead';
+import Lead from 'lib/entities/Crm/Lead';
 import FilterForm from 'components/Filter/FilterForm.vue';
 import TableList from 'components/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';

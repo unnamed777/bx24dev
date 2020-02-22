@@ -1,29 +1,38 @@
 <template>
-<TableList :columns="columns" :items="items"/>
+<TableList v-if="tableData.columns.length > 0" :columns="tableData.columns" :items="tableData.items"/>
 </template>
 
 <script>
-import BX24 from '../../../../lib/BX24';
-import TableList from '../../TableList.vue';
-import Deal from 'lib/models/Crm/Deal';
-import {prepareCrmEntityFields} from '../../../../lib/functions';
+import {mapState, mapActions, mapMutations} from 'vuex';
+import TableList from 'components/TableList.vue';
+import {prepareCrmEntityFields} from 'lib/functions';
 
 export default {
-    data() {
-        return {
-            columns: [],
-            items: [],
-        };
-    },
     components: {
         TableList,
     },
+
+    computed: {
+        tableData() {
+            return prepareCrmEntityFields(this.rawFields);
+        },
+        ...mapState('dealFields', {
+            rawFields: state => state.items
+        }),
+    },
+
     async mounted() {
-        let rawFields = await Deal.getFields();
-        this.$parent.$data.breadcrumb = ['CRM', 'Сделка', 'Поля'];
-        let data = prepareCrmEntityFields(rawFields);
-        this.columns = data.columns;
-        this.items = data.items;
+        await this.load();
+        this.setBreadcrumb(['CRM', 'Сделка', 'Поля']);
+    },
+
+    methods: {
+        ...mapMutations({
+            setBreadcrumb: 'setBreadcrumb',
+        }),
+        ...mapActions({
+            load: 'dealFields/load',
+        })
     }
 };
 </script>

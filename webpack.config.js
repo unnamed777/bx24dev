@@ -6,6 +6,8 @@ const CopyPlugin = require('copy-webpack-plugin');
 const ExtensionReloader = require('webpack-extension-reloader');
 const { VueLoaderPlugin } = require('vue-loader');
 const { version } = require('./package.json');
+const WebpackNotifierPlugin = require('webpack-notifier');
+const stripANSI = require('strip-ansi');
 
 const config = {
     mode: 'development',//process.env.NODE_ENV,
@@ -60,6 +62,7 @@ const config = {
         ],
     },
     plugins: [
+        new WebpackNotifierPlugin(),
         new webpack.DefinePlugin({
             global: 'window',
         }),
@@ -114,5 +117,45 @@ function transformHtml(content) {
         ...process.env,
     });
 }
+
+WebpackNotifierPlugin.prototype.compileMessage = function(stats) {
+    if (this.isFirstBuild) {
+        this.isFirstBuild = false;
+
+        if (this.options.skipFirstNotification) {
+            return;
+        }
+    }
+
+    let error;
+
+    if (stats.hasErrors()) {
+        error = stats.compilation.errors[0];
+    } else if (stats.hasWarnings() && !this.options.excludeWarnings) {
+        error = stats.compilation.warnings[0];
+    } else if (!this.lastBuildSucceeded || this.options.alwaysNotify) {
+        this.lastBuildSucceeded = true;
+        return 'Build successful';
+    } else {
+        return;
+    }
+
+    this.lastBuildSucceeded = false;
+
+    let message;
+
+    if (error.module && error.module.rawRequest)
+        message = error.module.rawRequest + '\n';
+
+    if (error.error) {
+        message = /*errorSrc[1] + ' ' + errorSrc[2] + */'Error: ' + message + error.error.toString();
+    } else if (error.warning) {
+        message = 'Warning: ' + message + error.warning.toString();
+    } else if (error.message) {
+        message = 'Warning: ' + message + error.message.toString();
+    }
+
+    return stripANSI(message);
+};
 
 module.exports = config;

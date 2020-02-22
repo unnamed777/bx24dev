@@ -120,7 +120,7 @@ export default class AbstractEntry {
 
     /**
      * Fetches entity fields with cache
-     * @returns {Promise<*>}
+     * @returns {Promise<Object>}
      */
     static async getFields() {
         if (!this.fieldsEndpoint) {
@@ -128,7 +128,7 @@ export default class AbstractEntry {
         }
 
         if (this.rawFields) {
-            return this.rawFields;
+            //return this.rawFields;
         }
 
         this.rawFields = await BX24.fetch(this.fieldsEndpoint);

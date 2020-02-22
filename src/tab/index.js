@@ -1,11 +1,12 @@
-import Vue from 'vue'
-import App from './App'
+import Vue from 'vue';
+import App from './App';
+import store from './store';
 // import router from './router'
 
-/* eslint-disable no-new */
 window.app = new Vue({
-  el: '#app',
-  //router,
-  render: h => h(App),
-  data: {}
+    el: '#app',
+    //router,
+    store,
+    render: h => h(App),
+    data: {}
 });

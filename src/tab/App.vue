@@ -36,6 +36,7 @@
 </div>
 </template>
 <script>
+import {mapState, mapMutations} from 'vuex';
 import BX24 from '../lib/BX24';
 import messageListener from '../lib/MessageListener';
 import EntityList from './components/EntityList.vue';
@@ -51,12 +52,23 @@ import CrmStatusTypes from './components/modules/Crm/StatusTypes.vue';
 import CrmSources from './components/modules/Crm/Sources.vue';
 
 export default {
+    components: {
+        EntityList,
+        TableList,
+        SidebarMenu,
+        CrmDealList,
+        CrmDealFields,
+        CrmDealStages,
+        CrmLeadList,
+        CrmLeadFields,
+        CrmLeadStatuses,
+        CrmStatusTypes,
+        CrmSources,
+    },
+
     data() {
         return {
             apps: [],
-            activeAppId: null,
-            activeModule: null,
-            breadcrumb: [],
             moduleData: {},
             menu: [
                 {
@@ -127,19 +139,11 @@ export default {
         }
     },
 
-    components: {
-        EntityList,
-        TableList,
-        SidebarMenu,
-        CrmDealList,
-        CrmDealFields,
-        CrmDealStages,
-        CrmLeadList,
-        CrmLeadFields,
-        CrmLeadStatuses,
-        CrmStatusTypes,
-        CrmSources,
-    },
+    computed: mapState({
+        activeModule: state => state.activeModule,
+        activeAppId: state => state.activeAppId,
+        breadcrumb: state => state.breadcrumb,
+    }),
 
     async mounted() {
         messageListener.init();
@@ -203,9 +207,9 @@ export default {
         },
 
         async selectApp(appId) {
-            this.activeAppId = appId;
+            this.setActiveAppId(appId);
             BX24.setAuth(await this.getAuth());
-            this.activeModule = 'CrmDealList';
+            //this.activeModule = 'CrmDealList';
         },
 
         async getAuth() {
@@ -270,8 +274,15 @@ export default {
         },
 
         onClickSetModule(module) {
-            return () => { this.activeModule = module; };
+            return () => {
+                this.setActiveModule(module);
+            };
         },
+
+        ...mapMutations({
+            setActiveModule: 'setActiveModule',
+            setActiveAppId: 'setActiveAppId'
+        }),
     },
 
 }

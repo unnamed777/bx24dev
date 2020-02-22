@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import BX24 from 'lib/BX24';
+import {mapState, mapActions, mapMutations} from 'vuex';
 import {prepareCrmEntityFields, getFieldLabel} from 'lib/functions';
-import Deal from 'lib/models/Crm/Deal';
+import Deal from 'lib/entities/Crm/Deal';
 import FilterForm from 'components/Filter/FilterForm.vue';
 import TableList from 'components/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
