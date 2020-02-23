@@ -208,11 +208,11 @@ export default {
 
         async selectApp(appId) {
             this.setActiveAppId(appId);
-            BX24.setAuth(await this.getAuth());
+            this.getActiveAppAuth();
             //this.activeModule = 'CrmDealList';
         },
 
-        async getAuth() {
+        async getActiveAppAuth() {
             const app = this.apps[this.activeAppId];
             let result;
 
@@ -227,6 +227,7 @@ export default {
                                 payload: auth,
                             });
                         }
+
                         exportFunction(refreshAuthHelper, window, {defineAs: 'refreshAuthHelper'});
 
                         window.wrappedJSObject.BX24.getAuth();
@@ -239,13 +240,23 @@ export default {
                 return;
             }
 
-            console.log(result);
+            console.log('executeScript result', result);
+
+            // If auth is failed (expired in app), try to refresh it
+            if (result === false) {
+                this.refreshAuth();
+                return;
+            }
+
+            BX24.setAuth(result);
             return result;
         },
 
         async refreshAuth() {
             const app = this.apps[this.activeAppId];
-            let result;
+
+            // If b24 authorization is expired, this call will notify of problem
+            this.refreshTimeout = setTimeout(this.onRefreshAuthFailed, 3000);
 
             try {
                 browser.tabs.executeScript(app.tabId, {
@@ -270,7 +281,12 @@ export default {
 
         onRefreshAuth({payload}) {
             console.log('onRefreshAuth');
+            clearTimeout(this.refreshTimeout);
             BX24.setAuth(payload);
+        },
+
+        onRefreshAuthFailed() {
+            alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
         },
 
         onClickSetModule(module) {

@@ -31,22 +31,17 @@ export default {
 
     data() {
         return {
-            fields: {},
             items: [],
             visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STAGE_ID'],
-            //columns: [],
-            fieldsLoaded: false,
         };
     },
 
     computed: {
         availableColumns() {
-            let result = Object.values(this.fields).map(item => ({
+            return Object.values(this.fields).map(item => ({
                 code: item.field,
                 label: getFieldLabel(item)
             }));
-            console.log(result);
-            return result;
         },
 
         columns() {
@@ -57,20 +52,24 @@ export default {
             }
 
             return columns;
-        }
+        },
+
+        fieldsLoaded() {
+            return Object.entries(this.fields).length > 0;
+        },
+
+        ...mapState({
+            fields: state => state.dealFields.items
+        }),
     },
 
     async mounted() {
-        this.fields = await Deal.getFields();
-        this.fieldsLoaded = true;
-        this.$parent.$data.breadcrumb = ['CRM', 'Сделки', 'Список'];
+        this.loadFields();
+        this.loadCrmStatuses();
+        this.setBreadcrumb(['CRM', 'Сделки', 'Список']);
     },
 
     methods: {
-        endpoint() {
-            return 'crm.deal.list';
-        },
-
         async onSubmit(filter) {
             console.log('Filter', filter);
 
@@ -83,7 +82,16 @@ export default {
 
         setVisibleColumns(columns) {
             this.visibleColumns = columns;
-        }
+        },
+
+        ...mapMutations({
+            setBreadcrumb: 'setBreadcrumb',
+        }),
+
+        ...mapActions({
+            loadFields: 'dealFields/load',
+            loadCrmStatuses: 'crmStatuses/load',
+        })
     }
 };
 </script>

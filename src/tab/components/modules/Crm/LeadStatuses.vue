@@ -3,41 +3,44 @@
 </template>
 
 <script>
-import BX24 from '../../../../lib/BX24';
+import {mapState, mapActions, mapMutations} from 'vuex';
 import TableList from '../../TableList.vue';
 
 export default {
-    data() {
-        return {
-            columns: [],
-            items: [],
-        };
-    },
-
     components: {
         TableList,
     },
 
+    data() {
+        return {
+            columns: [
+                {code: 'ID', label: 'ID'},
+                {code: 'STATUS_ID', label: 'STATUS_ID'},
+                {code: 'NAME', label: 'Название'},
+                {code: 'SORT', label: 'Сортировка'},
+            ],
+        };
+    },
+
+    computed: {
+        ...mapState({
+            items: store => store.leadStatuses.items,
+        }),
+    },
+
     async mounted() {
-        let result = await BX24.call('crm.status.list', {
-            order: {'SORT': 'ASC'},
-            filter: {
-                'ENTITY_ID': 'DEAL_STAGE'
-            }
-        });
+        this.load();
+        this.setBreadcrumb(['CRM', 'Справочники', 'Статусы лидов']);
+    },
 
-        console.log(result);
+    methods: {
+        ...mapMutations({
+            setBreadcrumb: 'setBreadcrumb',
+        }),
 
-        this.$parent.$data.breadcrumb = ['CRM', 'Справочники', 'Стадии сделки'];
-
-        this.columns = [
-            {code: 'ID', label: 'ID'},
-            {code: 'STATUS_ID', label: 'STATUS_ID'},
-            {code: 'NAME', label: 'Название'},
-            {code: 'SORT', label: 'Сортировка'},
-        ];
-
-        this.items = result;
+        ...mapActions({
+            load: 'leadStatuses/load',
+        })
     }
 };
 </script>

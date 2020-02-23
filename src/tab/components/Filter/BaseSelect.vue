@@ -12,7 +12,7 @@ export default {
     },
 
     props: {
-        options: Object,
+        options: [Object, Array],
         value: [String, Number],
     },
 

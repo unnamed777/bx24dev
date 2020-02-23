@@ -30,16 +30,18 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
 import DefaultValue from './DefaultValue.vue';
 import EnumValue from './EnumValue.vue';
 import UserValue from './UserValue.vue';
-import zipWith from 'lodash/zipwith';
+import CrmStatusValue from './CrmStatusValue.vue';
 
 export default {
     components: {
         DefaultValue,
         EnumValue,
         UserValue,
+        CrmStatusValue,
     },
     model: {
         prop: 'item',
@@ -88,6 +90,19 @@ export default {
                     };
                     break;
 
+                case 'crm_status':
+                    component = 'CrmStatusValue';
+
+                    extra = {
+                        entityId: this.fields[this.code].statusType,
+                        /*items: this.getCrmStatusByEntityId(this.fields[this.code].statusType).map(item => ({
+                            value: item.STATUS_ID,
+                            label: item.NAME,
+                        })),*/
+                    };
+
+                    break;
+
                 default:
                     component = 'DefaultValue';
                     break;
@@ -104,12 +119,7 @@ export default {
         code() {
             this.notify();
         },
-        value() {
-            //this.notify();
-        },
-        operator() {
-            //this.notify();
-        },
+
         values(newValue) {
             this.notify();
         }
@@ -129,7 +139,11 @@ export default {
 
         addValue() {
             this.values.push({operator: '', value: null});
-        }
+        },
+
+        /*...mapGetters({
+            getCrmStatusByEntityId: 'crmStatus/getByEntityId',
+        }),*/
     }
 };
 </script>

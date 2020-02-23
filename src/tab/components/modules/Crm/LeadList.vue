@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import {mapState, mapMutations, mapActions} from 'vuex';
 import {getFieldLabel} from 'lib/functions';
 import Lead from 'lib/entities/Crm/Lead';
 import FilterForm from 'components/Filter/FilterForm.vue';
@@ -30,10 +31,8 @@ export default {
 
     data() {
         return {
-            fields: {},
             items: [],
             visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STATUS_ID'],
-            //columns: [],
         };
     },
 
@@ -55,12 +54,16 @@ export default {
             }
 
             return columns;
-        }
+        },
+
+        ...mapState({
+            fields: state => state.leadFields.items,
+        }),
     },
 
     async mounted() {
-        this.fields = await Lead.getFields();
-        this.$parent.$data.breadcrumb = ['CRM', 'Лиды', 'Список'];
+        this.loadFields();
+        this.setBreadcrumb(['CRM', 'Лиды', 'Список']);
     },
 
     methods: {
@@ -76,7 +79,15 @@ export default {
 
         setVisibleColumns(columns) {
             this.visibleColumns = columns;
-        }
+        },
+
+        ...mapMutations({
+            setBreadcrumb: 'setBreadcrumb',
+        }),
+
+        ...mapActions({
+            loadFields: 'leadFields/load',
+        }),
     }
 };
 </script>

@@ -56,6 +56,8 @@ export default {
         let hasUserFieldType = false;
         console.log(this.fields);
 
+        // Put loading of CrmStatuses and etc here...
+
         for (let field of Object.values(this.fields)) {
             if (field.type === 'user') {
                 hasUserFieldType = true;

@@ -4,28 +4,16 @@
 
 <script>
 import BaseSelect from './BaseSelect.vue';
+import modelMixin from './modelMixin';
 
 export default {
-    model: {
-        prop: 'complexValue',
-        event: 'change',
-    },
-
     components: {
         BaseSelect,
     },
 
-    props: {
-        complexValue: Object,
-        field: Object,
-        extra: Object,
-    },
-
-    data() {
-        return {
-            value: this.complexValue.value,
-        };
-    },
+    mixins: [
+        modelMixin
+    ],
 
     computed: {
         options() {
@@ -35,30 +23,5 @@ export default {
             })) : [];
         }
     },
-
-    watch: {
-        complexValue() {
-            this.value = this.complexValue.value;
-        },
-
-        operator() {
-            this.notify();
-        },
-
-        value() {
-            this.notify();
-        }
-    },
-
-    mounted() {
-    },
-
-    methods: {
-        notify() {
-            this.$emit('change', {
-                value: this.value,
-            });
-        }
-    }
 }
 </script>

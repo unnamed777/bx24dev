@@ -1,7 +1,10 @@
+import Vue from "vue";
 import Vuex from 'vuex';
 import dealFields from "./modules/dealFields";
+import dealStages from "./modules/dealStages";
 import leadFields from "./modules/leadFields";
-import Vue from "vue";
+import leadStatuses from "./modules/leadStatuses";
+import crmStatuses from "./modules/crmStatuses";
 
 Vue.use(Vuex);
 
@@ -11,6 +14,7 @@ const store = new Vuex.Store({
         activeModule: null,
         breadcrumb: [],
     },
+
     mutations: {
         setActiveAppId(state, payload) {
             state.activeAppId = payload;
@@ -24,9 +28,13 @@ const store = new Vuex.Store({
             state.breadcrumb = payload;
         }
     },
+
     modules: {
         dealFields,
+        dealStages,
         leadFields,
+        leadStatuses,
+        crmStatuses,
     }
 });
 

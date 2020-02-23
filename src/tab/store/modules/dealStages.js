@@ -1,9 +1,8 @@
-import Deal from 'lib/entities/Crm/Deal';
+import BX24 from 'lib/BX24';
 import mixin from './cachedItemsLoaderMixin';
 
 export default {
     namespaced: true,
-
     state: {
         ...mixin.state,
     },
@@ -16,7 +15,12 @@ export default {
         ...mixin.actions,
 
         forceLoad: mixin.helpers.makeForceLoad(() => {
-            return Deal.getFields();
+            return BX24.call('crm.status.list', {
+                order: {'SORT': 'ASC'},
+                filter: {
+                    'ENTITY_ID': 'DEAL_STAGE'
+                }
+            });
         }),
     }
 };

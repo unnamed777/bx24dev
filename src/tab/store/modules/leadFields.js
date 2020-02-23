@@ -1,25 +1,23 @@
 import Lead from 'lib/entities/Crm/Lead';
+import mixin from './cachedItemsLoaderMixin';
+import Deal from "../../../lib/entities/Crm/Deal";
 
 export default {
     namespaced: true,
-    state: {
-        items: {},
-    },
-    mutations: {
-        set(state, payload) {
-            state.items = payload;
-        }
-    },
-    actions: {
-        async load({state, dispatch}) {
-            if (Object.entries(state.items).length === 0) {
-                dispatch('forceLoad');
-            }
-        },
 
-        async forceLoad({commit}) {
-            let fields = await Lead.getFields();
-            commit('set', fields);
-        }
+    state: {
+        ...mixin.state,
+    },
+
+    mutations: {
+        ...mixin.mutations,
+    },
+
+    actions: {
+        ...mixin.actions,
+
+        forceLoad: mixin.helpers.makeForceLoad(() => {
+            return Lead.getFields();
+        }),
     }
 };

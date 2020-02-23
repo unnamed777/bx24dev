@@ -12,21 +12,15 @@
 </template>
 
 <script>
-export default {
-    model: {
-        prop: 'complexValue',
-        event: 'change',
-    },
+import modelMixin from './modelMixin';
 
-    props: {
-        complexValue: Object,
-        extra: Object,
-    },
+export default {
+    mixins: [
+        modelMixin
+    ],
 
     data() {
         return {
-            operator: this.complexValue.operator,
-            value: this.complexValue.value,
             operators: {
                 '': '=',
                 '!': '!=',
@@ -38,32 +32,8 @@ export default {
         };
     },
 
-    watch: {
-        complexValue() {
-            this.value = this.complexValue.value;
-            this.operator = this.complexValue.operator;
-        },
-
-        operator() {
-            this.notify();
-        },
-
-        value() {
-            this.notify();
-        }
-    },
-
     mounted() {
         $(this.$el.querySelector('.dropdown-toggle')).dropdown();
     },
-
-    methods: {
-        notify() {
-            this.$emit('change', {
-                value: this.value,
-                operator: this.operator,
-            });
-        }
-    }
 }
 </script>
