@@ -1,12 +1,17 @@
 import Vue from 'vue';
 import App from './App';
 import store from './store';
-// import router from './router'
+import router from './router';
 
 window.app = new Vue({
     el: '#app',
-    //router,
+    router,
     store,
     render: h => h(App),
-    data: {}
+    data: {},
+    methods: {
+        test() {
+            console.log('test method');
+        }
+    }
 });

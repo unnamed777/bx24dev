@@ -19,15 +19,13 @@ export default {
     computed: {
         options() {
             return this.extra && this.extra.entityId
-                ? this.getCrmStatusByEntityId()(this.extra.entityId).map(item => ({
+                ? this.getCrmStatusByEntityId(this.extra.entityId).map(item => ({
                     value: item.STATUS_ID,
                     label: item.NAME,
                 }))
                 : [];
-        }
-    },
+        },
 
-    methods: {
         ...mapGetters({
             getCrmStatusByEntityId: 'crmStatuses/getByEntityId',
         }),

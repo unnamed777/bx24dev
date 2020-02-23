@@ -44,10 +44,10 @@ export default class Collection {
     }
 
     [Symbol.iterator]() {
-        let i = 0;
+        let i = -1;
 
         return {
-            next() {
+            next: () => {
                 if (!this.data[++i]) {
                     return {
                         value: undefined,

@@ -5,6 +5,8 @@ import dealStages from "./modules/dealStages";
 import leadFields from "./modules/leadFields";
 import leadStatuses from "./modules/leadStatuses";
 import crmStatuses from "./modules/crmStatuses";
+import entities from "./modules/entities";
+import entityProperties from "./modules/entityProperties";
 
 Vue.use(Vuex);
 
@@ -35,6 +37,8 @@ const store = new Vuex.Store({
         leadFields,
         leadStatuses,
         crmStatuses,
+        entities,
+        entityProperties,
     }
 });
 

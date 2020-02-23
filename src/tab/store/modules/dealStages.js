@@ -1,10 +1,11 @@
-import BX24 from 'lib/BX24';
+import CrmStatus from 'lib/entities/Crm/Status';
 import mixin from './cachedItemsLoaderMixin';
 
 export default {
     namespaced: true,
     state: {
         ...mixin.state,
+        items: [],
     },
 
     mutations: {
@@ -14,13 +15,9 @@ export default {
     actions: {
         ...mixin.actions,
 
-        forceLoad: mixin.helpers.makeForceLoad(() => {
-            return BX24.call('crm.status.list', {
-                order: {'SORT': 'ASC'},
-                filter: {
-                    'ENTITY_ID': 'DEAL_STAGE'
-                }
-            });
+        forceLoad: mixin.helpers.makeForceLoad(async () => {
+            const statuses = await CrmStatus.load();
+            return statuses.filterByEntityId('DEAL_STAGE');
         }),
     }
 };

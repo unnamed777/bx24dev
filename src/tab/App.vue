@@ -17,10 +17,10 @@
                 </div>
             </div>
 
-            <SidebarMenu v-bind:items="menu" v-if="activeAppId !== null"/>
+            <SidebarMenu v-if="activeAppId !== null" :actions="{refreshAuth, showEntityList}"/>
         </div>
         <div class="col-10 pt-3">
-            <nav aria-label="breadcrumb"  v-if="activeAppId !== null && breadcrumb.length > 0">
+            <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
                 <ol class="breadcrumb bg-light">
                     <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
                         <template v-if="index === breadcrumb.length - 1">{{ item }}</template>
@@ -31,6 +31,7 @@
             <EntityList v-if="activeModule === 'entityList'" v-bind:items="entityList"></EntityList>
             <TableList v-if="activeModule === 'tableList'" v-bind:fields="moduleData.fields" v-bind:items="moduleData.items"/>
             <Template v-bind:is="activeModule" v-if="activeModule"/>
+            <router-view></router-view>
         </div>
     </div>
 </div>
@@ -41,7 +42,7 @@ import BX24 from '../lib/BX24';
 import messageListener from '../lib/MessageListener';
 import EntityList from './components/EntityList.vue';
 import TableList from './components/TableList.vue';
-import SidebarMenu from './components/SidebarMenu.vue';
+import SidebarMenu from './components/SidebarMenu/index.vue';
 import CrmDealList from './components/modules/Crm/DealList.vue';
 import CrmDealFields from './components/modules/Crm/DealFields.vue';
 import CrmDealStages from './components/modules/Crm/DealStages.vue';
@@ -70,72 +71,6 @@ export default {
         return {
             apps: [],
             moduleData: {},
-            menu: [
-                {
-                    label: 'test',
-                    action: this.testCall,
-                },
-                {
-                    label: 'Refresh auth',
-                    action: this.refreshAuth,
-                },
-                {
-                    label: 'entity.list',
-                    action: this.showEntityList,
-                },
-                {
-                    label: 'CRM',
-                    children: [
-                        {
-                            label: 'Лиды',
-                            children: [
-                                {
-                                    label: 'Список',
-                                    action: this.onClickSetModule('CrmLeadList'),
-                                },
-                                {
-                                    label: 'Поля',
-                                    action: this.onClickSetModule('CrmLeadFields'),
-                                },
-                                {
-                                    label: 'Статусы',
-                                    action: this.onClickSetModule('CrmLeadStatuses'),
-                                }
-                            ]
-                        },
-                        {
-                            label: 'Сделки',
-                            children: [
-                                {
-                                    label: 'Список',
-                                    action: this.onClickSetModule('CrmDealList'),
-                                },
-                                {
-                                    label: 'Поля',
-                                    action: this.onClickSetModule('CrmDealFields'),
-                                },
-                                {
-                                    label: 'Стадии',
-                                    action: this.onClickSetModule('CrmDealStages'),
-                                }
-                            ]
-                        },
-                        {
-                            label: 'Справочники',
-                            children: [
-                                {
-                                    label: 'Типы',
-                                    action: this.onClickSetModule('CrmStatusTypes'),
-                                },
-                                {
-                                    label: 'Источники',
-                                    action: this.onClickSetModule('CrmSources'),
-                                },
-                            ]
-                        },
-                    ]
-                }
-            ]
         }
     },
 
@@ -249,7 +184,10 @@ export default {
             }
 
             BX24.setAuth(result);
-            return result;
+
+            if (this.$root.onReadyToRoute) {
+                this.$root.onReadyToRoute();
+            }
         },
 
         async refreshAuth() {
@@ -275,14 +213,18 @@ export default {
 
         async showEntityList() {
             this.entityList = await BX24.call('entity.get');
-            this.activeModule = 'entityList';
-            this.breadcrumb = ['Хранилище данных'];
+            //this.activeModule = 'entityList';
+            //this.breadcrumb = ['Хранилище данных'];
         },
 
         onRefreshAuth({payload}) {
             console.log('onRefreshAuth');
             clearTimeout(this.refreshTimeout);
             BX24.setAuth(payload);
+
+            if (this.$root.onReadyToRoute) {
+                this.$root.onReadyToRoute();
+            }
         },
 
         onRefreshAuthFailed() {
@@ -291,7 +233,8 @@ export default {
 
         onClickSetModule(module) {
             return () => {
-                this.setActiveModule(module);
+                //this.setActiveModule(module);
+                this.$router.push({name: module});
             };
         },
 

@@ -15,7 +15,7 @@ export default {
     actions: {
         async load({state, dispatch}) {
             if (Object.entries(state.items).length === 0) {
-                dispatch('forceLoad');
+                await dispatch('forceLoad');
             }
         },
     },

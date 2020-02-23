@@ -10,13 +10,8 @@ export default {
     },
 
     getters: {
-        getByEntityId: (state) => {
-            console.log('init getter');
-
-            return (entityId) => {
-                console.log('inside');
-                return state.items.filter(item => item.ENTITY_ID === entityId);
-            }
+        getByEntityId: (state) => (entityId) => {
+            return state.items.filter(item => item.ENTITY_ID === entityId);
         },
     },
 

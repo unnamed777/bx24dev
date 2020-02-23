@@ -15,4 +15,14 @@ export default class Lead extends AbstractEntity {
     static get listEndpoint() {
         return 'crm.status.list';
     }
+
+    static load(params = {}) {
+        return super.load(params).then(collection => {
+            collection.filterByEntityId = function (entityId) {
+                return this.getAll().filter(item => item.ENTITY_ID === entityId);
+            };
+
+            return collection;
+        });
+    }
 }
