@@ -28,16 +28,11 @@ export default {
     computed: {
         tableItems() {
             let result = [];
-            const rightLabels = {
-                'R': 'Чтение',
-                'W': 'Запись',
-                'X': 'Управление',
-            };
 
             for (let [object, rightId] of Object.entries(this.rights)) {
                 result.push({
                     object: `[${object}] ${this.objectNames[object] || ''}`,
-                    right: `[${rightId}] ${rightLabels[rightId]}`,
+                    right: `[${rightId}] ${Entity.rightLabels[rightId]}`,
                 });
             }
 

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import BaseSelect from './BaseSelect.vue';
+import BaseSelect from 'components/ui/BaseSelect.vue';
 import modelMixin from './modelMixin';
 
 export default {

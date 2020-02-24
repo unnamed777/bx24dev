@@ -7,9 +7,10 @@ import CrmLeadFields from 'components/modules/Crm/LeadFields.vue';
 import CrmLeadStatuses from 'components/modules/Crm/LeadStatuses.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
-import EntityList from 'components/EntityList.vue';
-import EntityProperties from 'components/modules/Entity/Properties.vue';
-import EntityRights from 'components/modules/Entity/Rights.vue';
+import EntityList from 'components/modules/Entity/EntityList.vue';
+import EntityProperties from 'components/modules/Entity/EntityProperties.vue';
+import EntityRights from 'components/modules/Entity/EntityRights.vue';
+import EntityAdd from 'components/modules/Entity/EntityAdd.vue';
 
 export default [
     {
@@ -53,9 +54,14 @@ export default [
         component: CrmStatusTypes,
     },
     {
-        path: '/entity/:entityId/list',
+        path: '/entity/list',
         name: 'entityList',
         component: EntityList,
+    },
+    {
+        path: '/entity/:entityId/list',
+        name: 'entityItemList',
+        //component: EntityItemList,
     },
     {
         path: '/entity/:entityId/properties',
@@ -66,5 +72,10 @@ export default [
         path: '/entity/:entityId/rights',
         name: 'entityRights',
         component: EntityRights,
-    }
+    },
+    {
+        path: '/entity/add',
+        name: 'entityAdd',
+        component: EntityAdd,
+    },
 ]

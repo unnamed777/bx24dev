@@ -40,7 +40,7 @@
 import {mapState, mapMutations} from 'vuex';
 import BX24 from '../lib/BX24';
 import messageListener from '../lib/MessageListener';
-import EntityList from './components/EntityList.vue';
+//import EntityList from 'components/Entity/EntityList.vue';
 import TableList from './components/TableList.vue';
 import SidebarMenu from './components/SidebarMenu/index.vue';
 import CrmDealList from './components/modules/Crm/DealList.vue';
@@ -54,7 +54,7 @@ import CrmSources from './components/modules/Crm/Sources.vue';
 
 export default {
     components: {
-        EntityList,
+        //EntityList,
         TableList,
         SidebarMenu,
         CrmDealList,

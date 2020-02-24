@@ -1,6 +1,6 @@
 <template>
 <div class="nav-item">
-    <router-link v-if="route" :to="route" class="nav-link">{{ item.label }}</router-link>
+    <router-link v-if="item.route" :to="item.route" class="nav-link">{{ item.label }}</router-link>
     <template v-else>
         <a
             class="nav-link"
@@ -9,7 +9,12 @@
             v-bind:class="{ 'nav-link--children': hasChildren, 'nav-link--expanded': expanded }"
         >{{ item.label }}</a>
         <div class="nav-item__submenu pl-3" v-if="hasChildren" v-bind:class="{ 'nav-item__submenu--expanded': expanded }">
-            <SidebarMenuItem v-for="(child, index) in item.children" v-bind:item="child" v-bind:key="index" />
+            <SidebarMenuItem
+                v-for="(child, index) in item.children"
+                :item="child"
+                :key="index"
+                :ref="`item_${child._id}`"
+            />
         </div>
     </template>
 </div>
@@ -36,7 +41,7 @@ export default {
             return !!this.item.action;
         },
 
-        route() {
+        /*route() {
             if (!this.item.route) {
                 return null;
             }
@@ -48,7 +53,7 @@ export default {
                     name: this.item.route
                 };
             }
-        }
+        }*/
     },
     methods: {
         async doAction() {

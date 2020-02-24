@@ -62,7 +62,7 @@ export default {
 
     methods: {
         async prepareData() {
-            await this.loadEntity(this.entityId);
+            await this.loadEntities();
             await this.loadProperties(this.entityId);
             this.setBreadcrumb(['Хранилище', `${this.entity.NAME} (${this.entity.ENTITY})`, 'Свойства']);
         },
@@ -72,7 +72,7 @@ export default {
         }),
 
         ...mapActions({
-            loadEntity: 'entities/load',
+            loadEntities: 'entities/load',
             loadProperties: 'entityProperties/load',
         })
     }

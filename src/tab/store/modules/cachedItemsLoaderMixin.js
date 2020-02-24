@@ -18,6 +18,10 @@ export default {
                 await dispatch('forceLoad');
             }
         },
+
+        async reload({dispatch}) {
+            await dispatch('forceLoad');
+        },
     },
 
     helpers: {

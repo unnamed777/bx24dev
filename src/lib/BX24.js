@@ -24,8 +24,7 @@ export default {
     },
 
     async fetch(method, data = {}) {
-        let result = await this.request(method, data);
-        return result.result;
+        return this.call(method, data);
     },
 
     async fetchAll(method, data = {}) {

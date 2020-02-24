@@ -1,6 +1,11 @@
 <template>
 <div class="nav flex-column mb-4">
-    <SidebarMenuItem v-for="(item, index) in items" v-bind:item="item" v-bind:key="index"></SidebarMenuItem>
+    <SidebarMenuItem
+        v-for="(item, index) in items"
+        :item="item"
+        :key="item._id"
+        :ref="`item_${item._id}`"
+    />
 </div>
 </template>
 
@@ -19,77 +24,82 @@ export default {
     },
 
     data() {
+        const items = [
+            /*{
+                label: 'test',
+                action: this.testCall,
+            },*/
+            {
+                label: 'Refresh auth',
+                action: this.refreshAuth,
+            },
+            {
+                id: 'entities',
+                label: 'Хранилище',
+                action: this.onEntitiesClick,
+                children: [
+                    {label: 'Загрузка...'}
+                ],
+            },
+            {
+                label: 'CRM',
+                children: [
+                    {
+                        label: 'Лиды',
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('crmLeadList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('crmLeadFields'),
+                            },
+                            {
+                                label: 'Статусы',
+                                route: this.getPath('crmLeadStatuses'),
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Сделки',
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('crmDealList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('crmDealFields'),
+                            },
+                            {
+                                label: 'Стадии',
+                                route: this.getPath('crmDealStages'),
+
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Справочники',
+                        children: [
+                            {
+                                label: 'Типы',
+                                route: this.getPath('crmStatusTypes'),
+                            },
+                            {
+                                label: 'Источники',
+                                route: this.getPath('crmSources'),
+                            },
+                        ]
+                    },
+                ]
+            }
+        ];
+
+        this.assignInternalIds(items);
+
         return {
-            items: [
-                /*{
-                    label: 'test',
-                    action: this.testCall,
-                },*/
-                {
-                    label: 'Refresh auth',
-                    action: this.refreshAuth,
-                },
-                {
-                    id: 'entities',
-                    label: 'Хранилище',
-                    action: this.onEntitiesClick,
-                    children: [
-                        {label: 'Загрузка...'}
-                    ],
-                },
-                {
-                    label: 'CRM',
-                    children: [
-                        {
-                            label: 'Лиды',
-                            children: [
-                                {
-                                    label: 'Список',
-                                    route: 'crmLeadList',
-                                },
-                                {
-                                    label: 'Поля',
-                                    route: 'crmLeadFields',
-                                },
-                                {
-                                    label: 'Статусы',
-                                    route: 'crmLeadStatuses',
-                                }
-                            ]
-                        },
-                        {
-                            label: 'Сделки',
-                            children: [
-                                {
-                                    label: 'Список',
-                                    route: 'crmDealList',
-                                },
-                                {
-                                    label: 'Поля',
-                                    route: 'crmDealFields',
-                                },
-                                {
-                                    label: 'Стадии',
-                                    route: 'crmDealStages',
-                                }
-                            ]
-                        },
-                        {
-                            label: 'Справочники',
-                            children: [
-                                {
-                                    label: 'Типы',
-                                    route: 'crmStatusTypes',
-                                },
-                                {
-                                    label: 'Источники',
-                                    route: 'crmSources',
-                                },
-                            ]
-                        },
-                    ]
-                }
-            ]
+            items,
         };
     },
 
@@ -100,6 +110,8 @@ export default {
             const map = {
                 route: {},
                 id: {},
+                _id: {},
+                _rel: {},
             };
 
             for (let item of queue) {
@@ -111,7 +123,15 @@ export default {
                     map.id[item.id] = item;
                 }
 
+                if (item._id) {
+                    map._id[item._id] = item;
+                }
+
                 if (item.children) {
+                    item.children.forEach(child => {
+                        map._rel[child._id] = item._id;
+                    });
+
                     queue.push(...item.children);
                 }
             }
@@ -125,8 +145,43 @@ export default {
     },
 
     watch: {
+        items() {
+            console.log('items changed');
+        },
+
         entities() {
             this.rebuildEntitiesMenu();
+        },
+
+        $route(value) {
+            let path = value.path;
+            const item = this.itemsMap.route[path];
+
+            if (!item) {
+                console.log('Menu item not found');
+                return;
+            }
+
+            let nextId = item._id;
+            let parents = [];
+
+            while (undefined !== (nextId = this.itemsMap._rel[nextId])) {
+                parents.push(nextId);
+            }
+
+            parents = parents.reverse();
+            console.log('Expand menu', parents);
+            let menuItem = this.$refs[`item_${parents[0]}`][0];
+
+            for (let i = 1; i <= parents.length; i++) {
+                console.log('current item', menuItem, parents[i - 1]);
+                menuItem.toggle();
+                console.log('Get next parent', parents[i]);
+
+                if (i !== parents.length) {
+                    menuItem = menuItem.$refs[`item_${parents[i]}`][0];
+                }
+            }
         }
     },
 
@@ -134,14 +189,27 @@ export default {
         onEntitiesClick() {
             this.loadEntities();
 
+            if (this.$router.currentRoute.name !== 'entityList') {
+                this.$router.push({name: 'entityList'});
+            }
+
             return {
                 expand: true,
             };
         },
 
+        getPath(route, params) {
+            return this.$router.resolve({
+                name: route,
+                params,
+            }).route.path;
+        },
+
         rebuildEntitiesMenu() {
             const items = [];
 
+            // Routes are translates into links.
+            // It's needed to match sidebar items with current route and expand them.
             for (let entity of this.entities) {
                 items.push({
                     id: `entity_${entity.ENTITY}`,
@@ -149,36 +217,48 @@ export default {
                     children: [
                         {
                             label: 'Элементы',
-                            route: {
-                                name: 'entityList',
-                                params: {
-                                    entityId: entity.ENTITY
-                                },
-                            },
+                            route: this.getPath('entityList', { entityId: entity.ENTITY }),
                         },
                         {
                             label: 'Свойства',
-                            route: {
-                                name: 'entityProperties',
-                                params: {
-                                    entityId: entity.ENTITY
-                                },
-                            },
+                            route: this.getPath('entityProperties', { entityId: entity.ENTITY }),
                         },
                         {
                             label: 'Права',
-                            route: {
-                                name: 'entityRights',
-                                params: {
-                                    entityId: entity.ENTITY
-                                },
-                            },
+                            route: this.getPath('entityRights', { entityId: entity.ENTITY }),
                         },
                     ],
                 });
             }
 
+            items.push({
+                label: 'Добавить...',
+                route: {
+                    name: 'entityAdd',
+                }
+            });
+
+            this.assignInternalIds(items);
+
             this.itemsMap.id.entities.children = items;
+        },
+
+        assignInternalIds(items) {
+            let queue = [...items];
+
+            if (!this.internalCounter) {
+                this.internalCounter = 0;
+            }
+
+            for (let item of queue) {
+                if (!item._id) {
+                    item._id = ++this.internalCounter;
+                }
+
+                if (item.children) {
+                    queue.push(...item.children);
+                }
+            }
         },
 
         ...mapActions({
