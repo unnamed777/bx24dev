@@ -11,6 +11,9 @@ import EntityList from 'components/modules/Entity/EntityList.vue';
 import EntityProperties from 'components/modules/Entity/EntityProperties.vue';
 import EntityRights from 'components/modules/Entity/EntityRights.vue';
 import EntityAdd from 'components/modules/Entity/EntityAdd.vue';
+import EventList from 'components/modules/Event/EventList.vue';
+import PlacementList from 'components/modules/Placement/PlacementList.vue';
+import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
 
 export default [
     {
@@ -54,6 +57,11 @@ export default [
         component: CrmStatusTypes,
     },
     {
+        path: '/crm/status/sources',
+        name: 'crmSources',
+        component: CrmSources,
+    },
+    {
         path: '/entity/list',
         name: 'entityList',
         component: EntityList,
@@ -77,5 +85,20 @@ export default [
         path: '/entity/add',
         name: 'entityAdd',
         component: EntityAdd,
+    },
+    {
+        path: '/event/list',
+        name: 'eventList',
+        component: EventList,
+    },
+    {
+        path: '/placement/list',
+        name: 'placementList',
+        component: PlacementList,
+    },
+    {
+        path: '/placement/types',
+        name: 'placementTypes',
+        component: PlacementTypes,
     },
 ]

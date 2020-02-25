@@ -4,7 +4,7 @@
 
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
-import TableList from 'components/TableList.vue';
+import TableList from 'components/TableList/TableList.vue';
 
 export default {
     components: {

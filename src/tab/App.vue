@@ -28,8 +28,6 @@
                     </li>
                 </ol>
             </nav>
-            <EntityList v-if="activeModule === 'entityList'" v-bind:items="entityList"></EntityList>
-            <TableList v-if="activeModule === 'tableList'" v-bind:fields="moduleData.fields" v-bind:items="moduleData.items"/>
             <Template v-bind:is="activeModule" v-if="activeModule"/>
             <router-view></router-view>
         </div>
@@ -40,31 +38,11 @@
 import {mapState, mapMutations} from 'vuex';
 import BX24 from '../lib/BX24';
 import messageListener from '../lib/MessageListener';
-//import EntityList from 'components/Entity/EntityList.vue';
-import TableList from './components/TableList.vue';
 import SidebarMenu from './components/SidebarMenu/index.vue';
-import CrmDealList from './components/modules/Crm/DealList.vue';
-import CrmDealFields from './components/modules/Crm/DealFields.vue';
-import CrmDealStages from './components/modules/Crm/DealStages.vue';
-import CrmLeadList from './components/modules/Crm/LeadList.vue';
-import CrmLeadFields from './components/modules/Crm/LeadFields.vue';
-import CrmLeadStatuses from './components/modules/Crm/LeadStatuses.vue';
-import CrmStatusTypes from './components/modules/Crm/StatusTypes.vue';
-import CrmSources from './components/modules/Crm/Sources.vue';
 
 export default {
     components: {
-        //EntityList,
-        TableList,
         SidebarMenu,
-        CrmDealList,
-        CrmDealFields,
-        CrmDealStages,
-        CrmLeadList,
-        CrmLeadFields,
-        CrmLeadStatuses,
-        CrmStatusTypes,
-        CrmSources,
     },
 
     data() {

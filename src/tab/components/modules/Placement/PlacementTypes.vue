@@ -4,6 +4,7 @@
 
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+import BX24 from 'lib/BX24';
 import TableList from 'components/TableList/TableList.vue';
 
 export default {
@@ -13,42 +14,32 @@ export default {
 
     data() {
         return {
+            items: [],
             tableColumns: [
-                {code: 'ENTITY', label: 'Идентификатор'},
-                {code: 'NAME', label: 'Название'},
+                {code: 'place', label: 'Место'},
             ]
         };
     },
 
     computed: {
         tableItems() {
-            return this.entities.sort((a, b) => {
-                return a.ENTITY < b.ENTITY ? -1 : 1;
-            });
+            return this.items.map((item) => ({ place: item }));
         },
-
-        ...mapState({
-            entities: state => state.entities.items,
-        }),
     },
 
     async mounted() {
-        await this.loadEntities();
+        this.prepareData();
     },
 
     methods: {
         async prepareData() {
-            await this.loadEntities();
-            this.setBreadcrumb(['Хранилище', 'Список']);
+            this.items = await BX24.fetch('placement.list');
+            this.setBreadcrumb(['Placement', 'Места']);
         },
 
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
         }),
-
-        ...mapActions({
-            loadEntities: 'entities/load',
-        })
     }
 };
 </script>

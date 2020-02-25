@@ -19,7 +19,7 @@ import {mapState, mapMutations, mapActions} from 'vuex';
 import {getFieldLabel} from 'lib/functions';
 import Lead from 'lib/entities/Crm/Lead';
 import FilterForm from 'components/Filter/FilterForm.vue';
-import TableList from 'components/TableList.vue';
+import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 
 export default {

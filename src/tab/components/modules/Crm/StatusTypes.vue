@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import BX24 from '../../../../lib/BX24';
-import TableList from '../../TableList.vue';
+import BX24 from 'lib/BX24';
+import TableList from 'components/TableList/TableList.vue';
 
 export default {
     data() {

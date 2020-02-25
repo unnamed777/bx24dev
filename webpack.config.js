@@ -24,8 +24,8 @@ const config = {
     },
     resolve: {
         modules: [
-            path.resolve(__dirname, './src'),
             path.resolve(__dirname, './src/tab'),
+            path.resolve(__dirname, './src'),
             'node_modules',
         ],
         extensions: ['.js', '.vue'],

@@ -7,7 +7,7 @@ import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import Entity from 'lib/entities/Entity/Entity';
 import BX24 from 'lib/BX24';
 import zipObject from 'lodash/zipObject';
-import TableList from 'components/TableList.vue';
+import TableList from 'components/TableList/TableList.vue';
 
 export default {
     components: {

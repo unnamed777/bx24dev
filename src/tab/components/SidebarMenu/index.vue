@@ -93,7 +93,29 @@ export default {
                         ]
                     },
                 ]
-            }
+            },
+            {
+                label: 'События',
+                children: [
+                    {
+                        label: 'Список',
+                        route: this.getPath('eventList'),
+                    },
+                ]
+            },
+            {
+                label: 'Placement',
+                children: [
+                    {
+                        label: 'Список',
+                        route: this.getPath('placementList'),
+                    },
+                    {
+                        label: 'Места',
+                        route: this.getPath('placementTypes'),
+                    },
+                ]
+            },
         ];
 
         this.assignInternalIds(items);
@@ -175,7 +197,7 @@ export default {
 
             for (let i = 1; i <= parents.length; i++) {
                 console.log('current item', menuItem, parents[i - 1]);
-                menuItem.toggle();
+                menuItem.toggle(true);
                 console.log('Get next parent', parents[i]);
 
                 if (i !== parents.length) {
@@ -282,19 +304,23 @@ export default {
         &--children {
             &:before {
                 position: absolute;
+                top: 1rem;
                 left: 0px;
+                width: 8px;
+                height: 8px;
 
-                content: '▶︎';
-                color: #555555;
-                font-size: 0.7rem;
-                line-height: 1.5rem;
+                content: '';
+                opacity: 0.6;
+                background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAuUlEQVRIie2VTQrCMBQGBwXrKRQ9jIJ6JGs9kf3xBp5C0UsI2q1uGiwlafPSt+jCgWxnSL5F4M9QOAMf5VPUA3PgrSgvgWXzFkfFQGJ7pgi4KcgfwNQWAFgrBHYuuSHvIc+65AAz4BUgL4GFTwDgEBCIfeUgH7x1WBeSwbdSuSHzkKehcugeXDSsi7glsO8rB5gAV4v8TsCwLlaWwEZLbkhr8pO2HH6Di4YdCwJPYARcaHwmmkTVGQ5fXWTJ42kvaCYAAAAASUVORK5CYII=');
+                background-size: 100% 100%;
+                transform: rotate(-90deg);
                 transition: transform ease 0.2s;
             }
         }
 
         &--expanded {
             &.nav-link--children:before {
-                transform: rotate(90deg);
+                transform: rotate(0deg);
             }
         }
     }
@@ -308,5 +334,43 @@ export default {
             }
         }
     }
+
+    // wide items. Refactor
+    .nav {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+
+    //$leftPadding: 0.5rem;
+    --left-padding: 1rem;
+    --shift: 1rem;
+    --icon-space: 1rem;
+    --level: 0;
+
+    .nav-link {
+        padding-left: calc(var(--left-padding) + var(--icon-space) + var(--level) * var(--shift));
+
+        &--children::before {
+            left: calc(var(--left-padding) + var(--icon-space) + (var(--level) - 1) * var(--shift));
+        }
+    }
+
+    .nav-item__submenu {
+        --level: 1;
+
+        .nav-item__submenu {
+            --level: 2;
+
+            .nav-item__submenu {
+                --level: 3;
+            }
+        }
+    }
+
+
+    .router-link-exact-active {
+        background-color: #eceef2;
+    }
+
 }
 </style>

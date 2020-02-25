@@ -8,7 +8,7 @@
             v-on:click.prevent="hasAction ? doAction() : (hasChildren ? toggle() : null)"
             v-bind:class="{ 'nav-link--children': hasChildren, 'nav-link--expanded': expanded }"
         >{{ item.label }}</a>
-        <div class="nav-item__submenu pl-3" v-if="hasChildren" v-bind:class="{ 'nav-item__submenu--expanded': expanded }">
+        <div class="nav-item__submenu" v-if="hasChildren" v-bind:class="{ 'nav-item__submenu--expanded': expanded }">
             <SidebarMenuItem
                 v-for="(child, index) in item.children"
                 :item="child"
