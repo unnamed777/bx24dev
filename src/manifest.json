@@ -22,7 +22,11 @@
   "permissions": [
     "<all_urls>",
     "webNavigation",
-    "tabs"
+    "webRequest",
+    "webRequestBlocking",
+    "tabs",
+    "storage"
   ],
-  "content_security_policy": "script-src 'self' https://localhost:*; object-src 'self';"
+  "content_security_policy": "script-src 'self' https://localhost:*; object-src 'self';",
+  "web_accessible_resources": ["tab/index.html", "popup/popup.html"]
 }

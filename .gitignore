@@ -3,3 +3,4 @@
 /*.log
 /dist
 /dist-zip
+/.secret.js

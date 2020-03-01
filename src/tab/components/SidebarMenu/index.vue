@@ -335,13 +335,11 @@ export default {
         }
     }
 
-    // wide items. Refactor
     .nav {
         margin-left: -15px;
         margin-right: -15px;
     }
 
-    //$leftPadding: 0.5rem;
     --left-padding: 1rem;
     --shift: 1rem;
     --icon-space: 1rem;

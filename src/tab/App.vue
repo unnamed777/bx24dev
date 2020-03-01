@@ -5,19 +5,19 @@
             <div class="mt-3 mb-3">
                 <div v-for="(tab, index) in apps">
                     <a
-                            href="#"
-                            class="d-block"
-                            :class="activeAppId === index ? 'font-weight-bold' : null"
-                            :title="tab.appUrl"
-                            :data-id="index"
-                            v-on:click.prevent="onAppItemClick"
+                        href="#"
+                        class="d-block"
+                        :class="activeAppId === index ? 'font-weight-bold' : null"
+                        :title="tab.appUrl"
+                        :data-id="index"
+                        v-on:click.prevent="onAppItemClick"
                     >
                         {{ tab.title }} / {{ tab.portal }}
                     </a>
                 </div>
             </div>
 
-            <SidebarMenu v-if="activeAppId !== null" :actions="{refreshAuth, showEntityList}"/>
+            <SidebarMenu v-if="activeAppId !== null" :actions="{refreshAuth}"/>
         </div>
         <div class="col-10 pt-3">
             <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
@@ -37,8 +37,9 @@
 <script>
 import {mapState, mapMutations} from 'vuex';
 import BX24 from '../lib/BX24';
-import messageListener from '../lib/MessageListener';
+//import messageListener from '../lib/MessageListener';
 import SidebarMenu from './components/SidebarMenu/index.vue';
+import testOauthApp from '../../.secret.js';
 
 export default {
     components: {
@@ -58,162 +59,151 @@ export default {
         breadcrumb: state => state.breadcrumb,
     }),
 
+    watch: {
+        $route(newValue) {
+            console.log('route changed', newValue);
+
+            if (newValue.name === 'oauth') {
+                this.useOAuthToken();
+            }
+        }
+    },
+
     async mounted() {
-        messageListener.init();
-        messageListener.subscribe('refreshAuth', this.onRefreshAuth.bind(this));
-
-        // We'll try to pre-select an app from a tab where the extension has been called
-        const openerTabId = (await browser.tabs.getCurrent()).openerTabId;
-        console.log('openerTabId', openerTabId);
-
-        let tabs = await browser.tabs.query({currentWindow: true});
-        const apps = [];
-        let appIdToSelect = null;
-
-        for (let tab of tabs) {
-            if (/bitrix24\.ru\/marketplace\/app\//i.test(tab.url) === false) {
-                continue;
-            }
-
-            let frames = await browser.webNavigation.getAllFrames({tabId: tab.id});
-            let appFound = false;
-            let frame;
-
-            // Check app frame
-            for (frame of frames) {
-                if (/\?DOMAIN=.*APP_SID=/gi.test(frame.url) !== false) {
-                    appFound = true;
-                    break;
-                }
-            }
-
-            if (appFound === false) {
-                continue;
-            }
-
-            apps.push({
-                tabId: tab.id,
-                url: tab.url,
-                portal: /\/\/(.*?)\//gi.exec(tab.url)[1],
-                title: tab.title,
-                frameId: frame.frameId,
-                appUrl: frame.url,
-            });
-
-            if (openerTabId === tab.id) {
-                appIdToSelect = apps.length - 1;
-            }
-        }
-
-        this.apps = apps;
-
-        if (appIdToSelect !== null) {
-            this.selectApp(appIdToSelect);
-        }
-
+        //messageListener.init();
         window.BX24 = BX24;
+
+        await this.obtainAuth();
+
+        if (this.$root.onReadyToRoute) {
+            this.$root.onReadyToRoute();
+        }
     },
 
     methods: {
+        async obtainAuth() {
+            let appData = await browser.runtime.sendMessage({
+                type: 'getAppData',
+            });
+
+            BX24.setAuth(appData.auth);
+
+            // Temporary
+            this.apps.push({
+                title: appData.title,
+                appUrl: appData.appUrl,
+                portal: appData.portal,
+            });
+
+            this.setActiveAppId(this.apps.length - 1);
+        },
+
+        async useOAuthToken() {
+            this.$route.query.code;
+
+            const {clientId, clientSecret} = testOauthApp;
+
+            let params = {
+                grant_type: 'authorization_code',
+                client_id: clientId,
+                client_secret: clientSecret,
+                code: this.$route.query.code,
+            };
+
+            const urlParams = new URLSearchParams;
+
+            for (let [param, value] of Object.entries(params)) {
+                urlParams.append(param, value);
+            }
+
+            const tokenUrl = 'https://oauth.bitrix.info/oauth/token/?' + urlParams.toString();
+            let result;
+
+            try {
+                result = await fetch(tokenUrl).then(response => response.json());
+            } catch (ex) {
+                console.error(ex);
+                alert(`Ошибка получения токена через OAuth.\n${ex.toString()}`);
+                return;
+            }
+
+            if (result.error) {
+                console.error(result);
+                alert(`Ошибка получения токена через OAuth.\n${result.error_description} (${result.error})`);
+            }
+
+            let appAuth = {
+                domain: /:\/\/(.*?)\//.exec(result.client_endpoint)[1],
+                access_token: result.access_token,
+                expires_in: result.expires_in,
+                member_id: result.member_id,
+                refresh_token: result.refresh_token,
+            };
+
+            BX24.setAuth(appAuth);
+
+            this.apps.push({
+                type: 'oauth',
+                title: 'OAuth',
+                appUrl: null,
+                portal: appAuth.domain,
+            });
+
+            this.setActiveAppId(this.apps.length - 1);
+
+            this.$router.push({name: 'index'});
+        },
+
         onAppItemClick(e) {
             this.selectApp(e.currentTarget.getAttribute('data-id') * 1);
         },
 
         async selectApp(appId) {
             this.setActiveAppId(appId);
-            this.getActiveAppAuth();
+            //this.getActiveAppAuth();
             //this.activeModule = 'CrmDealList';
         },
 
-        async getActiveAppAuth() {
-            const app = this.apps[this.activeAppId];
-            let result;
-
-            try {
-                result = (await browser.tabs.executeScript(app.tabId, {
-                    frameId: app.frameId,
-                    code: `
-                        function refreshAuthHelper(auth) {
-                            console.log(auth);
-                            browser.runtime.sendMessage({
-                                type: 'refreshAuth',
-                                payload: auth,
-                            });
-                        }
-
-                        exportFunction(refreshAuthHelper, window, {defineAs: 'refreshAuthHelper'});
-
-                        window.wrappedJSObject.BX24.getAuth();
-                    `,
-                }))[0];
-
-            } catch (ex) {
-                alert('Ошибка получения авторизации из фрейма');
-                console.error(ex);
-                return;
-            }
-
-            console.log('executeScript result', result);
-
-            // If auth is failed (expired in app), try to refresh it
-            if (result === false) {
-                this.refreshAuth();
-                return;
-            }
-
-            BX24.setAuth(result);
-
-            if (this.$root.onReadyToRoute) {
-                this.$root.onReadyToRoute();
-            }
+        refreshAuth() {
+            // stub
         },
 
-        async refreshAuth() {
-            const app = this.apps[this.activeAppId];
+        async test() {
+            const { appId, secret, url: waitForUrl } = testOauthApp;
+            const domain = 'nav.bitrix24.ru';
+            const authUrl = 'https://' + domain + '/oauth/authorize/?client_id=' + appId + '&state=bx24dev-ext-auth';
 
-            // If b24 authorization is expired, this call will notify of problem
-            this.refreshTimeout = setTimeout(this.onRefreshAuthFailed, 3000);
+            //await browser.tabs.create({url: browser.runtime.getURL('tab/index.html#/oauth?auaua=aaa'), active: false});
+            //return;
+            let authTab = await browser.tabs.create({url: 'about:blank', active: true});
 
-            try {
-                browser.tabs.executeScript(app.tabId, {
-                    frameId: app.frameId,
-                    code: `window.wrappedJSObject.BX24.refreshAuth(window.wrappedJSObject.refreshAuthHelper);`,
-                });
-            } catch (ex) {
-                alert('Ошибка получения авторизации из фрейма');
-                console.error(ex);
-            }
-        },
+            let redirectCallback = (details) => {
+                console.log('Captured url', details);
+                let url = new URL(details.url);
 
-        async testCall() {
-            console.log(await BX24.call('profile'));
-        },
+                browser.webRequest.onBeforeRequest.removeListener(redirectCallback);
 
-        async showEntityList() {
-            this.entityList = await BX24.call('entity.get');
-            //this.activeModule = 'entityList';
-            //this.breadcrumb = ['Хранилище данных'];
-        },
+                setTimeout(async () => {
+                    await browser.tabs.remove(authTab.id);
+                    let currentTab = await browser.tabs.query({ active: true });
 
-        onRefreshAuth({payload}) {
-            console.log('onRefreshAuth');
-            clearTimeout(this.refreshTimeout);
-            BX24.setAuth(payload);
+                    browser.tabs.update(currentTab.id, {
+                        url: browser.runtime.getURL('tab/index.html#/oauth' + url.search)
+                    });
+                }, 10);
 
-            if (this.$root.onReadyToRoute) {
-                this.$root.onReadyToRoute();
-            }
-        },
-
-        onRefreshAuthFailed() {
-            alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
-        },
-
-        onClickSetModule(module) {
-            return () => {
-                //this.setActiveModule(module);
-                this.$router.push({name: module});
+                return {
+                    cancel: true,
+                    //redirectUrl: browser.runtime.getURL('popup/popup.html#/oauth' + url.search),
+                };
             };
+
+            browser.webRequest.onBeforeRequest.addListener(redirectCallback, {
+                urls: [waitForUrl + '?*'],
+                tabId: authTab.id,
+            }, ['blocking']);
+
+            await browser.tabs.update(authTab.id, {url: authUrl});
         },
 
         ...mapMutations({
