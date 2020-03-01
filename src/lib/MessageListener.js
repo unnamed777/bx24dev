@@ -5,9 +5,9 @@ export default {
         browser.runtime.onMessage.addListener(this.onMessage.bind(this));
     },
 
-    onMessage(message) {
+    onMessage(message, sender, sendResponse) {
         if (message.type) {
-            this.notify(message);
+            this.notify(message, sender, sendResponse);
         }
     },
 
@@ -20,11 +20,11 @@ export default {
         return this.subscribers[type].length - 1;
     },
 
-    notify({type, payload}) {
+    notify({type, payload}, sender, sendResponse) {
         if (!this.subscribers[type]) {
             return;
         }
 
-        this.subscribers[type].forEach(func => func({type, payload}));
+        this.subscribers[type].forEach(func => func({type, payload}, sender, sendResponse));
     }
 };
