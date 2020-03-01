@@ -15,11 +15,6 @@ const removeInitGuard = router.beforeEach((to, from, next) => {
     // 4. Remove the guard when callback after firing callback. We need it just once
     console.log('beforeEach', from.name, to.name);
 
-    if (to.name === 'oauth') {
-        next();
-        removeInitGuard();
-    }
-
     // If some module is requested, wait till auth is obtained and route it it afterwards.
     if (to.name === 'index') {
         removeInitGuard();

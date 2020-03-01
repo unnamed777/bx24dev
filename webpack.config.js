@@ -24,10 +24,13 @@ const config = {
     },
     resolve: {
         modules: [
-            path.resolve(__dirname, './src/tab'),
             path.resolve(__dirname, './src'),
             'node_modules',
         ],
+        alias: {
+            lib: path.resolve(__dirname, 'src/lib'),
+            components: path.resolve(__dirname, 'src/tab/components'),
+        },
         extensions: ['.js', '.vue'],
     },
     devtool: 'source-map',

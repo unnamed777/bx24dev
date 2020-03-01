@@ -1,11 +1,30 @@
 import BX24 from "./BX24";
 import messageListener from '../lib/MessageListener';
+import { alert } from 'lib/functions';
+import AppProvider from 'lib/AuthProvider/AppProvider';
+import OAuthProvider from 'lib/AuthProvider/OAuthProvider';
 
 messageListener.init();
+
+/**
+ * @typedef {Object} B24Auth
+ * @property {string} domain
+ * @property {string} access_token
+ * @property {number} expires_in
+ * @property {number} member_id
+ * @property {string} refresh_token
+ */
 
 export default class ExtensionRunner {
     constructor({tab}) {
         this.callerTab = tab;
+    }
+
+    static get providers() {
+        return {
+            'app': AppProvider,
+            'oauth': OAuthProvider,
+        };
     }
 
     static createInstance({tab}) {
@@ -23,17 +42,29 @@ export default class ExtensionRunner {
     async run() {
         await this.detectPage();
 
-        if (this.pageType) {
-            await this[`obtain${this.pageType}Auth`]();
-        } else {
-            this.alert('-');
+        if (!this.pageType) {
+            alert('-');
+            return;
+        }
+
+        this.provider = new (this.constructor.providers[this.pageType])({
+            tabId: this.tabId,
+            frameId: this.frameId
+        });
+
+        try {
+            this.auth = await this.provider.obtain();
+        } catch (ex) {
+            alert(ex.toString());
             return;
         }
 
         if (!this.auth) {
+            alert('Авторизация не была получена');
             return;
         }
 
+        // Add listener if obtaining authorization is successful only
         messageListener.subscribe('getAppData', this.onExtensionRequestAuth.bind(this));
         this.openExtensionPage();
     }
@@ -59,17 +90,29 @@ export default class ExtensionRunner {
                 this.frameId = frame.frameId;
                 this.portal = /\/\/(.*?)\//gi.exec(this.callerTab.url)[1];
                 this.appUrl = frame.url;
-                this.pageType = 'App';
+                this.pageType = 'app';
             }
         } else if (/bitrix24\.ru\/marketplace\/local\/edit\/\d+\//.test(this.callerTab.url)) {
-            this.pageType = 'Oauth';
+            let frames = await browser.webNavigation.getAllFrames({tabId: this.callerTab.id});
+            let frameFound = false;
+            let frame;
+
+            for (frame of frames) {
+                if (/bitrix24\.ru\/marketplace\/local\/edit\/\d+\/\?.*IFRAME.*/.test(frame.url) !== false) {
+                    frameFound = true;
+                    break;
+                }
+            }
+
+            if (frameFound) {
+                this.tabId = this.callerTab.id;
+                this.frameId = frame.frameId;
+            }
+
+            this.pageType = 'oauth';
         }
 
         console.log(this.pageType);
-    }
-
-    alert(message) {
-        browser.tabs.executeScript({code : `alert(${JSON.stringify(message)});`});
     }
 
     async openExtensionPage() {
@@ -86,88 +129,11 @@ export default class ExtensionRunner {
         }
 
         sendResponse({
-            title: this.callerTab.title,
-            portal: this.portal,
-            appUrl: this.appUrl,
+            title: this.provider.appName,
+            portal: this.provider.domain,
+            appUrl: this.provider.appUrl,
             auth: this.auth,
         });
     }
 
-    async obtainAppAuth() {
-        messageListener.subscribe('refreshAppAuth', this.onRefreshAppAuth.bind(this));
-        let result;
-
-        try {
-            result = (await browser.tabs.executeScript(this.tabId, {
-                frameId: this.frameId,
-                code: `
-                        function refreshAuthHelper(auth) {
-                            console.log(auth);
-                            browser.runtime.sendMessage({
-                                type: 'refreshAuth',
-                                payload: {
-                                    id: ${this.id},
-                                    auth: auth,
-                                }
-                            });
-                        }
-
-                        exportFunction(refreshAuthHelper, window, {defineAs: 'refreshAuthHelper'});
-
-                        window.wrappedJSObject.BX24.getAuth();
-                    `,
-            }))[0];
-
-        } catch (ex) {
-            this.alert('Ошибка получения авторизации из фрейма');
-            console.error(ex);
-            return;
-        }
-
-        console.log('executeScript result', result);
-
-        // If auth is failed (expired in app), try to refresh it
-        if (result === false) {
-            result = await this.refreshAppAuth();
-        }
-
-        if (!result) {
-            this.alert('Авторизация не получена.');
-            return;
-        }
-
-        this.auth = result;
-    }
-
-    async refreshAppAuth() {
-        // If b24 authorization is expired or other error happens, this call will notify of problem
-        this.refreshTimeout = setTimeout(this.onRefreshAppAuthFailed, 3000);
-
-        try {
-            browser.tabs.executeScript(this.tabId, {
-                frameId: this.frameId,
-                code: `window.wrappedJSObject.BX24.refreshAuth(window.wrappedJSObject.refreshAuthHelper);`,
-            });
-        } catch (ex) {
-            alert('Ошибка получения авторизации из фрейма');
-            console.error(ex);
-        }
-    }
-
-    onRefreshAppAuth({payload}) {
-        if (payload.id !== this.id) {
-            return;
-        }
-
-        console.log('onRefreshAppAuth');
-        clearTimeout(this.refreshTimeout);
-        BX24.setAuth(payload.auth);
-    }
-
-    onRefreshAppAuthFailed() {
-        this.alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
-    }
-
-    obtainOauthAuth() {
-    }
 }

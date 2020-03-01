@@ -70,7 +70,6 @@ export default {
     },
 
     async mounted() {
-        //messageListener.init();
         window.BX24 = BX24;
 
         await this.obtainAuth();
@@ -86,6 +85,7 @@ export default {
                 type: 'getAppData',
             });
 
+            console.log('appData from background', appData);
             BX24.setAuth(appData.auth);
 
             // Temporary
@@ -96,62 +96,6 @@ export default {
             });
 
             this.setActiveAppId(this.apps.length - 1);
-        },
-
-        async useOAuthToken() {
-            this.$route.query.code;
-
-            const {clientId, clientSecret} = testOauthApp;
-
-            let params = {
-                grant_type: 'authorization_code',
-                client_id: clientId,
-                client_secret: clientSecret,
-                code: this.$route.query.code,
-            };
-
-            const urlParams = new URLSearchParams;
-
-            for (let [param, value] of Object.entries(params)) {
-                urlParams.append(param, value);
-            }
-
-            const tokenUrl = 'https://oauth.bitrix.info/oauth/token/?' + urlParams.toString();
-            let result;
-
-            try {
-                result = await fetch(tokenUrl).then(response => response.json());
-            } catch (ex) {
-                console.error(ex);
-                alert(`Ошибка получения токена через OAuth.\n${ex.toString()}`);
-                return;
-            }
-
-            if (result.error) {
-                console.error(result);
-                alert(`Ошибка получения токена через OAuth.\n${result.error_description} (${result.error})`);
-            }
-
-            let appAuth = {
-                domain: /:\/\/(.*?)\//.exec(result.client_endpoint)[1],
-                access_token: result.access_token,
-                expires_in: result.expires_in,
-                member_id: result.member_id,
-                refresh_token: result.refresh_token,
-            };
-
-            BX24.setAuth(appAuth);
-
-            this.apps.push({
-                type: 'oauth',
-                title: 'OAuth',
-                appUrl: null,
-                portal: appAuth.domain,
-            });
-
-            this.setActiveAppId(this.apps.length - 1);
-
-            this.$router.push({name: 'index'});
         },
 
         onAppItemClick(e) {
@@ -166,44 +110,6 @@ export default {
 
         refreshAuth() {
             // stub
-        },
-
-        async test() {
-            const { appId, secret, url: waitForUrl } = testOauthApp;
-            const domain = 'nav.bitrix24.ru';
-            const authUrl = 'https://' + domain + '/oauth/authorize/?client_id=' + appId + '&state=bx24dev-ext-auth';
-
-            //await browser.tabs.create({url: browser.runtime.getURL('tab/index.html#/oauth?auaua=aaa'), active: false});
-            //return;
-            let authTab = await browser.tabs.create({url: 'about:blank', active: true});
-
-            let redirectCallback = (details) => {
-                console.log('Captured url', details);
-                let url = new URL(details.url);
-
-                browser.webRequest.onBeforeRequest.removeListener(redirectCallback);
-
-                setTimeout(async () => {
-                    await browser.tabs.remove(authTab.id);
-                    let currentTab = await browser.tabs.query({ active: true });
-
-                    browser.tabs.update(currentTab.id, {
-                        url: browser.runtime.getURL('tab/index.html#/oauth' + url.search)
-                    });
-                }, 10);
-
-                return {
-                    cancel: true,
-                    //redirectUrl: browser.runtime.getURL('popup/popup.html#/oauth' + url.search),
-                };
-            };
-
-            browser.webRequest.onBeforeRequest.addListener(redirectCallback, {
-                urls: [waitForUrl + '?*'],
-                tabId: authTab.id,
-            }, ['blocking']);
-
-            await browser.tabs.update(authTab.id, {url: authUrl});
         },
 
         ...mapMutations({

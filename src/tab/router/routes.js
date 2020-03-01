@@ -14,18 +14,12 @@ import EntityAdd from 'components/modules/Entity/EntityAdd.vue';
 import EventList from 'components/modules/Event/EventList.vue';
 import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
-import OAuth from 'components/OAuth.vue';
 
 export default [
     {
         path: '/',
         name: 'index',
         component: IndexPage,
-    },
-    {
-        path: '/oauth',
-        name: 'oauth',
-        component: OAuth,
     },
     {
         path: '/crm/deal/fields',

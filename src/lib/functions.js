@@ -1,3 +1,18 @@
+export function getExposedPromise() {
+    let exportResolve, exportReject;
+
+    const promise = new Promise((resolve, reject) => {
+        exportResolve = resolve;
+        exportReject = reject;
+    });
+
+    return {
+        promise: promise,
+        resolve: exportResolve,
+        reject: exportReject
+    };
+};
+
 export function prepareCrmEntityFields(crmFields) {
     const items = [];
 
@@ -32,4 +47,8 @@ export function prepareCrmEntityFields(crmFields) {
  */
 export function getFieldLabel(field) {
     return field.formLabel || field.title;
+}
+
+export function alert(message) {
+    browser.tabs.executeScript({code : `alert(${JSON.stringify(message)});`});
 }
