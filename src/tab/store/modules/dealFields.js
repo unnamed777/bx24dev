@@ -6,6 +6,7 @@ export default {
 
     state: {
         ...mixin.state,
+        items: {},
     },
 
     mutations: {

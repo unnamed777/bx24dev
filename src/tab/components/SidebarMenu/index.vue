@@ -239,7 +239,7 @@ export default {
                     children: [
                         {
                             label: 'Элементы',
-                            route: this.getPath('entityList', { entityId: entity.ENTITY }),
+                            route: this.getPath('entityItemList', { entityId: entity.ENTITY }),
                         },
                         {
                             label: 'Свойства',

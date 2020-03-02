@@ -1,10 +1,18 @@
 <template>
-<TableList :columns="columns" :items="tableItems"/>
+<div>
+    <TableList
+        :columns="tableColumns"
+        :rowActions="tableRowActions"
+        :items="tableItems"
+    />
+    <button class="btn btn-primary" @click="$router.push({ name: 'entityPropertyAdd', params: { entityId } })">Добавить</button>
+</div>
 </template>
 
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import TableList from 'components/TableList/TableList.vue';
+import EntityProperty from 'lib/entities/Entity/Property';
 
 export default {
     components: {
@@ -13,18 +21,28 @@ export default {
 
     data() {
         return {
-            columns: [
+            tableColumns: [
                 {code: 'PROPERTY', label: 'Код'},
                 {code: 'NAME', label: 'Название'},
                 {code: 'TYPE', label: 'Тип'},
                 {code: 'SORT', label: 'Сортировка'},
-            ]
+            ],
+            tableRowActions: [
+                {
+                    label: 'Удалить',
+                    onClick: this.onDeleteClick,
+                },
+            ],
+            properties: [],
         };
     },
 
     computed: {
         tableItems() {
-            return this.properties.sort((a, b) => {
+            //const properties = cloneDeep(this.properties);
+            const properties = [...this.properties];
+
+            return properties.sort((a, b) => {
                 if (a.SORT === b.SORT) {
                     return a.NAME < b.NAME ? -1 : 1;
                 }
@@ -41,12 +59,13 @@ export default {
             return this.getEntityById(this.$route.params.entityId);
         },
 
-        ...mapState({
+        /*...mapState({
             properties: state => state.entityProperties.items,
-        }),
+        }),*/
 
         ...mapGetters({
-            getEntityById: 'entities/getById'
+            getEntityById: 'entities/getById',
+            getByEntityId: 'entityProperties/getByEntityId',
         }),
     },
 
@@ -63,8 +82,27 @@ export default {
     methods: {
         async prepareData() {
             await this.loadEntities();
-            await this.loadProperties(this.entityId);
+            await this.fillProperties();
+
             this.setBreadcrumb(['Хранилище', `${this.entity.NAME} (${this.entity.ENTITY})`, 'Свойства']);
+        },
+
+        async fillProperties() {
+            await this.loadProperties(this.entityId);
+            this.properties = this.getByEntityId(this.entityId);
+        },
+
+        async onDeleteClick(row) {
+            if (!confirm(`Удалить свойство ${row.PROPERTY} из хранилища ${this.entity.ENTITY}?`)) {
+                return;
+            }
+
+            await EntityProperty.delete({
+                ENTITY: this.entity.ENTITY,
+                PROPERTY: row.PROPERTY,
+            });
+
+            this.fillProperties();
         },
 
         ...mapMutations({
@@ -73,7 +111,8 @@ export default {
 
         ...mapActions({
             loadEntities: 'entities/load',
-            loadProperties: 'entityProperties/load',
+            // Always update properties
+            loadProperties: 'entityProperties/reload',
         })
     }
 };

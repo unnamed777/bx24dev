@@ -6,10 +6,11 @@
         </label>
         <div class="position-relative" :class="`col-${ui.valueCols}`">
             <component
-                :is="valueComponents[field.code]"
+                :is="valueComponents[field.code].component"
                 v-model="values[field.code]"
                 :key="field.code"
                 :field="field"
+                :extra="valueComponents[field.code].extra"
                 class="mb-2"
             />
         </div>
@@ -20,10 +21,12 @@
 
 <script>
 import BaseInput from 'components/ui/BaseInput';
+import BaseSelect from 'components/ui/BaseSelect';
 
 export default {
     components: {
-        BaseInput
+        BaseInput,
+        BaseSelect,
     },
 
     model: {
@@ -47,7 +50,7 @@ export default {
 
     data() {
         return {
-            values: {},
+            values: { ...this.model },
         };
     },
 
@@ -57,14 +60,23 @@ export default {
 
             for (let field of this.fields) {
                 let component;
+                let extra = {};
 
                 switch (field.type) {
+                    case 'enumeration':
+                        component = 'BaseSelect';
+                        extra.options = field.items.map(item => ({value: item.ID, label: item.VALUE }));
+                        break;
+
                     default:
                         component = 'BaseInput';
                         break;
                 }
 
-                components[field.code] = component;
+                components[field.code] = {
+                    component: component,
+                    extra: extra,
+                };
             }
 
             return components;

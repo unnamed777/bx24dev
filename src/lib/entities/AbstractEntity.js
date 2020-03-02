@@ -118,20 +118,24 @@ export default class AbstractEntry {
         });
     }
 
+    static loadFields() {
+        if (!this.fieldsEndpoint) {
+            throw new Error('fieldsEndpoint is undefined');
+        }
+
+        return BX24.fetch(this.fieldsEndpoint);
+    }
+
     /**
      * Fetches entity fields with cache
      * @returns {Promise<Object>}
      */
     static async getFields() {
-        if (!this.fieldsEndpoint) {
-            throw new Error('fieldsEndpoint is undefined');
-        }
-
         if (this.rawFields) {
             //return this.rawFields;
         }
 
-        this.rawFields = await BX24.fetch(this.fieldsEndpoint);
+        this.rawFields = await this.loadFields();
 
         for (let fieldCode of Object.keys(this.rawFields)) {
             this.rawFields[fieldCode].code = fieldCode;

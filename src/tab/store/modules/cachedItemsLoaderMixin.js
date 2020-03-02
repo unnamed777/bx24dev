@@ -1,6 +1,5 @@
 export default {
     state: {
-        items: {},
         isLoading: false,
     },
     mutations: {

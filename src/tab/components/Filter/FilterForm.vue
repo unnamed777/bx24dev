@@ -18,7 +18,7 @@
 
 <script>
 import FilterItem from './Item.vue';
-import isNil from 'lodash/isnil';
+import isNil from 'lodash-es/isnil';
 import User from 'lib/entities/User';
 
 export default {

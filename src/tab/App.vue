@@ -125,6 +125,10 @@ export default {
 html, body {
     height: 100%;
 }
+
+*:focus {
+    outline: none;
+}
 /*.sidebar {
     position: fixed;
     top: 0;

@@ -25,7 +25,8 @@
     "webRequest",
     "webRequestBlocking",
     "tabs",
-    "storage"
+    "storage",
+    "contextualIdentities"
   ],
   "content_security_policy": "script-src 'self' https://localhost:*; object-src 'self';",
   "web_accessible_resources": ["tab/index.html", "popup/popup.html"]

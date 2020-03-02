@@ -1,6 +1,6 @@
 <template>
 <select class="form-control form-control-sm" v-model="currentValue">
-    <option v-for="option of options" :value="option.value">{{ option.label }}</option>
+    <option v-for="option of currentOptions" :value="option.value">{{ option.label }}</option>
 </select>
 </template>
 
@@ -14,9 +14,18 @@ export default {
     props: {
         options: [Object, Array],
         value: [String, Number],
+        extra: Object,
     },
 
     computed: {
+        currentOptions() {
+            if (this.options) {
+                return this.options;
+            } else if (this.extra && this.extra.options) {
+                return this.extra.options;
+            }
+        },
+
         currentValue: {
             get() {
                 return this.value;

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+import {mapMutations} from 'vuex';
 import BX24 from 'lib/BX24';
 import TableList from 'components/TableList/TableList.vue';
 

@@ -5,13 +5,36 @@ export default {
     namespaced: true,
     state: {
         ...mixin.state,
-        items: [],
+        items: {},
     },
+
     mutations: {
         ...mixin.mutations,
+
+        set(state, payload) {
+            state.items[payload.key] = payload.items;
+        },
     },
+
+    getters: {
+        getByEntityId: (state) => (entityId) => {
+            return state.items[entityId];
+        },
+    },
+
     actions: {
-        async load({state, dispatch, commit}, payload) {
+        async load({state, dispatch}, entityId) {
+            if (!state.items[entityId]) {
+                await dispatch('forceLoad', entityId);
+            }
+        },
+
+        async reload({dispatch}, entityId) {
+            await dispatch('forceLoad', entityId);
+        },
+
+        async forceLoad({state, dispatch, commit}, entityId) {
+            // add key?
             if (state.isLoading === true) {
                 return;
             }
@@ -19,17 +42,15 @@ export default {
             commit('setLoading', true);
 
             let result = (await EntityProperty.load({
-                ENTITY: payload
+                ENTITY: entityId
             })).getAll();
 
-            commit('set', result);
+            commit('set', {
+                key: entityId,
+                items: result
+            });
+
             commit('setLoading', false);
         },
-        //...mixin.actions,
-
-        /*forceLoad: mixin.helpers.makeForceLoad(async () => {
-            const statuses = await CrmStatus.load();
-            return statuses.filterByEntityId('STATUS');
-        }),*/
     }
 };
