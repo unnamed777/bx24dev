@@ -11,6 +11,14 @@ export default class Item extends AbstractEntity {
         return 'entity.item.add';
     }
 
+    static get updateEndpoint() {
+        return 'entity.item.update';
+    }
+
+    static get deleteEndpoint() {
+        return 'entity.item.delete';
+    }
+
     static get fields() {
         return {
             ENTITY: {
@@ -131,5 +139,25 @@ export default class Item extends AbstractEntity {
      */
     static load(params = {}) {
         return super.load(params);
+    }
+
+    /**
+     * @param {string} entityId
+     * @param {number} id
+     * @returns {Promise<*>}
+     */
+    static delete(entityId, id) {
+        if (!entityId) {
+            throw new Error('entityId is required');
+        }
+
+        if (!id) {
+            throw new Error('id is required');
+        }
+
+        return BX24.call(this.deleteEndpoint, {
+            ENTITY: entityId,
+            ID: id,
+        });
     }
 }

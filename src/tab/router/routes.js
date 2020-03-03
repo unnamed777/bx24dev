@@ -8,10 +8,11 @@ import CrmLeadStatuses from 'components/modules/Crm/LeadStatuses.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
 import EntityList from 'components/modules/Entity/EntityList.vue';
+import EntityAdd from 'components/modules/Entity/EntityAdd.vue';
 import EntityProperties from 'components/modules/Entity/EntityProperties.vue';
 import EntityPropertyAdd from 'components/modules/Entity/EntityPropertyAdd.vue';
 import EntityRights from 'components/modules/Entity/EntityRights.vue';
-import EntityAdd from 'components/modules/Entity/EntityAdd.vue';
+import EntityRightsAdd from 'components/modules/Entity/EntityRightsAdd.vue';
 import EntityItemList from 'components/modules/Entity/EntityItemList.vue';
 import EventList from 'components/modules/Event/EventList.vue';
 import PlacementList from 'components/modules/Placement/PlacementList.vue';
@@ -87,6 +88,11 @@ export default [
         path: '/entity/:entityId/rights',
         name: 'entityRights',
         component: EntityRights,
+    },
+    {
+        path: '/entity/:entityId/rights/add',
+        name: 'entityRightsAdd',
+        component: EntityRightsAdd,
     },
     {
         path: '/entity/add',

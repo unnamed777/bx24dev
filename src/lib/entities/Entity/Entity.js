@@ -33,6 +33,14 @@ export default class Entity extends AbstractEntity {
         return BX24.fetch(this.rightsEndpoint, {ENTITY: entityId});
     }
 
+    /**
+     * @param {string} entityId
+     * @param {Object} rights
+     */
+    static setRights(entityId, rights) {
+        return BX24.call(this.rightsEndpoint, {ENTITY: entityId, ACCESS: rights});
+    }
+
     static add(data) {
         if (!data.ENTITY) {
             throw new Error('ENTITY is required');

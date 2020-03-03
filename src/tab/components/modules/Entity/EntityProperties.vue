@@ -92,7 +92,7 @@ export default {
             this.properties = this.getByEntityId(this.entityId);
         },
 
-        async onDeleteClick(row) {
+        async onDeleteClick({row, index}) {
             if (!confirm(`Удалить свойство ${row.PROPERTY} из хранилища ${this.entity.ENTITY}?`)) {
                 return;
             }

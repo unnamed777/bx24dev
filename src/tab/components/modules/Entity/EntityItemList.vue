@@ -8,7 +8,11 @@
     <div v-if="items.length > 0">
         <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
         <div style="max-width: 100%; overflow-x: scroll;">
-            <TableList :columns="columns" :items="tableItems" />
+            <TableList
+                :columns="columns"
+                :rowActions="tableRowActions"
+                :items="tableItems"
+            />
         </div>
     </div>
 </div>
@@ -22,6 +26,7 @@ import FilterForm from 'components/Filter/FilterForm.vue';
 import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 import cloneDeep from 'lodash-es/cloneDeep';
+import EntityProperty from "lib/entities/Entity/Property";
 
 export default {
     components: {
@@ -35,6 +40,12 @@ export default {
             items: [],
             visibleColumns: ['ID', 'NAME'],
             fields: {},
+            tableRowActions: [
+                {
+                    label: 'Удалить',
+                    onClick: this.onDeleteClick,
+                },
+            ],
         };
     },
 
@@ -134,6 +145,17 @@ export default {
 
         setVisibleColumns(columns) {
             this.visibleColumns = columns;
+        },
+
+        async onDeleteClick({index, row}) {
+            if (!confirm(`Удалить элемент ${row.ID} из хранилища ${this.entity.ENTITY}?`)) {
+                return;
+            }
+
+            await EntityItem.delete(this.entity.ENTITY, row.ID);
+
+            let itemIndex = this.items.findIndex((item) => item.ID === row.ID);
+            this.items = [].concat(this.items.slice(0, itemIndex), this.items.slice(itemIndex + 1));
         },
 
         ...mapMutations({

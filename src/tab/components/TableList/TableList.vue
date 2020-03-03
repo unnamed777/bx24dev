@@ -13,7 +13,14 @@
                         <div class="position-relative">
                             <span class="table-row-action-trigger" data-toggle="dropdown" @click="toggleRowMenu(index)"><MenuIcon class="table-row-action-trigger__icon" /></span>
                             <div v-if="activeRowMenuIndex === index" class="dropdown-menu">
-                                <button v-for="action of rowActions" class="dropdown-item" type="button" @click="action.onClick(item)">{{ action.label }}</button>
+                                <button
+                                    v-for="action of rowActions"
+                                    class="dropdown-item"
+                                    type="button"
+                                    @click="action.onClick({ index: index, row: item })"
+                                >
+                                    {{ action.label }}
+                                </button>
                             </div>
                         </div>
                     </th>

@@ -77,6 +77,8 @@ export default {
         if (this.$root.onReadyToRoute) {
             this.$root.onReadyToRoute();
         }
+
+        document.title = document.title + ': ' + this.apps[this.activeAppId].title;
     },
 
     methods: {
