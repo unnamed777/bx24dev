@@ -18,7 +18,7 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import Entity from 'lib/entities/Entity/Entity';
-import EntityProperty from 'lib/entities/Entity/Property';
+import EntityItem from 'lib/entities/Entity/Item';
 import BX24 from 'lib/BX24';
 import Form from 'components/ui/Form.vue';
 
@@ -29,21 +29,11 @@ export default {
 
     data() {
         return {
-            formData: {},
+            formData: {
+                ENTITY: this.$route.params.entityId,
+            },
             form: {
-                fields: [
-                    {
-                        code: 'object',
-                        label: 'Объект',
-                        type: 'string',
-                    },
-                    {
-                        code: 'access',
-                        label: 'Права',
-                        type: 'enumeration',
-                        items: Object.entries(Entity.rightLabels).map(item => ({ ID: item[0], VALUE: item[1] })),
-                    },
-                ],
+                fields: [],
                 ui: {
                     labelCols: 3,
                     valueCols: 9,
@@ -60,31 +50,33 @@ export default {
         entity() {
             return this.$store.state.entities.items[this.entityId];
         },
+
+        properties() {
+            return this.$store.state.entityProperties.items[this.entityId];
+        },
+
     },
 
     async mounted() {
+        window.testComponent = this;
         await this.loadEntities();
-        this.rights = await Entity.loadRights(this.entityId);
-        this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Права', 'Добавить']);
+        await this.loadProperties(this.entityId);
+        this.mergedFields = await EntityItem.getMergedFields(this.entityId, this.properties);
+
+        this.form.fields = Object.values(this.mergedFields)
+            .filter((item) => !item.isReadOnly)
+            .sort((a, b) => a.sort - b.sort);
+
+        this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Элементы', 'Новый']);
     },
 
     methods: {
         async create() {
-            if (this.rights[this.formData.object]) {
-                alert(`Для ${this.formData.object} уже существует доступ ${this.rights[this.formData.object]}`);
-                return;
-            }
-
-            if (!Entity.rightLabels[this.formData.access]) {
-                alert(`Неизвестное право ${this.formData.access}`);
-            }
-
-            // Add object validation
-            const newRights = {...this.rights};
-            newRights[this.formData.object] = this.formData.access;
 
             try {
-                let result = await Entity.setRights(this.entityId, newRights);
+                let result;
+
+                result = await EntityItem.add(this.entityId, this.formData);
 
                 if (!result) {
                     return;
@@ -94,7 +86,11 @@ export default {
                 alert(ex.toString());
             }
 
-            this.$router.push({ name: 'entityRights', params: { entityId: this.entityId } });
+            this.$router.push({
+                name: 'entityItemList',
+                params: { entityId: this.entityId },
+                query: { autoload: true }
+            });
         },
 
         ...mapMutations({
@@ -104,6 +100,7 @@ export default {
         ...mapActions({
             loadEntities: 'entities/load',
             reloadEntities: 'entities/reload',
+            loadProperties: 'entityProperties/load',
         })
     }
 };

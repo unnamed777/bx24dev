@@ -48,15 +48,11 @@ export default {
         },
 
         entity() {
-            return this.getEntityById(this.entityId);
+            return this.$store.state.entities.items[this.entityId];
         },
 
         ...mapState({
             properties: state => state.entityProperties.items,
-        }),
-
-        ...mapGetters({
-            getEntityById: 'entities/getById'
         }),
     },
 

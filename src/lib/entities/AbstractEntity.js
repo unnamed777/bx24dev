@@ -127,12 +127,12 @@ export default class AbstractEntry {
     }
 
     /**
-     * Fetches entity fields with cache
+     * Fetches entity fields, transforms a bit for convenience and caches
      * @returns {Promise<Object>}
      */
     static async getFields() {
         if (this.rawFields) {
-            //return this.rawFields;
+            return { ...this.rawFields };
         }
 
         this.rawFields = await this.loadFields();
@@ -142,6 +142,6 @@ export default class AbstractEntry {
             this.rawFields[fieldCode].label = getFieldLabel(this.rawFields[fieldCode]);
         }
 
-        return this.rawFields;
+        return { ...this.rawFields };
     }
 }

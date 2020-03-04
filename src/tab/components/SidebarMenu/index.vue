@@ -232,7 +232,7 @@ export default {
 
             // Routes are translates into links.
             // It's needed to match sidebar items with current route and expand them.
-            for (let entity of this.entities) {
+            for (let entity of Object.values(this.entities)) {
                 items.push({
                     id: `entity_${entity.ENTITY}`,
                     label: `${entity.NAME} (${entity.ENTITY})`,

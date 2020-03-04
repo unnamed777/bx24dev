@@ -1,11 +1,14 @@
 <template>
 <div>
+    <div class="mb-3">
+        <button class="btn btn-light" @click="$router.push({ name: 'entityPropertyAdd', params: { entityId } })">Создать свойство</button>
+        <button class="btn btn-light" @click.prevent>Экспорт</button>
+    </div>
     <TableList
         :columns="tableColumns"
         :rowActions="tableRowActions"
         :items="tableItems"
     />
-    <button class="btn btn-primary" @click="$router.push({ name: 'entityPropertyAdd', params: { entityId } })">Добавить</button>
 </div>
 </template>
 
@@ -56,7 +59,7 @@ export default {
         },
 
         entity() {
-            return this.getEntityById(this.$route.params.entityId);
+            return this.$store.state.entities.items[this.entityId];
         },
 
         /*...mapState({

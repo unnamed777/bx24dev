@@ -22,7 +22,7 @@ export default {
 
     computed: {
         tableItems() {
-            return this.entities.sort((a, b) => {
+            return Object.values(this.entities).sort((a, b) => {
                 return a.ENTITY < b.ENTITY ? -1 : 1;
             });
         },

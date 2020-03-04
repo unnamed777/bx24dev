@@ -48,12 +48,8 @@ export default {
         },
 
         entity() {
-            return this.getEntityById(this.$route.params.entityId);
+            return this.$store.state.entities.items[this.entityId];
         },
-
-        ...mapGetters({
-            getEntityById: 'entities/getById'
-        }),
     },
 
     async mounted() {

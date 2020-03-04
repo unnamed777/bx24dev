@@ -2,11 +2,20 @@
 <div>
     <div class="row" v-if="fieldsLoaded">
         <div class="col-5">
-            <FilterForm :fields="fields" v-on:submit="onSubmit" />
+            <FilterForm
+                :fields="fields"
+                @submit="onSubmit"
+            />
         </div>
     </div>
+    <button class="btn btn-light" @click="$router.push({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
     <div v-if="items.length > 0">
-        <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
+        <TableColumns
+            :items="fields"
+            :selected="visibleColumns"
+            @change="setVisibleColumns"
+        />
+
         <div style="max-width: 100%; overflow-x: scroll;">
             <TableList
                 :columns="columns"
@@ -51,7 +60,7 @@ export default {
 
     computed: {
         fieldsLoaded() {
-            return Object.entries(this.fields).length > 0;
+            return Object.values(this.fields).length > 0;
         },
 
         entityId() {
@@ -59,7 +68,11 @@ export default {
         },
 
         entity() {
-            return this.getEntityById(this.$route.params.entityId);
+            return this.$store.state.entities.items[this.entityId];
+        },
+
+        properties() {
+            return this.$store.state.entityProperties.items[this.entityId];
         },
 
         availableColumns() {
@@ -94,47 +107,44 @@ export default {
 
             return items;
         },
-
-        ...mapGetters({
-            getEntityById: 'entities/getById',
-            getByEntityId: 'entityProperties/getByEntityId',
-        }),
     },
 
     async mounted() {
+        window.testComponent = this;
         await this.loadEntities();
         this.fields = await EntityItem.getFields();
         await this.fillProperties();
 
         this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Элементы']);
+
+        if (this.$route.query.autoload) {
+            console.log(1);
+            this.loadItems();
+        }
     },
 
     methods: {
         async fillProperties() {
             await this.loadProperties(this.entityId);
-            this.properties = this.getByEntityId(this.entityId);
-            const fields = {...this.fields};
 
-            this.properties.map((property) => {
-                let title = property.NAME ? `${property.NAME} (${property.PROPERTY})` : property.PROPERTY;
-                let alias = `PROPERTY_${property.PROPERTY}`;
+            this.mergedFields = await EntityItem.getMergedFields(this.entityId, this.properties);
+            this.fields = this.mergedFields;
 
-                fields[alias] = {
-                    code: alias,
-                    label: title,
-                    title: title,
-                    type: property.TYPE,
-                };
-
-                this.visibleColumns.push(alias);
-            });
-
-            this.fields = fields;
+            // Add all properties to visible columns
+            this.visibleColumns = this.visibleColumns.concat(
+                Object.values(this.fields)
+                    .filter(item => item.isProperty)
+                    .map(item => item.code)
+            );
         },
 
         async onSubmit(filter) {
             console.log('Filter', filter);
+            this.loadItems({ filter });
+        },
 
+        async loadItems({ filter } = {}) {
+            console.log(2);
             this.items = (await EntityItem.load({
                 ENTITY: this.entityId,
                 SORT: { 'ID': 'DESC' },

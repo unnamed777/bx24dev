@@ -2,7 +2,7 @@
 <div>
     <div class="filter-item form-group row" v-for="field of fields">
         <label :class="`col-${ui.labelCols}`">
-            {{ field.label }}
+            {{ field.label }} <span v-if="field.isRequired" class="text-danger small">*</span>
         </label>
         <div class="position-relative" :class="`col-${ui.valueCols}`">
             <component

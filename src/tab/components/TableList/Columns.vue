@@ -2,7 +2,7 @@
 <div class="table-list-columns small mb-2">
     <div class="mr-2"><a href="#" v-on:click.prevent="expanded = !expanded">Колонки</a><span v-if="expanded">:</span></div>
     <div class="table-list-columns__list" v-if="expanded">
-        <div v-for="column in items" class="form-check">
+        <div v-for="column in itemsSorted" class="form-check">
             <input class="form-check-input" type="checkbox" :id="'tableListColumn_' + column.code" :value="column.code" v-model="selectedOwn">
             <label class="form-check-label d-inline" :for="'tableListColumn_' + column.code">{{ column.label }}</label>
         </div>
@@ -29,6 +29,10 @@ export default {
     },
 
     computed: {
+        itemsSorted() {
+            return Object.values(this.items).sort((a, b) => a.sort - b.sort);
+        },
+
         selectedOwn: {
             get() {
                 this.currentlySelected = [...this.selected];

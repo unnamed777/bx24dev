@@ -14,6 +14,7 @@ import EntityPropertyAdd from 'components/modules/Entity/EntityPropertyAdd.vue';
 import EntityRights from 'components/modules/Entity/EntityRights.vue';
 import EntityRightsAdd from 'components/modules/Entity/EntityRightsAdd.vue';
 import EntityItemList from 'components/modules/Entity/EntityItemList.vue';
+import EntityItemAdd from 'components/modules/Entity/EntityItemAdd.vue';
 import EventList from 'components/modules/Event/EventList.vue';
 import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
@@ -73,6 +74,11 @@ export default [
         path: '/entity/:entityId/list',
         name: 'entityItemList',
         component: EntityItemList,
+    },
+    {
+        path: '/entity/:entityId/items/add',
+        name: 'entityItemAdd',
+        component: EntityItemAdd,
     },
     {
         path: '/entity/:entityId/properties',

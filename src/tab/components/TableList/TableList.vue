@@ -4,7 +4,7 @@
             <thead>
                 <tr>
                     <th v-if="rowActions" class="action-cell"></th>
-                    <th v-for="field in columns" v-bind:title="field.code" @click="sort = field.code">{{ field.label }}</th>
+                    <th v-for="field in columns" v-bind:title="field.code" @click="changeSort(field.code)">{{ field.label }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +58,7 @@ export default {
     data() {
         return {
             sort: null,
+            order: null,
             activeRowMenuIndex: null,
         };
     },
@@ -68,17 +69,36 @@ export default {
                 return this.items;
             }
 
+            const column = this.columns.find((item) => item.code === this.sort);
             const items = [...this.items];
 
-            return items.sort((a, b) => {
-                return a[this.sort] < b[this.sort] ? -1 : 1;
-            });
+            return items.sort(column.type === 'double' || column.type === 'integer' ? this.sortDouble : this.sortString);
         }
     },
 
     methods: {
         toggleRowMenu(index) {
             this.activeRowMenuIndex = index;
+        },
+
+        changeSort(newSort) {
+            if (this.sort === newSort) {
+                this.order = this.order === 1 ? -1 : 1;
+            } else {
+                this.sort = newSort;
+                this.order = 1;
+            }
+        },
+
+        sortString(a, b) {
+            return (a[this.sort] < b[this.sort] ? -1 : 1) * this.order;
+        },
+
+        sortDouble(a, b) {
+            const valueA = parseFloat(a[this.sort]);
+            const valueB = parseFloat(b[this.sort]);
+
+            return (valueA - valueB) * this.order;
         }
     },
 }

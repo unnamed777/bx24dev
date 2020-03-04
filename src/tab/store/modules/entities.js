@@ -6,7 +6,7 @@ export default {
 
     state: {
         ...mixin.state,
-        items: [],
+        items: {},
     },
 
     getters: {
@@ -22,8 +22,15 @@ export default {
     actions: {
         ...mixin.actions,
 
-        forceLoad: mixin.helpers.makeForceLoad(async () => (
-            (await Entity.load()).getAll()
-        )),
+        forceLoad: mixin.helpers.makeForceLoad(async () => {
+            let entities = await Entity.load();
+            let result = {};
+
+            for (let entity of entities) {
+                result[entity.ENTITY] = entity;
+            }
+
+            return result;
+        }),
     }
 };

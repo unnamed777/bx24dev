@@ -1,5 +1,6 @@
 import EntityProperty from 'lib/entities/Entity/Property';
 import mixin from './cachedItemsLoaderMixin';
+import Vue from 'vue';
 
 export default {
     namespaced: true,
@@ -12,7 +13,7 @@ export default {
         ...mixin.mutations,
 
         set(state, payload) {
-            state.items[payload.key] = payload.items;
+            Vue.set(state.items, payload.key, payload.items);
         },
     },
 

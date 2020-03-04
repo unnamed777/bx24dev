@@ -50,7 +50,7 @@ export default {
 
     props: {
         fields: {
-            type: Object,
+            type: [Object],
             default: () => { return {}; },
         },
         item: Object,

@@ -26,78 +26,105 @@ export default class Item extends AbstractEntity {
                 isRequired: true,
                 isReadOnly: true,
                 title: 'Хранилище',
+                sort: -10,
             },
             ID: {
                 type: 'integer',
                 isRequired: true,
                 isReadOnly: true,
                 title: 'ID',
+                sort: -9,
             },
             DATE_CREATE: {
                 type: 'string',
                 isReadOnly: true,
                 title: 'Дата создания',
+                sort: 400,
             },
             CREATED_BY: {
                 type: 'integer',
                 isReadOnly: true,
                 title: 'Кем создан',
+                sort: 405,
             },
             TIMESTAMP_X: {
                 type: 'string',
                 isReadOnly: true,
                 title: 'Дата изменения',
+                sort: 410,
             },
             MODIFIED: {
                 type: 'integer',
                 isReadOnly: true,
                 title: 'Кем изменён',
+                sort: 420,
             },
             NAME: {
                 type: 'integer',
                 isRequired: true,
-                isReadOnly: true,
+                isReadOnly: false,
                 title: 'Название',
+                sort: -5,
             },
             ACTIVE: {
                 type: 'boolean',
                 title: 'Активен',
+                isReadOnly: false,
+                sort: 600,
             },
             DATE_ACTIVE_FROM: {
                 type: 'datetime',
                 title: 'Активен с',
+                isReadOnly: false,
+                sort: 630,
             },
             DATE_ACTIVE_TO: {
                 type: 'datetime',
                 title: 'Активен до',
+                isReadOnly: false,
+                sort: 631,
             },
             SORT: {
                 type: 'integer',
                 title: 'Сортировка',
+                isReadOnly: false,
+                sort: 700,
             },
             PREVIEW_PICTURE: {
                 type: 'integer',
                 title: 'Картинка анонса',
+                isReadOnly: false,
+                sort: 700,
             },
             PREVIEW_TEXT: {
                 type: 'string',
                 title: 'Текст анонса',
+                isReadOnly: false,
+                sort: 700,
             },
             DETAIL_PICTURE: {
                 type: 'integer',
                 title: 'Детальная картинка',
+                isReadOnly: false,
+                sort: 700,
             },
             DETAIL_TEXT: {
                 type: 'string',
                 title: 'Детальный текст',
+                isReadOnly: false,
+                sort: 700,
             },
             CODE: {
                 type: 'string',
                 title: 'Символьный код',
+                isReadOnly: false,
+                sort: 30,
             },
             SECTION: {
                 type: 'integer',
                 title: 'Раздел',
+                isReadOnly: false,
+                sort: 700,
             },
         };
     }
@@ -110,7 +137,17 @@ export default class Item extends AbstractEntity {
         return params;
     }
 
-    static add(data) {
+    /**
+     * @param {string} entityId
+     * @param {Object} data
+     * @returns {Promise<*>}
+     */
+    static add(entityId, data) {
+        if (entityId) {
+            data = { ...data };
+            data.ENTITY = entityId;
+        }
+
         if (!data.ENTITY) {
             throw new Error('ENTITY is required');
         }
@@ -159,5 +196,38 @@ export default class Item extends AbstractEntity {
             ENTITY: entityId,
             ID: id,
         });
+    }
+
+    /**
+     * Returns item fields augmented with properties for
+     * further using in forms and filters
+     *
+     * @param {string} entityId
+     * @param {Object} properties
+     * @returns {Promise<Object>}
+     */
+    static async getMergedFields(entityId, properties) {
+        const fields = await this.getFields();
+        const mapTypes = {
+            'N': 'double',
+            'S': 'string',
+            'F': 'string',
+        };
+
+        properties.map((property) => {
+            let title = property.NAME ? `${property.NAME} (${property.PROPERTY})` : property.PROPERTY;
+            let alias = `PROPERTY_${property.PROPERTY}`;
+
+            fields[alias] = {
+                code: alias,
+                label: title,
+                title: title,
+                type: mapTypes[property.TYPE],
+                sort: parseInt(property.SORT, 10),
+                isProperty: true,
+            };
+        });
+
+        return fields;
     }
 }

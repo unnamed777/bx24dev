@@ -1,35 +1,53 @@
 <template>
-<div class="container-fluid" style="height: calc(100%);">
-    <div class="row">
-        <div class="sidebar col-2 bg-light">
-            <div class="mt-3 mb-3">
-                <div v-for="(tab, index) in apps">
-                    <a
-                        href="#"
-                        class="d-block"
-                        :class="activeAppId === index ? 'font-weight-bold' : null"
-                        :title="tab.appUrl"
-                        :data-id="index"
-                        v-on:click.prevent="onAppItemClick"
-                    >
-                        {{ tab.title }} / {{ tab.portal }}
-                    </a>
+<div>
+    <!--<nav class="navbar navbar-light">
+      <a class="navbar-brand">
+          <div v-if="activeAppId" class="b24app">
+              <div class="b24app__title">
+                  {{ apps[activeAppId].title }}
+              </div>
+              <div class="b24app__portal">{{ apps[activeAppId].portal }}</div>
+          </div>
+      </a>
+    </nav>-->
+    <div class="container-fluid" style="height: calc(100%);">
+        <div class="row">
+            <div class="sidebar col-2 bg-light">
+                <div v-if="activeAppId" class="b24app">
+                    <div class="b24app__title">
+                        {{ apps[activeAppId].title }}
+                    </div>
+                    <div class="b24app__portal">{{ apps[activeAppId].portal }}</div>
                 </div>
-            </div>
+                <!--<div class="mt-3 mb-3">
+                    <div v-for="(tab, index) in apps">
+                        <a
+                            href="#"
+                            class="d-block"
+                            :class="activeAppId === index ? 'font-weight-bold' : null"
+                            :title="tab.appUrl"
+                            :data-id="index"
+                            v-on:click.prevent="onAppItemClick"
+                        >
+                            {{ tab.title }} / {{ tab.portal }}
+                        </a>
+                    </div>
+                </div>-->
 
-            <SidebarMenu v-if="activeAppId !== null" :actions="{refreshAuth}"/>
-        </div>
-        <div class="col-10 pt-3">
-            <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
-                <ol class="breadcrumb bg-light">
-                    <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
-                        <template v-if="index === breadcrumb.length - 1">{{ item }}</template>
-                        <template v-else><a href="#">{{ item }}</a></template>
-                    </li>
-                </ol>
-            </nav>
-            <Template v-bind:is="activeModule" v-if="activeModule"/>
-            <router-view></router-view>
+                <SidebarMenu v-if="activeAppId !== null" :actions="{refreshAuth}"/>
+            </div>
+            <div class="col-10 pt-3">
+                <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
+                    <ol class="breadcrumb bg-light">
+                        <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
+                            <template v-if="index === breadcrumb.length - 1">{{ item }}</template>
+                            <template v-else><a href="#">{{ item }}</a></template>
+                        </li>
+                    </ol>
+                </nav>
+                <Template v-bind:is="activeModule" v-if="activeModule"/>
+                <router-view></router-view>
+            </div>
         </div>
     </div>
 </div>
@@ -48,7 +66,7 @@ export default {
 
     data() {
         return {
-            apps: [],
+            apps: [null],
             moduleData: {},
         }
     },
@@ -146,8 +164,8 @@ html, body {
     z-index: 1000;
     //height: calc(100vh/* - 4rem*/);
     height: 100%;
-    min-height: 100vh;
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    min-height: calc(100vh);
+    // box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
 
 .form-control:focus {
@@ -177,6 +195,32 @@ html, body {
         #{$el}__add-value-wrapper {
             display: block;
         }
+    }
+}
+
+.navbar {
+    background-color: #edeef2;
+
+    .b24app {
+        padding: 0;
+    }
+}
+
+.navbar-brand {
+    padding: 0px;
+    line-height: 1em;
+}
+
+.b24app {
+    padding: 0.5rem 0;
+    white-space: nowrap;
+
+    &__title {
+        font-size: 1.2rem;
+    }
+
+    &__portal {
+        font-size: 0.7rem;
     }
 }
 </style>

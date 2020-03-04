@@ -3,9 +3,9 @@
     <FilterItem
         v-for="(filterItem, index) of filter"
         v-model="filter[index]"
-        v-bind:fields="fields"
-        v-bind:key="index"
-        v-bind:users="users"
+        :fields="fields"
+        :key="index"
+        :users="users"
     />
     <div class="form-group row">
         <div class="col-12 d-flex justify-content-end">
@@ -45,16 +45,10 @@ export default {
                 this.addNewItem();
             }
         },
-
-        fields() {
-            console.log(this.fields);
-        }
     },
 
     async mounted() {
-        console.log('mounted');
         let hasUserFieldType = false;
-        console.log(this.fields);
 
         // Put loading of CrmStatuses and etc here...
 
