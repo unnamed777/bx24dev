@@ -38,7 +38,7 @@
             </div>
             <div class="col-10 pt-3">
                 <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
-                    <ol class="breadcrumb bg-light">
+                    <ol class="breadcrumb">
                         <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
                             <template v-if="index === breadcrumb.length - 1">{{ item }}</template>
                             <template v-else><a href="#">{{ item }}</a></template>
@@ -221,6 +221,22 @@ html, body {
 
     &__portal {
         font-size: 0.7rem;
+    }
+}
+
+.breadcrumb {
+    padding: 0px;
+    background-color: transparent;
+}
+
+.filter-preview-object {
+    font-family: monospace;
+    font-size: 0.8rem;
+    line-height: 1rem;
+    white-space: pre;
+
+    &__key {
+        color: #007bff;
     }
 }
 </style>

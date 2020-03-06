@@ -1,13 +1,10 @@
 <template>
 <div>
-    <div class="row" v-if="fieldsLoaded">
-        <div class="col-5">
-            <FilterForm
-                :fields="fields"
-                @submit="onSubmit"
-            />
-        </div>
-    </div>
+    <GetListForm
+        :fields="fields"
+        @change="onFormChange"
+        @submit="onSubmit"
+    />
     <button class="btn btn-light" @click="$router.push({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
     <div v-if="items.length > 0">
         <TableColumns
@@ -31,15 +28,14 @@
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import EntityItem from 'lib/entities/Entity/Item';
-import FilterForm from 'components/Filter/FilterForm.vue';
+import GetListForm from 'components/ui/GetListForm.vue';
 import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 import cloneDeep from 'lodash-es/cloneDeep';
-import EntityProperty from "lib/entities/Entity/Property";
 
 export default {
     components: {
-        FilterForm,
+        GetListForm,
         TableList,
         TableColumns,
     },
@@ -55,6 +51,7 @@ export default {
                     onClick: this.onDeleteClick,
                 },
             ],
+            filter: {},
         };
     },
 
@@ -138,13 +135,11 @@ export default {
             );
         },
 
-        async onSubmit(filter) {
-            console.log('Filter', filter);
-            this.loadItems({ filter });
+        async onSubmit() {
+            this.loadItems({ filter: this.filter });
         },
 
         async loadItems({ filter } = {}) {
-            console.log(2);
             this.items = (await EntityItem.load({
                 ENTITY: this.entityId,
                 SORT: { 'ID': 'DESC' },
@@ -155,6 +150,10 @@ export default {
 
         setVisibleColumns(columns) {
             this.visibleColumns = columns;
+        },
+
+        onFormChange({filter}) {
+            this.filter = filter;
         },
 
         async onDeleteClick({index, row}) {

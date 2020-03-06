@@ -1,10 +1,11 @@
 <template>
 <div>
-    <div class="row" v-if="fieldsLoaded">
-        <div class="col-5">
-            <FilterForm :fields="fields" v-on:submit="onSubmit" />
-        </div>
-    </div>
+    <GetListForm
+        :fields="fields"
+        @change="onFormChange"
+        @submit="onSubmit"
+    />
+
     <div v-if="items.length > 0">
         <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
         <div style="max-width: 100%; overflow-x: scroll;">
@@ -15,16 +16,16 @@
 </template>
 
 <script>
-import {mapState, mapActions, mapMutations} from 'vuex';
-import {prepareCrmEntityFields, getFieldLabel} from 'lib/functions';
+import { mapState, mapActions, mapMutations } from 'vuex';
+import { getFieldLabel } from 'lib/functions';
 import Deal from 'lib/entities/Crm/Deal';
-import FilterForm from 'components/Filter/FilterForm.vue';
+import GetListForm from 'components/ui/GetListForm.vue';
 import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 
 export default {
     components: {
-        FilterForm,
+        GetListForm,
         TableList,
         TableColumns,
     },
@@ -33,6 +34,7 @@ export default {
         return {
             items: [],
             visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STAGE_ID'],
+            filter: {},
         };
     },
 
@@ -70,14 +72,16 @@ export default {
     },
 
     methods: {
-        async onSubmit(filter) {
-            console.log('Filter', filter);
-
+        async onSubmit() {
             this.items = (await Deal.load({
                 order: {'ID': 'ASC'},
-                filter,
+                filter: this.filter,
                 _limit: 100
             })).getAll();
+        },
+
+        onFormChange({filter}) {
+            this.filter = filter;
         },
 
         setVisibleColumns(columns) {

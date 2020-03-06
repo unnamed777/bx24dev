@@ -1,10 +1,10 @@
 <template>
 <div>
-    <div class="row">
-        <div class="col-5">
-            <FilterForm :fields="fields" v-on:submit="onSubmit" />
-        </div>
-    </div>
+    <GetListForm
+        :fields="fields"
+        @change="onFormChange"
+        @submit="onSubmit"
+    />
     <div v-if="items.length > 0">
         <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
         <div style="max-width: 100%; overflow-x: scroll;">
@@ -18,13 +18,13 @@
 import {mapState, mapMutations, mapActions} from 'vuex';
 import {getFieldLabel} from 'lib/functions';
 import Lead from 'lib/entities/Crm/Lead';
-import FilterForm from 'components/Filter/FilterForm.vue';
+import GetListForm from 'components/ui/GetListForm.vue';
 import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 
 export default {
     components: {
-        FilterForm,
+        GetListForm,
         TableList,
         TableColumns,
     },
@@ -33,6 +33,7 @@ export default {
         return {
             items: [],
             visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STATUS_ID'],
+            filter: {},
         };
     },
 
@@ -67,18 +68,20 @@ export default {
     },
 
     methods: {
-        async onSubmit(filter) {
-            console.log('Filter', filter);
-
+        async onSubmit() {
             this.items = (await Lead.load({
                 order: {'ID': 'ASC'},
-                filter,
+                filter: this.filter,
                 _limit: 100
             })).getAll();
         },
 
         setVisibleColumns(columns) {
             this.visibleColumns = columns;
+        },
+
+        onFormChange({filter}) {
+            this.filter = filter;
         },
 
         ...mapMutations({

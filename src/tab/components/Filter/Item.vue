@@ -25,6 +25,9 @@
             />
             <div class="filter-item__add-value-wrapper"><a href="#" @click.prevent="addValue">добавить</a></div>
         </template>
+        <template v-else>
+            <input type="text" class="form-control form-control-sm" tabindex="-1" style="opacity: 0.3; pointer-events: none; "/>
+        </template>
     </div>
 </div>
 </template>

@@ -30,6 +30,7 @@ const config = {
         alias: {
             lib: path.resolve(__dirname, 'src/lib'),
             components: path.resolve(__dirname, 'src/tab/components'),
+            mixins: path.resolve(__dirname, 'src/tab/mixins'),
         },
         extensions: ['.js', '.vue'],
     },
