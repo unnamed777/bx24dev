@@ -1,6 +1,6 @@
 <template>
-<div>
-    <div class="row" v-if="fieldsLoaded">
+<div v-if="fieldsLoaded">
+    <div class="row">
         <div class="col-5">
             <div class="mb-2 font-weight-bold">Фильтр</div>
             <FilterForm
@@ -10,7 +10,16 @@
         </div>
         <div class="col-7">
             <div class="mb-2 font-weight-bold">Объект</div>
-            <div class="filter-preview-object" v-html="compiledFilterPreview"></div>
+            <div class="filter-preview-object" v-html="filterPreview"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">
+            <div class="mb-2 font-weight-bold">Сортировка</div>
+            <SortForm
+                :fields="fields"
+                @change="onSortChange"
+            />
         </div>
     </div>
     <div class="row">
@@ -23,10 +32,12 @@
 
 <script>
 import FilterForm from 'components/Filter/FilterForm.vue';
+import SortForm from 'components/SortForm.vue';
 
 export default {
     components: {
         FilterForm,
+        SortForm,
     },
 
     props: {
@@ -35,8 +46,9 @@ export default {
 
     data() {
         return {
-            compiledFilter: {},
-            compiledFilterPreview: '<div class="filter-preview-object">{}</div>',
+            filter: {},
+            sort: {},
+            filterPreview: '<div class="filter-preview-object">{}</div>',
         };
     },
 
@@ -48,10 +60,23 @@ export default {
 
     methods: {
         onFilterChange({filter, preview}) {
-            this.compiledFilter = filter;
-            this.compiledFilterPreview = preview;
-            this.$emit('change', {filter, preview});
+            this.filter = filter;
+            this.filterPreview = preview;
+            this.notify();
         },
+
+        onSortChange(sort) {
+            this.sort = sort;
+            this.notify();
+        },
+
+        notify() {
+            this.$emit('change', {
+                filter: this.filter,
+                preview: this.preview,
+                sort: this.sort,
+            });
+        }
     },
 }
 </script>

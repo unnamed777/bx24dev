@@ -46,6 +46,7 @@ export default {
         UserValue,
         CrmStatusValue,
     },
+
     model: {
         prop: 'item',
         event: 'change',

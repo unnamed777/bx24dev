@@ -35,6 +35,7 @@ export default {
             items: [],
             visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STAGE_ID'],
             filter: {},
+            sort: {},
         };
     },
 
@@ -74,14 +75,16 @@ export default {
     methods: {
         async onSubmit() {
             this.items = (await Deal.load({
-                order: {'ID': 'ASC'},
+                order: this.sort,
                 filter: this.filter,
                 _limit: 100
             })).getAll();
         },
 
-        onFormChange({filter}) {
+        onFormChange({filter, sort}) {
+            console.log('onFormChange', filter, sort);
             this.filter = filter;
+            this.sort = sort;
         },
 
         setVisibleColumns(columns) {

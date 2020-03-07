@@ -2,7 +2,7 @@
 <div class="filter-item-value input-group">
     <!-- add disabled -->
     <div class="input-group-prepend">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">{{ operators[operator] }}</button>
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="width: 50px;">{{ operators[operator] }}</button>
         <div class="dropdown-menu">
             <a class="dropdown-item" href="#" v-for="(label, op) of operators" v-on:click="operator = op">{{ label }}</a>
         </div>

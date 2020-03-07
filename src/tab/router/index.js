@@ -13,7 +13,7 @@ const removeInitGuard = router.beforeEach((to, from, next) => {
     // 2. Wait for getting b24 auth
     // 3. If auth is successfully obtained, fire callback
     // 4. Remove the guard when callback after firing callback. We need it just once
-    console.log('beforeEach', from.name, to.name);
+    console.log('beforeEach', from, to);
 
     // If some module is requested, wait till auth is obtained and route it it afterwards.
     if (to.name === 'index') {
