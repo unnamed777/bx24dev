@@ -1,26 +1,59 @@
 <template>
 <div>
-    <GetListForm
-        :fields="fields"
-        @change="onFormChange"
-        @submit="onSubmit"
-    />
-    <div v-if="items.length > 0">
-        <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
-        <div style="max-width: 100%; overflow-x: scroll;">
-            <TableList :columns="columns" :items="items" />
+    <div class="row">
+        <div class="col-10">
+            <GetListForm
+                :fields="fields"
+                @change="onFormChange"
+                @submit="onSubmit"
+            />
         </div>
+        <div class="col-2 d-flex justify-content-end">
+            <div>
+                <!-- buttons -->
+            </div>
+        </div>
+    </div>
+
+    <div v-if="items.length > 0">
+        <TableColumns
+            :items="fields"
+            :selected="visibleColumns"
+            @change="setVisibleColumns"
+        />
+
+        <PageNavigation
+            v-if="totalPages > 1"
+            :total="totalPages"
+            :current="currentPage"
+            @change="onPageChange"
+        />
+
+        <div style="max-width: 100%; overflow-x: scroll;">
+            <TableList
+                :columns="columns"
+                :items="items"
+            />
+        </div>
+
+        <PageNavigation
+            v-if="totalPages > 1"
+            :total="totalPages"
+            :current="currentPage"
+            @change="onPageChange"
+        />
     </div>
 </div>
 </template>
 
 <script>
-import {mapState, mapMutations, mapActions} from 'vuex';
-import {getFieldLabel} from 'lib/functions';
+import { mapState, mapMutations, mapActions } from 'vuex';
+import { getFieldLabel } from 'lib/functions';
 import Lead from 'lib/entities/Crm/Lead';
 import GetListForm from 'components/ui/GetListForm.vue';
 import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
+import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 
 export default {
     components: {
@@ -36,6 +69,8 @@ export default {
             filter: {},
         };
     },
+
+    mixins: [entriesPageNavMixin],
 
     computed: {
         availableColumns() {
@@ -69,11 +104,20 @@ export default {
 
     methods: {
         async onSubmit() {
-            this.items = (await Lead.load({
-                order: {'ID': 'ASC'},
+            this.currentPage = 1;
+            this.loadEntries();
+        },
+
+        async loadEntries() {
+            let collection = (await Lead.load({
+                order: this.sort,
                 filter: this.filter,
-                _limit: 100
-            })).getAll();
+            }, {
+                page: this.currentPage,
+            }));
+
+            this.items = collection.getAll();
+            this.totalPages = Math.ceil(collection.total / Lead.PAGE_SIZE);
         },
 
         setVisibleColumns(columns) {

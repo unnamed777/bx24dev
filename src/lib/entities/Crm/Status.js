@@ -16,8 +16,8 @@ export default class Lead extends AbstractEntity {
         return 'crm.status.list';
     }
 
-    static load(params = {}) {
-        return super.load(params).then(collection => {
+    static load(payload = {}, extra = {}) {
+        return super.load(payload).then(collection => {
             collection.filterByEntityId = function (entityId) {
                 return this.getAll().filter(item => item.ENTITY_ID === entityId);
             };

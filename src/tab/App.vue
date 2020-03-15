@@ -149,6 +149,7 @@ html, body {
 *:focus {
     outline: none;
 }
+
 /*.sidebar {
     position: fixed;
     top: 0;
@@ -216,7 +217,9 @@ html, body {
     white-space: nowrap;
 
     &__title {
+        overflow: hidden;
         font-size: 1.2rem;
+        text-overflow: ellipsis;
     }
 
     &__portal {
@@ -239,4 +242,15 @@ html, body {
         color: #007bff;
     }
 }
+
+.page-link {
+    &:not([href]) {
+        cursor: default;
+    }
+
+    &:focus {
+        box-shadow: none;
+    }
+}
+
 </style>

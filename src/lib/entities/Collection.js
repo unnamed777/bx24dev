@@ -98,4 +98,16 @@ export default class Collection {
 
         return this.data[index] || {};
     }
+
+    get total() {
+        return this._total;
+    }
+
+    set total(value) {
+        if (this._total !== undefined) {
+            throw new Error('"total" can be set only once');
+        }
+
+        this._total = value;
+    }
 }

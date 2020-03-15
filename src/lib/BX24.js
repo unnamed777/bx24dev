@@ -23,21 +23,43 @@ export default {
         return result.result;
     },
 
-    async fetch(method, data = {}) {
-        return this.call(method, data);
-    },
+    /**
+     *
+     * @param {string} method
+     * @param {Object} data
+     * @param options If options.total is true, method will return {items, total} object
+     * @returns {Promise<*[]|{entries: *[], total: number}>}
+     */
+    async fetch(method, data = {}, options = {}) {
+        const response = await this.request(method, data);
+        let returnResult;
 
-    async fetchAll(method, data = {}) {
-        let items = [];
-        let limit = null;
-
-        if (data._limit) {
-            limit = data._limit;
-            delete data._limit;
+        if (options.total) {
+            returnResult = {
+                entries: response.result,
+                total: response.total,
+            };
+        } else {
+            returnResult = response.result;
         }
 
+        return returnResult;
+    },
+
+    /**
+     *
+     * @param {string} method
+     * @param {Object} data
+     * @param options If options.total is true, method will return {items, total} object
+     * @returns {Promise<*[]|{entries: *[], total: number}>}
+     */
+    async fetchAll(method, data = {}, options = {}) {
+        let items = [];
+        let limit = options.limit || null;
+        let response;
+
         while (true) {
-            let response = await this.request(method, data);
+            response = await this.request(method, data);
 
             if (response.error) {
                 alert(response.error_description + `(${response.error})`);
@@ -58,6 +80,17 @@ export default {
             data.start = response.next;
         }
 
-        return items;
+        let returnResult;
+
+        if (options.total) {
+            returnResult = {
+                entries: items,
+                total: response.total,
+            };
+        } else {
+            returnResult = items;
+        }
+
+        return returnResult;
     },
 }

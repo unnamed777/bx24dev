@@ -9,6 +9,10 @@ export default class AbstractEntry {
         }
     }
 
+    static get PAGE_SIZE() {
+        return 50;
+    }
+
     static get typeCasting() {
         return {};
     }
@@ -98,23 +102,50 @@ export default class AbstractEntry {
     }
 
 
-    static prepareParams(params) {
-        params.order = params.order || this.defaultOrder;
-        params.select = params.select || this.defaultSelect;
+    static prepareListPayload(payload) {
+        payload.order = payload.order || this.defaultOrder;
+        payload.select = payload.select || this.defaultSelect;
 
-        return params;
+        return payload;
     }
 
     /**
      *
-     * @param params
+     * @param {Object} payload
+     * @param options
      * @returns {Promise<Collection>}
      */
-    static load(params = {}) {
-        params = this.prepareParams(params);
+    static load(payload = {}, options = {}) {
+        payload = this.prepareListPayload(payload);
+        let fetchMethod;
 
-        return BX24.fetchAll(this.listEndpoint, params).then(entries => {
-            return new Collection(entries, this);
+        if (options.page !== undefined) {
+            fetchMethod = 'fetch';
+
+            payload = {
+                ...payload,
+                start: parseInt(options.page - 1, 10) * this.PAGE_SIZE,
+            };
+        } else if (options.start) {
+            fetchMethod = 'fetch';
+
+            payload = {
+                ...payload,
+                start: options.start,
+            };
+        } else {
+            fetchMethod = 'fetchAll';
+        }
+
+        return BX24[fetchMethod](
+            this.listEndpoint,
+            payload,
+            { ...options, total: true }
+        ).then(result => {
+            const collection = new Collection(result.entries, this);
+            collection.total = result.total;
+
+            return collection;
         });
     }
 

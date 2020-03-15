@@ -1,16 +1,31 @@
 <template>
 <div>
-    <GetListForm
-        :fields="fields"
-        @change="onFormChange"
-        @submit="onSubmit"
-    />
-    <button class="btn btn-light" @click="$router.push({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
+    <div class="row">
+        <div class="col-10">
+            <GetListForm
+                :fields="fields"
+                @change="onFormChange"
+                @submit="onSubmit"
+            />
+        </div>
+        <div class="col-2 d-flex justify-content-end">
+            <div>
+                <button class="btn btn-primary" @click="$router.push({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
+            </div>
+        </div>
+    </div>
     <div v-if="items.length > 0">
         <TableColumns
             :items="fields"
             :selected="visibleColumns"
             @change="setVisibleColumns"
+        />
+
+        <PageNavigation
+            v-if="totalPages > 1"
+            :total="totalPages"
+            :current="currentPage"
+            @change="onPageChange"
         />
 
         <div style="max-width: 100%; overflow-x: scroll;">
@@ -20,6 +35,13 @@
                 :items="tableItems"
             />
         </div>
+
+        <PageNavigation
+            v-if="totalPages > 1"
+            :total="totalPages"
+            :current="currentPage"
+            @change="onPageChange"
+        />
     </div>
 </div>
 </template>
@@ -31,6 +53,7 @@ import EntityItem from 'lib/entities/Entity/Item';
 import GetListForm from 'components/ui/GetListForm.vue';
 import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
+import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 import cloneDeep from 'lodash-es/cloneDeep';
 
 export default {
@@ -39,6 +62,8 @@ export default {
         TableList,
         TableColumns,
     },
+
+    mixins: [entriesPageNavMixin],
 
     data() {
         return {
@@ -106,6 +131,12 @@ export default {
         },
     },
 
+    watch: {
+        $route() {
+            // Add reload
+        }
+    },
+
     async mounted() {
         window.testComponent = this;
         await this.loadEntities();
@@ -115,8 +146,7 @@ export default {
         this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Элементы']);
 
         if (this.$route.query.autoload) {
-            console.log(1);
-            this.loadItems();
+            this.loadEntries();
         }
     },
 
@@ -136,16 +166,21 @@ export default {
         },
 
         async onSubmit() {
-            this.loadItems({ filter: this.filter });
+            this.currentPage = 1;
+            this.loadEntries();
         },
 
-        async loadItems({ filter } = {}) {
-            this.items = (await EntityItem.load({
+        async loadEntries() {
+            let collection = await EntityItem.load({
                 ENTITY: this.entityId,
                 SORT: { 'ID': 'DESC' },
-                FILTER: filter,
-                _limit: 100
-            })).getAll();
+                FILTER: this.filter,
+            }, {
+                page: this.currentPage,
+            });
+
+            this.items = collection.getAll();
+            this.totalPages = Math.ceil(collection.total / EntityItem.PAGE_SIZE);
         },
 
         setVisibleColumns(columns) {

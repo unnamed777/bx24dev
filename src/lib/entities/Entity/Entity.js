@@ -22,7 +22,7 @@ export default class Entity extends AbstractEntity {
         };
     }
 
-    static prepareParams(params) {
+    static prepareListPayload(params) {
         return params;
     }
 

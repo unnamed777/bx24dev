@@ -54,12 +54,12 @@ export default class Property extends AbstractEntity {
         };
     }
 
-    static prepareParams(params) {
-        if (!params.ENTITY) {
+    static prepareListPayload(payload) {
+        if (!payload.ENTITY) {
             throw new Error('ENTITY is required');
         }
 
-        return params;
+        return payload;
     }
 
     static loadFields() {

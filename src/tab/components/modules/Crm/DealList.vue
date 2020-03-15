@@ -1,16 +1,47 @@
 <template>
 <div>
-    <GetListForm
-        :fields="fields"
-        @change="onFormChange"
-        @submit="onSubmit"
-    />
+    <div class="row">
+        <div class="col-10">
+            <GetListForm
+                :fields="fields"
+                @change="onFormChange"
+                @submit="onSubmit"
+            />
+        </div>
+        <div class="col-2 d-flex justify-content-end">
+            <div>
+                <!-- buttons -->
+            </div>
+        </div>
+    </div>
 
     <div v-if="items.length > 0">
-        <TableColumns :items="fields" :selected="visibleColumns" v-on:change="setVisibleColumns" />
+        <TableColumns
+            :items="fields"
+            :selected="visibleColumns"
+            @change="setVisibleColumns"
+        />
+
+        <PageNavigation
+            v-if="totalPages > 1"
+            :total="totalPages"
+            :current="currentPage"
+            @change="onPageChange"
+        />
+
         <div style="max-width: 100%; overflow-x: scroll;">
-            <TableList :columns="columns" :items="items" />
+            <TableList
+                :columns="columns"
+                :items="items"
+            />
         </div>
+
+        <PageNavigation
+            v-if="totalPages > 1"
+            :total="totalPages"
+            :current="currentPage"
+            @change="onPageChange"
+        />
     </div>
 </div>
 </template>
@@ -22,13 +53,18 @@ import Deal from 'lib/entities/Crm/Deal';
 import GetListForm from 'components/ui/GetListForm.vue';
 import TableList from 'components/TableList/TableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
+import PageNavigation from 'components/ui/PageNavigation.vue';
+import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 
 export default {
     components: {
         GetListForm,
         TableList,
         TableColumns,
+        PageNavigation,
     },
+
+    mixins: [entriesPageNavMixin],
 
     data() {
         return {
@@ -74,11 +110,20 @@ export default {
 
     methods: {
         async onSubmit() {
-            this.items = (await Deal.load({
+            this.currentPage = 1;
+            this.loadEntries();
+        },
+
+        async loadEntries() {
+            let collection = (await Deal.load({
                 order: this.sort,
                 filter: this.filter,
-                _limit: 100
-            })).getAll();
+            }, {
+                page: this.currentPage,
+            }));
+
+            this.items = collection.getAll();
+            this.totalPages = Math.ceil(collection.total / Deal.PAGE_SIZE);
         },
 
         onFormChange({filter, sort}) {

@@ -129,12 +129,12 @@ export default class Item extends AbstractEntity {
         };
     }
 
-    static prepareParams(params) {
-        if (!params.ENTITY) {
+    static prepareListPayload(payload) {
+        if (!payload.ENTITY) {
             throw new Error('ENTITY is required');
         }
 
-        return params;
+        return payload;
     }
 
     /**
@@ -165,7 +165,8 @@ export default class Item extends AbstractEntity {
 
     /**
      *
-     * @param {EntityItemFilterParams} params
+     * @param {EntityItemFilterParams} payload
+     * @param {Object} options
      *
      * @typedef {Object} EntityItemFilterParams
      * @property {string} ENTITY
@@ -174,8 +175,8 @@ export default class Item extends AbstractEntity {
      *
      * @returns {Promise<Collection>}
      */
-    static load(params = {}) {
-        return super.load(params);
+    static load(payload = {}, options = {}) {
+        return super.load(payload);
     }
 
     /**
