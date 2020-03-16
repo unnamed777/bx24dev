@@ -1,6 +1,6 @@
 {
   "name": "bx24dev",
-  "description": "Extension",
+  "description": "Bitrix24 Dev extension",
   "version": null,
   "manifest_version": 2,
   "icons": {

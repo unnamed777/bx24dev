@@ -80,6 +80,19 @@ export default {
                         ]
                     },
                     {
+                        label: 'Дела',
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('crmActivityList'),
+                            },
+                            {
+                                label: 'Типы',
+                                //route: this.getPath('crmDealFields'),
+                            },
+                        ]
+                    },
+                    {
                         label: 'Справочники',
                         children: [
                             {
@@ -292,6 +305,23 @@ export default {
 
 <style lang="scss">
 .sidebar {
+    /*.sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 48px 0 0;
+        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    }*/
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 100%;
+    min-height: calc(100vh);
+    max-height: 100vh;
+    overflow-y: auto;
+
     .nav-link {
         $el: &;
         position: relative;

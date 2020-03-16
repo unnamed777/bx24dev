@@ -150,25 +150,6 @@ html, body {
     outline: none;
 }
 
-/*.sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100;
-    padding: 48px 0 0;
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-}*/
-.sidebar {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    //height: calc(100vh/* - 4rem*/);
-    height: 100%;
-    min-height: calc(100vh);
-    // box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-}
-
 .form-control:focus {
     border-color: #000;
     box-shadow: none !important;

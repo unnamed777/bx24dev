@@ -5,6 +5,7 @@ import CrmDealStages from 'components/modules/Crm/DealStages.vue';
 import CrmLeadList from 'components/modules/Crm/LeadList.vue';
 import CrmLeadFields from 'components/modules/Crm/LeadFields.vue';
 import CrmLeadStatuses from 'components/modules/Crm/LeadStatuses.vue';
+import CrmActivityList from 'components/modules/Crm/ActivityList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
 import EntityList from 'components/modules/Entity/EntityList.vue';
@@ -54,6 +55,11 @@ export default [
         path: '/crm/lead/statuses',
         name: 'crmLeadStatuses',
         component: CrmLeadStatuses,
+    },
+    {
+        path: '/crm/activity/list',
+        name: 'crmActivityList',
+        component: CrmActivityList,
     },
     {
         path: '/crm/status/types',
