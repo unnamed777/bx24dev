@@ -51,7 +51,7 @@ import { mapState, mapMutations, mapActions } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import Lead from 'lib/entities/Crm/Lead';
 import GetListForm from 'components/ui/GetListForm.vue';
-import TableList from 'components/TableList/TableList.vue';
+import TableList from 'components/TableList/BaseTableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 

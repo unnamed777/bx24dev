@@ -4,7 +4,7 @@
 
 <script>
 import {mapState, mapActions, mapMutations} from 'vuex';
-import TableList from 'components/TableList/TableList.vue';
+import TableList from 'components/TableList/BaseTableList.vue';
 import {prepareCrmEntityFields} from 'lib/functions';
 
 export default {

@@ -4,7 +4,7 @@
     <div class="table-list-columns__list" v-if="expanded">
         <div v-for="column in itemsSorted" class="form-check">
             <input class="form-check-input" type="checkbox" :id="'tableListColumn_' + column.code" :value="column.code" v-model="selectedOwn">
-            <label class="form-check-label d-inline" :for="'tableListColumn_' + column.code">{{ column.label }}</label>
+            <label class="form-check-label d-inline" :for="'tableListColumn_' + column.code">{{ column.label }} ({{ column.code }})</label>
         </div>
     </div>
 </div>

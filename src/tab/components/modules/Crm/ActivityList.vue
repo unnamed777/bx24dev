@@ -30,9 +30,10 @@
         />
 
         <div style="max-width: 100%; overflow-x: scroll;">
-            <TableList
+            <FormattedTableList
                 :columns="columns"
                 :items="items"
+                :links="{ user: users }"
             />
         </div>
 
@@ -51,7 +52,7 @@ import { mapState, mapActions, mapMutations } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import Activity from 'lib/entities/Crm/Activity';
 import GetListForm from 'components/ui/GetListForm.vue';
-import TableList from 'components/TableList/TableList.vue';
+import FormattedTableList from 'components/TableList/FormattedTableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 import PageNavigation from 'components/ui/PageNavigation.vue';
 import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
@@ -59,7 +60,7 @@ import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 export default {
     components: {
         GetListForm,
-        TableList,
+        FormattedTableList,
         TableColumns,
         PageNavigation,
     },
@@ -69,7 +70,7 @@ export default {
     data() {
         return {
             items: [],
-            visibleColumns: ['ID', 'OWNER_TYPE_ID', 'OWNER_ID', 'SUBJECT', 'RESPONSIBLE_ID'],
+            visibleColumns: ['ID', 'PROVIDER_ID', 'OWNER_TYPE_ID', 'OWNER_ID', 'SUBJECT', 'RESPONSIBLE_ID'],
             filter: {},
             sort: {},
         };
@@ -98,13 +99,16 @@ export default {
         },
 
         ...mapState({
-            fields: state => state.activityFields.items
+            fields: state => state.activityFields.items,
+            users: state => state.users.items,
         }),
     },
 
     async mounted() {
-        // await is omitted intentionally
         await this.loadFields();
+        this.preloadFieldTypeValues();
+        //await this.loadUsers();
+        //await this.loadOwnerTypes();
         this.setBreadcrumb(['CRM', 'Дела', 'Список']);
     },
 
@@ -136,12 +140,33 @@ export default {
             this.visibleColumns = columns;
         },
 
+        async preloadFieldTypeValues() {
+            const types = new Set();
+
+            Object.values(this.fields).map((item) => {
+                if (['integer', 'string', 'enumeration', 'char', 'datetime', 'diskfile'].indexOf(item.type) === -1) {
+                    types.add(item.type);
+                }
+            });
+
+            for (let type of types) {
+                if (!this.$store.state.fieldTypes[type]) {
+                    continue;
+                }
+                console.log(type);
+
+                await this.$store.dispatch(this.$store.state.fieldTypes[type] + '/load');
+            }
+        },
+
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
         }),
 
         ...mapActions({
             loadFields: 'activityFields/load',
+            loadUsers: 'users/load',
+            loadOwnerTypes: 'activityOwnerTypes/load',
         })
     }
 };

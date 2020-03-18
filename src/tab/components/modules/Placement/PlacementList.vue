@@ -5,7 +5,7 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import BX24 from 'lib/BX24';
-import TableList from 'components/TableList/TableList.vue';
+import TableList from 'components/TableList/BaseTableList.vue';
 
 export default {
     components: {

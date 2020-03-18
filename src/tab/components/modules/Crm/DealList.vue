@@ -30,9 +30,10 @@
         />
 
         <div style="max-width: 100%; overflow-x: scroll;">
-            <TableList
+            <FormattedTableList
                 :columns="columns"
                 :items="items"
+                :links="{ user: users }"
             />
         </div>
 
@@ -51,7 +52,8 @@ import { mapState, mapActions, mapMutations } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import Deal from 'lib/entities/Crm/Deal';
 import GetListForm from 'components/ui/GetListForm.vue';
-import TableList from 'components/TableList/TableList.vue';
+import TableList from 'components/TableList/BaseTableList.vue';
+import FormattedTableList from 'components/TableList/FormattedTableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 import PageNavigation from 'components/ui/PageNavigation.vue';
 import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
@@ -62,6 +64,7 @@ export default {
         TableList,
         TableColumns,
         PageNavigation,
+        FormattedTableList,
     },
 
     mixins: [entriesPageNavMixin],
@@ -98,13 +101,15 @@ export default {
         },
 
         ...mapState({
-            fields: state => state.dealFields.items
+            fields: state => state.dealFields.items,
+            users: state => state.users.items,
         }),
     },
 
     async mounted() {
         this.loadFields();
         this.loadCrmStatuses();
+        this.loadUsers();
         this.setBreadcrumb(['CRM', 'Сделки', 'Список']);
     },
 
@@ -143,6 +148,7 @@ export default {
         ...mapActions({
             loadFields: 'dealFields/load',
             loadCrmStatuses: 'crmStatuses/load',
+            loadUsers: 'users/load',
         })
     }
 };
