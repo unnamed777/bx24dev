@@ -10,9 +10,9 @@ export default {
     },
 
     getters: {
-        getFormatted: (state) => (id) => {
+        getFormatted: (state) => ({value}) => {
             // noinspection EqualityComparisonWithCoercionJS
-            const item = state.items.filter(item => item.ID == id)[0];
+            const item = state.items.filter(item => item.ID == value)[0];
 
             if (!item) {
                 return null;

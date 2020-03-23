@@ -33,7 +33,6 @@
             <FormattedTableList
                 :columns="columns"
                 :items="items"
-                :links="{ user: users }"
             />
         </div>
 
@@ -52,7 +51,6 @@ import { mapState, mapActions, mapMutations } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import Deal from 'lib/entities/Crm/Deal';
 import GetListForm from 'components/ui/GetListForm.vue';
-import TableList from 'components/TableList/BaseTableList.vue';
 import FormattedTableList from 'components/TableList/FormattedTableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 import PageNavigation from 'components/ui/PageNavigation.vue';
@@ -61,10 +59,9 @@ import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 export default {
     components: {
         GetListForm,
-        TableList,
+        FormattedTableList,
         TableColumns,
         PageNavigation,
-        FormattedTableList,
     },
 
     mixins: [entriesPageNavMixin],
@@ -107,10 +104,8 @@ export default {
     },
 
     async mounted() {
-        this.loadFields();
-        this.loadCrmStatuses();
-        this.loadUsers();
-        this.setBreadcrumb(['CRM', 'Сделки', 'Список']);
+        await this.loadFields();
+       this.setBreadcrumb(['CRM', 'Сделки', 'Список']);
     },
 
     methods: {
@@ -132,7 +127,6 @@ export default {
         },
 
         onFormChange({filter, sort}) {
-            console.log('onFormChange', filter, sort);
             this.filter = filter;
             this.sort = sort;
         },
@@ -147,8 +141,6 @@ export default {
 
         ...mapActions({
             loadFields: 'dealFields/load',
-            loadCrmStatuses: 'crmStatuses/load',
-            loadUsers: 'users/load',
         })
     }
 };

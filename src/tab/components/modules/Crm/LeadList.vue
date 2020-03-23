@@ -30,7 +30,7 @@
         />
 
         <div style="max-width: 100%; overflow-x: scroll;">
-            <TableList
+            <FormattedTableList
                 :columns="columns"
                 :items="items"
             />
@@ -51,14 +51,14 @@ import { mapState, mapMutations, mapActions } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import Lead from 'lib/entities/Crm/Lead';
 import GetListForm from 'components/ui/GetListForm.vue';
-import TableList from 'components/TableList/BaseTableList.vue';
+import FormattedTableList from 'components/TableList/FormattedTableList.vue';
 import TableColumns from 'components/TableList/Columns.vue';
 import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 
 export default {
     components: {
         GetListForm,
-        TableList,
+        FormattedTableList,
         TableColumns,
     },
 

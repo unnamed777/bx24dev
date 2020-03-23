@@ -7,7 +7,7 @@
         <div class="position-relative" :class="`col-${ui.valueCols}`">
             <component
                 :is="valueComponents[field.code].component"
-                v-model="values[field.code]"
+                v-model="local[field.code]"
                 :key="field.code"
                 :field="field"
                 :extra="valueComponents[field.code].extra"
@@ -15,7 +15,6 @@
             />
         </div>
     </div>
-    {{ values }}
 </div>
 </template>
 
@@ -80,6 +79,12 @@ export default {
             }
 
             return components;
+        },
+
+        local: {
+            get() {
+                return this.model;
+            }
         }
     },
 
@@ -87,6 +92,6 @@ export default {
         values(newValue) {
             this.$emit('change', newValue);
         }
-    }
+    },
 }
 </script>

@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from 'vuex';
+import router from '../router';
 import dealFields from "./modules/dealFields";
 import dealStages from "./modules/dealStages";
 import leadFields from "./modules/leadFields";
@@ -31,7 +32,22 @@ const store = new Vuex.Store({
         },
 
         setBreadcrumb(state, payload) {
-            state.breadcrumb = payload;
+            state.breadcrumb = payload.map((item) => {
+                if (typeof item === 'object') {
+                    return {
+                        text: item.text,
+                        link: router.resolve({
+                            name: item.route,
+                            params: item.params
+                        }).href
+                    };
+                } else {
+                    return {
+                        link: '#',
+                        text: item,
+                    };
+                }
+            });
         }
     },
 

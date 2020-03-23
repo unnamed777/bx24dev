@@ -30,46 +30,34 @@ export default {
 
     computed: {
         pages() {
-            const pages = [1];
+            const pages = [];
+            let start;
+            let end;
 
-            if (this.total > 1) {
-                pages.push(2);
+            if (this.current <= 4) {
+                start = -1 * (this.current + 1);
+                end = 7 - this.current;
+            } else if (this.current > this.total - 4) {
+                start = -1 * (7 - (this.total - this.current + 1));
+                end = this.total - this.current;
+            } else {
+                start = -2;
+                end = 2;
             }
 
-            if (this.total > 2) {
-                pages.push(3);
-            }
-
-            if (this.current - 1 > 3 && this.current - 1 < this.total - 2) {
-                if (this.current - 1 - pages[pages.length - 1] > 1) {
-                    pages.push(null);
+            for (let i = start; i <= end; i++) {
+                if (this.current + i > 0 && this.current + i <= this.total) {
+                    pages.push(this.current + i);
                 }
-
-                pages.push(this.current - 1);
             }
 
-            if (this.current > 3 && this.current < this.total - 2) {
-                pages.push(this.current);
+            if (pages[0] !== 1) {
+                pages.unshift(null);
+                pages.unshift(1);
             }
 
-            if (this.current + 1 > 3 && this.current < this.total - 3) {
-                pages.push(this.current + 1);
-            }
-
-            if (this.total - 2 > 3) {
-
-                if (this.total - 2 - pages[pages.length - 1] > 1) {
-                    pages.push(null);
-                }
-
-                pages.push(this.total - 2);
-            }
-
-            if (this.total - 1 > 3) {
-                pages.push(this.total - 1);
-            }
-
-            if (this.total > 3) {
+            if (pages[pages.length - 1] !== this.total) {
+                pages.push(null);
                 pages.push(this.total);
             }
 

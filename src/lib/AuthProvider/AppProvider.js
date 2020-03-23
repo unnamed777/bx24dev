@@ -1,5 +1,5 @@
 import messageListener from "lib/MessageListener";
-import { alert } from 'lib/functions';
+import { alert, getExposedPromise } from 'lib/functions';
 
 export default class AppProvider {
     constructor({tabId, frameId}) {
@@ -50,7 +50,7 @@ export default class AppProvider {
 
         // If auth is failed (expired in app), try to refresh it
         if (result === false) {
-            result = await this.refreshAppAuth();
+            result = await this.refresh();
         }
 
         return result;
@@ -59,7 +59,10 @@ export default class AppProvider {
     async refresh() {
         // If b24 authorization is expired or other error happens, this call will notify of problem
         this.refreshTimeout = setTimeout(this.onRefreshFailed, 3000);
+        const {promise, resolve } = getExposedPromise();
+        this.refreshResolve = resolve;
 
+        // @todo add promise which will be resolved when refreshAuth callback fired
         try {
             browser.tabs.executeScript(this.tabId, {
                 frameId: this.frameId,
@@ -69,6 +72,8 @@ export default class AppProvider {
             alert('Ошибка получения авторизации из фрейма');
             console.error(ex);
         }
+
+        return promise;
     }
 
     onRefresh({payload}) {
@@ -79,9 +84,16 @@ export default class AppProvider {
         console.log('onRefreshAppAuth');
         clearTimeout(this.refreshTimeout);
         alert('onRefreshAppAuth happened...');
+        this.refreshResolve(payload.auth);
+        delete this.refreshResolve;
     }
 
     onRefreshFailed() {
         alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
+
+        if (this.refreshResolve) {
+            this.refreshResolve(null);
+            delete this.refreshResolve;
+        }
     }
 }

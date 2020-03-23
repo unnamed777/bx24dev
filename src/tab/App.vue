@@ -40,8 +40,8 @@
                 <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
-                            <template v-if="index === breadcrumb.length - 1">{{ item }}</template>
-                            <template v-else><a href="#">{{ item }}</a></template>
+                            <template v-if="index === breadcrumb.length - 1">{{ item.text }}</template>
+                            <template v-else><a :href="item.link">{{ item.text }}</a></template>
                         </li>
                     </ol>
                 </nav>
@@ -232,6 +232,11 @@ html, body {
     &:focus {
         box-shadow: none;
     }
+}
+
+.btn-light {
+    background-color: #eff1f2;
+    border-color: #eff1f2;
 }
 
 </style>

@@ -176,7 +176,7 @@ export default class Item extends AbstractEntity {
      * @returns {Promise<Collection>}
      */
     static load(payload = {}, options = {}) {
-        return super.load(payload);
+        return super.load(payload, options);
     }
 
     /**
@@ -216,7 +216,7 @@ export default class Item extends AbstractEntity {
         };
 
         properties.map((property) => {
-            let title = property.NAME ? `${property.NAME} (${property.PROPERTY})` : property.PROPERTY;
+            let title = property.NAME ? `${property.NAME}` : property.PROPERTY;
             let alias = `PROPERTY_${property.PROPERTY}`;
 
             fields[alias] = {

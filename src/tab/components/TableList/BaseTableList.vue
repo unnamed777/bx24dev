@@ -4,7 +4,10 @@
             <thead>
                 <tr>
                     <th v-if="rowActions" class="action-cell"></th>
-                    <th v-for="field in columns" v-bind:title="field.code" @click="changeSort(field.code)">{{ field.label }}</th>
+                    <th v-for="field in columns" v-bind:title="field.code" @click="changeSort(field.code)">
+                        {{ field.label }}
+                        <div class="header-field-code text-muted">{{ field.code }}</div>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -130,5 +133,12 @@ table thead th {
     &__icon {
         width: 16px;
     }
+}
+
+.header-field-code {
+    margin-bottom: 2px;
+    font-size: 60%;
+    font-weight: normal;
+    line-height: 1em;
 }
 </style>

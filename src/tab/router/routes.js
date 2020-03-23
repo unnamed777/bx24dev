@@ -12,6 +12,7 @@ import EntityList from 'components/modules/Entity/EntityList.vue';
 import EntityAdd from 'components/modules/Entity/EntityAdd.vue';
 import EntityProperties from 'components/modules/Entity/EntityProperties.vue';
 import EntityPropertyAdd from 'components/modules/Entity/EntityPropertyAdd.vue';
+import EntityPropertyEdit from 'components/modules/Entity/EntityPropertyEdit.vue';
 import EntityRights from 'components/modules/Entity/EntityRights.vue';
 import EntityRightsAdd from 'components/modules/Entity/EntityRightsAdd.vue';
 import EntityItemList from 'components/modules/Entity/EntityItemList.vue';
@@ -95,6 +96,11 @@ export default [
         path: '/entity/:entityId/properties/add',
         name: 'entityPropertyAdd',
         component: EntityPropertyAdd,
+    },
+    {
+        path: '/entity/:entityId/properties/:propertyCode/edit',
+        name: 'entityPropertyEdit',
+        component: EntityPropertyEdit,
     },
     {
         path: '/entity/:entityId/rights',

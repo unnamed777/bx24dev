@@ -32,6 +32,10 @@ export default {
             ],
             tableRowActions: [
                 {
+                    label: 'Изменить',
+                    onClick: this.onChangeClick,
+                },
+                {
                     label: 'Удалить',
                     onClick: this.onDeleteClick,
                 },
@@ -62,10 +66,6 @@ export default {
             return this.$store.state.entities.items[this.entityId];
         },
 
-        /*...mapState({
-            properties: state => state.entityProperties.items,
-        }),*/
-
         ...mapGetters({
             getEntityById: 'entities/getById',
             getByEntityId: 'entityProperties/getByEntityId',
@@ -93,6 +93,16 @@ export default {
         async fillProperties() {
             await this.loadProperties(this.entityId);
             this.properties = this.getByEntityId(this.entityId);
+        },
+
+        async onChangeClick({row, index}) {
+            this.$router.push({
+                name: 'entityPropertyEdit',
+                params: {
+                    entityId: this.entity.ENTITY,
+                    propertyCode: row.PROPERTY,
+                },
+            });
         },
 
         async onDeleteClick({row, index}) {

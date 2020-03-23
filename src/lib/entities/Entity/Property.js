@@ -75,6 +75,15 @@ export default class Property extends AbstractEntity {
         return BX24.call(this.addEndpoint, data);
     }
 
+    static update(data) {
+        // Check all required fields
+        if (!data.ENTITY) {
+            throw new Error('ENTITY is required');
+        }
+
+        return BX24.call(this.updateEndpoint, data);
+    }
+
     /**
      * @param {EntityPropertyDeleteParams} params
      *

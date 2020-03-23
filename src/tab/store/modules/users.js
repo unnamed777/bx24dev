@@ -13,9 +13,9 @@ export default {
     },
 
     getters: {
-        getFormatted: (state) => (id) => {
+        getFormatted: (state) => ({value}) => {
             // noinspection EqualityComparisonWithCoercionJS
-            const user = state.items.filter(item => item.ID == id)[0];
+            const user = state.items.filter(item => item.ID == value)[0];
 
             if (!user) {
                 return null;

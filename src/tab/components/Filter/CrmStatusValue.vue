@@ -21,7 +21,7 @@ export default {
             return this.extra && this.extra.entityId
                 ? this.getCrmStatusByEntityId(this.extra.entityId).map(item => ({
                     value: item.STATUS_ID,
-                    label: item.NAME,
+                    label: `[${item.STATUS_ID}] ${item.NAME}`,
                 }))
                 : [];
         },

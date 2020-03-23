@@ -14,11 +14,14 @@
 import FilterItem from './Item.vue';
 import isNil from 'lodash-es/isnil';
 import User from 'lib/entities/User';
+import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
 
 export default {
     components: {
         FilterItem
     },
+
+    mixins: [preloadFieldTypeValuesMixin],
 
     props: {
         fields: Object
@@ -46,23 +49,14 @@ export default {
                 preview: this.compileFilterPreview(resultFilter),
             });
         },
+
+        fields() {
+            this.preloadFieldTypeValues(this.fields);
+        }
     },
 
     async mounted() {
-        let hasUserFieldType = false;
-
-        // Put loading of CrmStatuses and etc here...
-
-        for (let field of Object.values(this.fields)) {
-            if (field.type === 'user') {
-                hasUserFieldType = true;
-            }
-        }
-
-        if (hasUserFieldType) {
-            // I need a store:-(
-            this.users = (await User.load({select: ['ID', 'EMAIL', 'NAME', 'LAST_NAME']})).getAll();
-        }
+        this.preloadFieldTypeValues(this.fields);
     },
 
     methods: {

@@ -7,12 +7,15 @@
 </template>
 <script>
 import BaseTableList from './BaseTableList';
+import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
 import {mapState, mapActions, mapMutations} from 'vuex';
 
 export default {
     components: {
         BaseTableList,
     },
+
+    mixins: [preloadFieldTypeValuesMixin],
 
     props: {
         columns: {
@@ -24,11 +27,20 @@ export default {
         },
         items: Array,
         rowActions: Array,
-        links: Object,
+    },
+
+    data() {
+        return {
+            valuesPreloaded: false,
+        };
     },
 
     computed: {
         preparedItems() {
+            if (!this.isFieldTypeValuesLoaded) {
+                return [];
+            }
+
             const newItems = [];
             const registeredFieldTypes = this.$store.state.fieldTypes;
 
@@ -39,8 +51,10 @@ export default {
                     let value;
 
                     if (registeredFieldTypes[column.type]) {
-                        console.log(registeredFieldTypes[column.type]);
-                        value = this.$store.getters[`${registeredFieldTypes[column.type]}/getFormatted`](item[column.code]);
+                        value = this.$store.getters[`${registeredFieldTypes[column.type]}/getFormatted`]({
+                            field: column,
+                            value: item[column.code],
+                        });
 
                         if (value === null) {
                             value = item[column.code];
@@ -59,22 +73,14 @@ export default {
         }
     },
 
-    methods: {
-        getUser(id) {
-            if (!this.links.user) {
-                return id;
-            }
-
-            // iD in User entity is string
-            id = id.toString();
-            const user = this.links.user.filter((item) => item.ID === id)[0];
-
-            if (!user) {
-                return id;
-            }
-
-            return `[${id}] ${user.FULL_NAME}`;
+    watch: {
+        async columns() {
+            await this.preloadFieldTypeValues(this.columns);
         }
+    },
+
+    async mounted() {
+        await this.preloadFieldTypeValues(this.columns);
     },
 };
 </script>

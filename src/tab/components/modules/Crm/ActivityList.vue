@@ -106,9 +106,6 @@ export default {
 
     async mounted() {
         await this.loadFields();
-        this.preloadFieldTypeValues();
-        //await this.loadUsers();
-        //await this.loadOwnerTypes();
         this.setBreadcrumb(['CRM', 'Дела', 'Список']);
     },
 
@@ -140,33 +137,12 @@ export default {
             this.visibleColumns = columns;
         },
 
-        async preloadFieldTypeValues() {
-            const types = new Set();
-
-            Object.values(this.fields).map((item) => {
-                if (['integer', 'string', 'enumeration', 'char', 'datetime', 'diskfile'].indexOf(item.type) === -1) {
-                    types.add(item.type);
-                }
-            });
-
-            for (let type of types) {
-                if (!this.$store.state.fieldTypes[type]) {
-                    continue;
-                }
-                console.log(type);
-
-                await this.$store.dispatch(this.$store.state.fieldTypes[type] + '/load');
-            }
-        },
-
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
         }),
 
         ...mapActions({
             loadFields: 'activityFields/load',
-            loadUsers: 'users/load',
-            loadOwnerTypes: 'activityOwnerTypes/load',
         })
     }
 };
