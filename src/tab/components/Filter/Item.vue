@@ -90,7 +90,7 @@ export default {
                 case 'user':
                     component = 'UserValue';
                     extra = {
-                        users: this.users
+                        users: this.$store.state.users.items,
                     };
                     break;
 
