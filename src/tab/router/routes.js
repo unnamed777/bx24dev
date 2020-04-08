@@ -4,6 +4,7 @@ import CrmDealFields from 'components/modules/Crm/DealFields.vue';
 import CrmDealStages from 'components/modules/Crm/DealStages.vue';
 import CrmLeadList from 'components/modules/Crm/LeadList.vue';
 import CrmLeadFields from 'components/modules/Crm/LeadFields.vue';
+import CrmLeadFieldAdd from 'components/modules/Crm/LeadFieldAdd.vue';
 import CrmLeadStatuses from 'components/modules/Crm/LeadStatuses.vue';
 import CrmActivityList from 'components/modules/Crm/ActivityList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
@@ -46,6 +47,11 @@ export default [
         path: '/crm/lead/fields',
         name: 'crmLeadFields',
         component: CrmLeadFields,
+    },
+    {
+        path: '/crm/lead/fields/add',
+        name: 'crmLeadFieldAdd',
+        component: CrmLeadFieldAdd,
     },
     {
         path: '/crm/lead/list',

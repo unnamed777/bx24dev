@@ -1,5 +1,16 @@
 <template>
-<TableList v-if="tableData.columns.length > 0" :columns="tableData.columns" :items="tableData.items"/>
+<div>
+    <div class="row mb-4">
+        <div class="col-10">
+        </div>
+        <div class="col-2 d-flex justify-content-end">
+            <div>
+                <button class="btn btn-light" @click="$router.push({ name: 'crmLeadFieldAdd' })">Создать поле</button>
+            </div>
+        </div>
+    </div>
+    <TableList v-if="tableData.columns.length > 0" :columns="tableData.columns" :items="tableData.items"/>
+</div>
 </template>
 
 <script>
