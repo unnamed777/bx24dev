@@ -77,6 +77,7 @@ export default {
                 },
             ],
             filter: {},
+            sort: {},
         };
     },
 
@@ -173,7 +174,7 @@ export default {
         async loadEntries() {
             let collection = await EntityItem.load({
                 ENTITY: this.entityId,
-                SORT: { 'ID': 'DESC' },
+                SORT: this.sort,
                 FILTER: this.filter,
             }, {
                 page: this.currentPage,
@@ -187,8 +188,10 @@ export default {
             this.visibleColumns = columns;
         },
 
-        onFormChange({filter}) {
+        onFormChange({filter, sort}) {
+            console.log('onFormChange', filter, sort);
             this.filter = filter;
+            this.sort = sort;
         },
 
         async onDeleteClick({index, row}) {

@@ -67,6 +67,7 @@ export default {
             items: [],
             visibleColumns: ['ID', 'TITLE', 'OPPORTUNITY', 'STATUS_ID'],
             filter: {},
+            sort: {},
         };
     },
 
@@ -124,8 +125,9 @@ export default {
             this.visibleColumns = columns;
         },
 
-        onFormChange({filter}) {
+        onFormChange({filter, sort}) {
             this.filter = filter;
+            this.sort = sort;
         },
 
         ...mapMutations({
