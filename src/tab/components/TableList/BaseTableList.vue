@@ -4,14 +4,14 @@
             <thead>
                 <tr>
                     <th v-if="rowActions" class="action-cell"></th>
-                    <th v-for="field in columns" v-bind:title="field.code" @click="changeSort(field.code)">
-                        {{ field.label }}
-                        <div class="header-field-code text-muted">{{ field.code }}</div>
+                    <th v-for="column in columns" v-bind:title="column.code" @click="changeSort(column.code)">
+                        {{ column.label }}
+                        <div class="header-column-code text-muted">{{ column.code }}</div>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in itemsSorted">
+                <tr v-for="(item, index) in itemsSorted" :key="index">
                     <th v-if="rowActions" class="action-cell">
                         <div class="position-relative">
                             <span class="table-row-action-trigger" data-toggle="dropdown" @click="toggleRowMenu(index)"><MenuIcon class="table-row-action-trigger__icon" /></span>
@@ -27,7 +27,15 @@
                             </div>
                         </div>
                     </th>
-                    <td v-for="field in columns">{{ item[field.code] }}</td>
+                    <td v-for="column in columns">
+                        <slot
+                            :name="column.code"
+                            :item="item"
+                            :column="column"
+                        >
+                            {{ item[column.code] }}
+                        </slot>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -135,7 +143,7 @@ table thead th {
     }
 }
 
-.header-field-code {
+.header-column-code {
     margin-bottom: 2px;
     font-size: 60%;
     font-weight: normal;

@@ -16,6 +16,30 @@ export function getExposedPromise() {
 export function prepareCrmEntityFields(crmFields) {
     const items = [];
 
+    const pushEnumValues = (fieldCode) => {
+        const field = crmFields[fieldCode];
+        console.log(JSON.parse(JSON.stringify(field)));
+
+        let html = `
+            <div>
+                <table>
+                    <tbody>
+                        ${field.items.map((item) => {
+                            return `
+                                <tr>
+                                    <td>${item.ID}</td>
+                                    <td>${item.VALUE}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        field.type = field.type + html;
+    };
+
     for (let key in crmFields) {
         let field = crmFields[key];
 
