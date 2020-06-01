@@ -31,14 +31,14 @@ export default {
         tableData() {
             return prepareCrmEntityFields(this.rawFields);
         },
-        ...mapState('dealFields', {
+        ...mapState('companyFields', {
             rawFields: state => state.items
         }),
     },
 
     async mounted() {
         await this.load();
-        this.setBreadcrumb(['CRM', 'Сделка', 'Поля']);
+        this.setBreadcrumb(['CRM', 'Компании', 'Поля']);
     },
 
     methods: {
@@ -46,7 +46,7 @@ export default {
             setBreadcrumb: 'setBreadcrumb',
         }),
         ...mapActions({
-            load: 'dealFields/load',
+            load: 'companyFields/load',
         })
     }
 };

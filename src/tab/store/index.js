@@ -5,6 +5,8 @@ import dealFields from "./modules/dealFields";
 import dealStages from "./modules/dealStages";
 import leadFields from "./modules/leadFields";
 import leadStatuses from "./modules/leadStatuses";
+import contactFields from "./modules/contactFields";
+import companyFields from "./modules/companyFields";
 import activityFields from "./modules/activityFields";
 import activityOwnerTypes from "./modules/activityOwnerTypes";
 import crmStatuses from "./modules/crmStatuses";
@@ -56,6 +58,8 @@ const store = new Vuex.Store({
         dealStages,
         leadFields,
         leadStatuses,
+        companyFields,
+        contactFields,
         activityFields,
         activityOwnerTypes,
         crmStatuses,

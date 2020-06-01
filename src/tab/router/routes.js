@@ -6,6 +6,10 @@ import CrmLeadList from 'components/modules/Crm/LeadList.vue';
 import CrmLeadFields from 'components/modules/Crm/LeadFields.vue';
 import CrmLeadFieldAdd from 'components/modules/Crm/LeadFieldAdd.vue';
 import CrmLeadStatuses from 'components/modules/Crm/LeadStatuses.vue';
+import CrmCompanyList from 'components/modules/Crm/CompanyList.vue';
+import CrmCompanyFields from 'components/modules/Crm/CompanyFields.vue';
+import CrmContactList from 'components/modules/Crm/ContactList.vue';
+import CrmContactFields from 'components/modules/Crm/ContactFields.vue';
 import CrmActivityList from 'components/modules/Crm/ActivityList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
@@ -62,6 +66,26 @@ export default [
         path: '/crm/lead/statuses',
         name: 'crmLeadStatuses',
         component: CrmLeadStatuses,
+    },
+    {
+        path: '/crm/company/fields',
+        name: 'crmCompanyFields',
+        component: CrmCompanyFields,
+    },
+    {
+        path: '/crm/company/list',
+        name: 'crmCompanyList',
+        component: CrmCompanyList,
+    },
+    {
+        path: '/crm/contact/fields',
+        name: 'crmContactFields',
+        component: CrmContactFields,
+    },
+    {
+        path: '/crm/contact/list',
+        name: 'crmContactList',
+        component: CrmContactList,
     },
     {
         path: '/crm/activity/list',

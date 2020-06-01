@@ -80,6 +80,32 @@ export default {
                         ]
                     },
                     {
+                        label: 'Компании',
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('crmCompanyList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('crmCompanyFields'),
+                            },
+                        ]
+                    },
+                    {
+                        label: 'Контакты',
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('crmContactList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('crmContactFields'),
+                            },
+                        ]
+                    },
+                    {
                         label: 'Дела',
                         children: [
                             {
