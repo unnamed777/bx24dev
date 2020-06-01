@@ -1,29 +1,46 @@
 <template>
-<div class="filter-item-value input-group">
-    <!-- add disabled -->
-    <div class="input-group-prepend">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" style="width: 50px;">{{ operators[operator] }}</button>
-        <div class="dropdown-menu">
-            <a class="dropdown-item" href="#" v-for="(label, op) of operators" v-on:click="operator = op">{{ label }}</a>
-        </div>
+    <div class="filter-item-value input-group">
+        <Operators v-model="operator" />
+        <input type="text" class="form-control form-control-sm" v-model="value">
     </div>
-    <input type="text" class="form-control form-control-sm" v-model="value">
-</div>
+    <!--<BaseOperatorValue v-model="complexValue">
+        <template v-slot:default="slotProps">
+            {{ slotProps }}
+            <input type="text" class="form-control form-control-sm" v-model="slotProps.value">
+        </template>
+    </BaseOperatorValue>-->
 </template>
 
 <script>
 import modelMixin from './modelMixin';
+import Operators from './Operators';
+//import BaseOperatorValue from './BaseOperatorValue';
 
 export default {
+    components: {
+        Operators,
+    },
+
     mixins: [
         modelMixin
     ],
+
+    model: {
+        prop: 'complexValue',
+        event: 'change',
+    },
+
+    props: {
+        complexValue: Object,
+        field: Object,
+        extra: Object,
+    },
 
     data() {
         return {
             operators: {
                 '': '=',
-                '!': '!=',
+                '!': '!',
                 '<': '<',
                 '<=': '<=',
                 '>': '>',

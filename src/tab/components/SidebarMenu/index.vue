@@ -31,7 +31,7 @@ export default {
             },*/
             {
                 label: 'Refresh auth',
-                action: this.refreshAuth,
+                action: this.actions.refreshAuth,
             },
             {
                 id: 'entities',

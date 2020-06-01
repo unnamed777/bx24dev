@@ -34,7 +34,7 @@
                     </div>
                 </div>-->
 
-                <SidebarMenu v-if="activeAppId !== null" :actions="{refreshAuth}"/>
+                <SidebarMenu v-if="activeAppId !== null" :actions="{ refreshAuth }"/>
             </div>
             <div class="col-10 pt-3">
                 <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
@@ -128,8 +128,13 @@ export default {
             //this.activeModule = 'CrmDealList';
         },
 
-        refreshAuth() {
-            // stub
+        async refreshAuth() {
+            let appData = await browser.runtime.sendMessage({
+                type: 'getAppData',
+            });
+
+            console.log('appData from background', appData);
+            BX24.setAuth(appData.auth);
         },
 
         ...mapMutations({

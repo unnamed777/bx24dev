@@ -70,7 +70,7 @@ export default {
     data() {
         return {
             items: [],
-            visibleColumns: ['ID', 'PROVIDER_ID', 'OWNER_TYPE_ID', 'OWNER_ID', 'SUBJECT', 'RESPONSIBLE_ID'],
+            visibleColumns: ['ID', 'PROVIDER_ID', 'OWNER_TYPE_ID', 'OWNER_ID', 'SUBJECT', 'AUTHOR_ID', 'RESPONSIBLE_ID'],
             filter: {},
             sort: {},
         };

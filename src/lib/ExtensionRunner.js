@@ -66,6 +66,7 @@ export default class ExtensionRunner {
 
         // Add listener if obtaining authorization is successful only
         messageListener.subscribe('getAppData', this.onExtensionRequestAuth.bind(this));
+        messageListener.subscribe('refreshAuth', this.onExtensionRefreshAuth.bind(this));
         this.openExtensionPage();
     }
 
@@ -136,4 +137,29 @@ export default class ExtensionRunner {
         });
     }
 
+    async onExtensionRefreshAuth(message, sender, sendResponse) {
+        // Listen to own extension tab only
+        if (!sender.tab || sender.tab.id !== this.extensionTab.id) {
+            return;
+        }
+
+        try {
+            this.auth = await this.provider.refresh();
+        } catch (ex) {
+            alert(ex.toString());
+            return;
+        }
+
+        if (!this.auth) {
+            alert('Авторизация не была получена');
+            return;
+        }
+
+        sendResponse({
+            title: this.provider.appName,
+            portal: this.provider.domain,
+            appUrl: this.provider.appUrl,
+            auth: this.auth,
+        });
+    }
 }
