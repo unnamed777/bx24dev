@@ -244,4 +244,6 @@ html, body {
     border-color: #eff1f2;
 }
 
+
+//@import "vue-select/src/scss/vue-select.scss";
 </style>

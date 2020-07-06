@@ -2,10 +2,7 @@
 <div class="filter-item form-group row">
     <label class="col-6">
         <template>
-            <select class="form-control form-control-sm" v-model="code">
-                <option></option>
-                <option v-for="field in fieldsSorted" v-bind:value="field.code" :key="field.code">{{ field.label }} ({{ field.code }})</option>
-            </select>
+            <BaseSelect :options="fieldsSorted" v-model="code" />
         </template>
         <!--<template v-else>
             <a href="#" v-on:click.prevent="editMode = true">{{ fields[code].label }}</a>
@@ -34,6 +31,7 @@
 
 <script>
 import {mapGetters} from 'vuex';
+import BaseSelect from 'components/ui/BaseSelect';
 import DefaultValue from './DefaultValue.vue';
 import EnumValue from './EnumValue.vue';
 import UserValue from './UserValue.vue';
@@ -45,6 +43,7 @@ export default {
         EnumValue,
         UserValue,
         CrmStatusValue,
+        BaseSelect,
     },
 
     model: {
@@ -71,7 +70,12 @@ export default {
 
     computed: {
         fieldsSorted() {
-            return Object.values(this.fields).sort((a, b) => a.sort - b.sort);
+            return Object.values(this.fields).
+                sort((a, b) => a.sort - b.sort)
+                .map((item) => ({
+                    value: item.code,
+                    label: `${item.label} (${item.code})`,
+                }));
         },
 
         valueComponent() {

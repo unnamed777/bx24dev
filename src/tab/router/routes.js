@@ -13,6 +13,7 @@ import CrmContactFields from 'components/modules/Crm/ContactFields.vue';
 import CrmActivityList from 'components/modules/Crm/ActivityList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
+import CrmIndustries from 'components/modules/Crm/Industries.vue';
 import EntityList from 'components/modules/Entity/EntityList.vue';
 import EntityAdd from 'components/modules/Entity/EntityAdd.vue';
 import EntityProperties from 'components/modules/Entity/EntityProperties.vue';
@@ -101,6 +102,11 @@ export default [
         path: '/crm/status/sources',
         name: 'crmSources',
         component: CrmSources,
+    },
+    {
+        path: '/crm/status/industries',
+        name: 'crmIndustries',
+        component: CrmIndustries,
     },
     {
         path: '/entity/list',

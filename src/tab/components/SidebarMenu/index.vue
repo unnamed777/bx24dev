@@ -129,6 +129,10 @@ export default {
                                 label: 'Источники',
                                 route: this.getPath('crmSources'),
                             },
+                            {
+                                label: 'Сферы деятельности',
+                                route: this.getPath('crmIndustries'),
+                            },
                         ]
                     },
                 ]
