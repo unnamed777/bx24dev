@@ -1,7 +1,8 @@
 import qs from 'qs';
 
 export default {
-    setAuth(auth) {
+    setAuth(type, auth) {
+        this.type = type;
         this.auth = auth;
     },
 
@@ -11,8 +12,16 @@ export default {
 
         // URLSearchParams doesn't support nested objects, use qs
         const body = qs.stringify(data);
+        let url;
 
-        return await fetch(`https://${this.auth.domain}/rest/${method}.json`, {
+        // @todo refactor
+        if (this.type === 'webhook') {
+            url = `${this.auth.url}/${method}`;
+        } else {
+            url = `https://${this.auth.domain}/rest/${method}.json`;
+        }
+
+        return await fetch(url, {
             method: 'post',
             body,
         }).then(response => response.json());

@@ -22,6 +22,7 @@ export default class OAuthProvider {
         this.appUrl = this.credentials.appUrl;
         this.appName = this.credentials.appName;
         this.domain = this.auth.domain;
+        this.type = 'oauth';
 
         return this.auth;
     }

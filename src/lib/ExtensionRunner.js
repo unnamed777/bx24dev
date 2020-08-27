@@ -3,6 +3,7 @@ import messageListener from '../lib/MessageListener';
 import { alert } from 'lib/functions';
 import AppProvider from 'lib/AuthProvider/AppProvider';
 import OAuthProvider from 'lib/AuthProvider/OAuthProvider';
+import WebhookProvider from 'lib/AuthProvider/WebhookProvider';
 
 messageListener.init();
 
@@ -16,23 +17,25 @@ messageListener.init();
  */
 
 export default class ExtensionRunner {
-    constructor({tab}) {
+    constructor({tab, mode}) {
         this.callerTab = tab;
+        this.mode = mode;
     }
 
     static get providers() {
         return {
             'app': AppProvider,
             'oauth': OAuthProvider,
+            'webhook': WebhookProvider,
         };
     }
 
-    static createInstance({tab}) {
+    static createInstance({tab, mode}) {
         if (!this.instances) {
             this.instances = [null];
         }
 
-        let instance = new ExtensionRunner({tab});
+        let instance = new ExtensionRunner({tab, mode});
         this.instances.push(instance);
         instance.id = this.instances.length - 1;
 
@@ -43,6 +46,7 @@ export default class ExtensionRunner {
         await this.detectPage();
 
         if (!this.pageType) {
+            // @todo Destroy self
             alert('-');
             return;
         }
@@ -73,44 +77,50 @@ export default class ExtensionRunner {
     async detectPage() {
         this.pageType = null;
 
-        if (/bitrix24\.ru\/marketplace\/app\//i.test(this.callerTab.url) !== false) {
-            let frames = await browser.webNavigation.getAllFrames({tabId: this.callerTab.id});
-            let appFound = false;
-            let frame;
+        if (this.mode === 'oauth') {
+            if (/bitrix24\.ru\/marketplace\/app\//i.test(this.callerTab.url) !== false) {
+                // App's page
+                let frames = await browser.webNavigation.getAllFrames({tabId: this.callerTab.id});
+                let appFound = false;
+                let frame;
 
-            // Check app frame
-            for (frame of frames) {
-                if (/\?DOMAIN=.*APP_SID=/gi.test(frame.url) !== false) {
-                    appFound = true;
-                    break;
+                // Check app frame
+                for (frame of frames) {
+                    if (/\?DOMAIN=.*APP_SID=/gi.test(frame.url) !== false) {
+                        appFound = true;
+                        break;
+                    }
                 }
-            }
 
-            if (appFound) {
-                this.tabId = this.callerTab.id;
-                this.frameId = frame.frameId;
-                this.portal = /\/\/(.*?)\//gi.exec(this.callerTab.url)[1];
-                this.appUrl = frame.url;
-                this.pageType = 'app';
-            }
-        } else if (/bitrix24\.ru\/marketplace\/local\/edit\/\d+\//.test(this.callerTab.url)) {
-            let frames = await browser.webNavigation.getAllFrames({tabId: this.callerTab.id});
-            let frameFound = false;
-            let frame;
-
-            for (frame of frames) {
-                if (/bitrix24\.ru\/marketplace\/local\/edit\/\d+\/\?.*IFRAME.*/.test(frame.url) !== false) {
-                    frameFound = true;
-                    break;
+                if (appFound) {
+                    this.tabId = this.callerTab.id;
+                    this.frameId = frame.frameId;
+                    this.portal = /\/\/(.*?)\//gi.exec(this.callerTab.url)[1];
+                    this.appUrl = frame.url;
+                    this.pageType = 'app';
                 }
-            }
+            } else if (/bitrix24\.ru\/marketplace\/local\/edit\/\d+\//.test(this.callerTab.url)) {
+                // "Edit app" page
+                let frames = await browser.webNavigation.getAllFrames({tabId: this.callerTab.id});
+                let frameFound = false;
+                let frame;
 
-            if (frameFound) {
-                this.tabId = this.callerTab.id;
-                this.frameId = frame.frameId;
-            }
+                for (frame of frames) {
+                    if (/bitrix24\.ru\/marketplace\/local\/edit\/\d+\/\?.*IFRAME.*/.test(frame.url) !== false) {
+                        frameFound = true;
+                        break;
+                    }
+                }
 
-            this.pageType = 'oauth';
+                if (frameFound) {
+                    this.tabId = this.callerTab.id;
+                    this.frameId = frame.frameId;
+                }
+
+                this.pageType = 'oauth';
+            }
+        } else if (this.mode === 'webhook') {
+            this.pageType = 'webhook';
         }
 
         console.log(this.pageType);
@@ -129,11 +139,14 @@ export default class ExtensionRunner {
             return;
         }
 
+        console.log(this.provider);
+
         sendResponse({
             title: this.provider.appName,
             portal: this.provider.domain,
             appUrl: this.provider.appUrl,
             auth: this.auth,
+            authType: this.provider.type,
         });
     }
 

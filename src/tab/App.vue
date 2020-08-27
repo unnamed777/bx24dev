@@ -106,7 +106,7 @@ export default {
             });
 
             console.log('appData from background', appData);
-            BX24.setAuth(appData.auth);
+            BX24.setAuth(appData.authType, appData.auth);
 
             // Temporary
             this.apps.push({

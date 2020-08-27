@@ -18,6 +18,7 @@ export default class AppProvider {
         this.appName = callerTab.title;
         this.domain = (new URL(callerTab.url)).hostname;
         this.appUrl = (await browser.webNavigation.getFrame({ tabId: this.tabId, frameId: this.frameId })).url;
+        this.type = 'oauth';
 
         try {
             result = (await browser.tabs.executeScript(this.tabId, {
