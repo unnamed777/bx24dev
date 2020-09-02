@@ -23,6 +23,7 @@ import EntityRights from 'components/modules/Entity/EntityRights.vue';
 import EntityRightsAdd from 'components/modules/Entity/EntityRightsAdd.vue';
 import EntityItemList from 'components/modules/Entity/EntityItemList.vue';
 import EntityItemAdd from 'components/modules/Entity/EntityItemAdd.vue';
+import DepartmentList from 'components/modules/User/DepartmentList.vue';
 import EventList from 'components/modules/Event/EventList.vue';
 import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
@@ -147,6 +148,11 @@ export default [
         path: '/entity/:entityId/rights/add',
         name: 'entityRightsAdd',
         component: EntityRightsAdd,
+    },
+    {
+        path: '/user/department/list',
+        name: 'departmentList',
+        component: DepartmentList,
     },
     {
         path: '/entity/add',

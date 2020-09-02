@@ -138,6 +138,15 @@ export default {
                 ]
             },
             {
+                label: 'Пользователи',
+                children: [
+                    {
+                        label: 'Подразделения',
+                        route: this.getPath('departmentList'),
+                    },
+                ]
+            },
+            {
                 label: 'События',
                 children: [
                     {
