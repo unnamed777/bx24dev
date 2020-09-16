@@ -7,6 +7,8 @@ import leadFields from "./modules/leadFields";
 import leadStatuses from "./modules/leadStatuses";
 import contactFields from "./modules/contactFields";
 import companyFields from "./modules/companyFields";
+import invoiceFields from "./modules/invoiceFields";
+import invoiceStatuses from "./modules/invoiceStatuses";
 import activityFields from "./modules/activityFields";
 import activityOwnerTypes from "./modules/activityOwnerTypes";
 import crmStatuses from "./modules/crmStatuses";
@@ -60,6 +62,8 @@ const store = new Vuex.Store({
         leadStatuses,
         companyFields,
         contactFields,
+        invoiceFields,
+        invoiceStatuses,
         activityFields,
         activityOwnerTypes,
         crmStatuses,

@@ -106,6 +106,23 @@ export default {
                         ]
                     },
                     {
+                        label: 'Счета',
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('crmInvoiceList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('crmInvoiceFields'),
+                            },
+                            {
+                                label: 'Статусы',
+                                route: this.getPath('crmInvoiceStatuses'),
+                            }
+                        ]
+                    },
+                    {
                         label: 'Дела',
                         children: [
                             {

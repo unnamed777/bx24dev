@@ -10,6 +10,10 @@ import CrmCompanyList from 'components/modules/Crm/CompanyList.vue';
 import CrmCompanyFields from 'components/modules/Crm/CompanyFields.vue';
 import CrmContactList from 'components/modules/Crm/ContactList.vue';
 import CrmContactFields from 'components/modules/Crm/ContactFields.vue';
+import CrmInvoiceList from 'components/modules/Crm/Invoice/InvoiceList.vue';
+import CrmInvoiceFields from 'components/modules/Crm/Invoice/InvoiceFields.vue';
+import CrmInvoiceFieldAdd from 'components/modules/Crm/Invoice/InvoiceFieldAdd.vue';
+import CrmInvoiceStatuses from 'components/modules/Crm/Invoice/InvoiceStatuses.vue';
 import CrmActivityList from 'components/modules/Crm/ActivityList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
@@ -88,6 +92,26 @@ export default [
         path: '/crm/contact/list',
         name: 'crmContactList',
         component: CrmContactList,
+    },
+    {
+        path: '/crm/invoice/fields',
+        name: 'crmInvoiceFields',
+        component: CrmInvoiceFields,
+    },
+    {
+        path: '/crm/invoice/fields/add',
+        name: 'crmInvoiceFieldAdd',
+        component: CrmInvoiceFieldAdd,
+    },
+    {
+        path: '/crm/invoice/list',
+        name: 'crmInvoiceList',
+        component: CrmInvoiceList,
+    },
+    {
+        path: '/crm/invoice/statuses',
+        name: 'crmInvoiceStatuses',
+        component: CrmInvoiceStatuses,
     },
     {
         path: '/crm/activity/list',
