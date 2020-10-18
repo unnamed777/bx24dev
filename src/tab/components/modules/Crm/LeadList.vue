@@ -16,12 +16,6 @@
     </div>
 
     <div v-if="items.length > 0">
-        <TableColumns
-            :items="fields"
-            :selected="visibleColumns"
-            @change="setVisibleColumns"
-        />
-
         <PageNavigation
             v-if="totalPages > 1"
             :total="totalPages"
@@ -30,9 +24,11 @@
         />
 
         <div style="max-width: 100%; overflow-x: scroll;">
-            <FormattedTableList
-                :columns="columns"
+            <RichTableList
+                :availableColumns="availableColumns"
+                :visibleColumns="visibleColumns"
                 :items="items"
+                :hasSettings="true"
             />
         </div>
 
@@ -47,20 +43,22 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import Lead from 'lib/entities/Crm/Lead';
 import GetListForm from 'components/ui/GetListForm.vue';
-import FormattedTableList from 'components/TableList/FormattedTableList.vue';
-import TableColumns from 'components/TableList/Columns.vue';
+import RichTableList from 'components/TableList/RichTableList.vue';
+import PageNavigation from 'components/ui/PageNavigation';
 import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
 
 export default {
     components: {
         GetListForm,
-        FormattedTableList,
-        TableColumns,
+        RichTableList,
+        PageNavigation,
     },
+
+    mixins: [entriesPageNavMixin],
 
     data() {
         return {
@@ -71,26 +69,13 @@ export default {
         };
     },
 
-    mixins: [entriesPageNavMixin],
-
     computed: {
         availableColumns() {
-            let result = Object.values(this.fields).map(item => ({
+            return Object.values(this.fields).map(item => ({
                 code: item.field,
-                label: getFieldLabel(item)
+                label: getFieldLabel(item),
+                ...item
             }));
-            console.log(result);
-            return result;
-        },
-
-        columns() {
-            let columns = [];
-
-            for (let columnCode of this.visibleColumns) {
-                columns.push(this.fields[columnCode]);
-            }
-
-            return columns;
         },
 
         ...mapState({
@@ -99,12 +84,13 @@ export default {
     },
 
     async mounted() {
+        // noinspection ES6MissingAwait
         this.loadFields();
         this.setBreadcrumb(['CRM', 'Лиды', 'Список']);
     },
 
     methods: {
-        async onSubmit() {
+        onSubmit() {
             this.currentPage = 1;
             this.loadEntries();
         },
@@ -119,10 +105,6 @@ export default {
 
             this.items = collection.getAll();
             this.totalPages = Math.ceil(collection.total / Lead.PAGE_SIZE);
-        },
-
-        setVisibleColumns(columns) {
-            this.visibleColumns = columns;
         },
 
         onFormChange({filter, sort}) {

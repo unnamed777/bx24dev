@@ -124,7 +124,7 @@ export default {
         }),
 
         ...mapActions({
-            reloadFields: 'leadFields/reload',
+            reloadFields: 'leadFields/forceLoad',
         }),
     }
 };

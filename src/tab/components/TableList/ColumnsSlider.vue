@@ -1,7 +1,7 @@
 <template>
 <div class="table-list-columns small mb-2">
-    <div class="mr-2"><a href="#" v-on:click.prevent="expanded = !expanded">Колонки</a><span v-if="expanded">:</span></div>
-    <div class="table-list-columns__list" v-if="expanded">
+    <h5>Колонки</h5>
+    <div class="table-list-columns__list">
         <div v-for="column in itemsSorted" class="form-check">
             <input class="form-check-input" type="checkbox" :id="'tableListColumn_' + column.code" :value="column.code" v-model="selectedOwn">
             <label class="form-check-label d-inline" :for="'tableListColumn_' + column.code">{{ column.label }} ({{ column.code }})</label>
@@ -24,7 +24,6 @@ export default {
         return {
             //selectedNow: [],
             currentlySelected: [],
-            expanded: false,
         }
     },
 
@@ -51,11 +50,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .table-list-columns {
-    &__list {
-        column-count: 5;
-    }
+    padding: 20px;
+    width: 350px;
 
     .form-check {
         page-break-inside: avoid;

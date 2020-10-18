@@ -4,12 +4,19 @@
             <thead>
                 <tr>
                     <th v-if="rowActions" class="action-cell"></th>
-                    <th v-for="column in columns" v-bind:title="column.code" @click="changeSort(column.code)">
-                        {{ column.label }}
-                        <div class="header-column-code text-muted">{{ column.code }}</div>
+                    <th
+                        v-for="column in columns" v-bind:title="column.code"
+                        class="header-column"
+                        @click="changeSort(column.code)"
+                    >
+                        <slot name="header-column" :column="column">
+                            {{ column.label }}
+                            <div class="header-column-code text-muted">{{ column.code }}</div>
+                        </slot>
                     </th>
                 </tr>
             </thead>
+
             <tbody>
                 <tr v-for="(item, index) in itemsSorted" :key="index">
                     <th v-if="rowActions" class="action-cell">
@@ -42,18 +49,24 @@
     </div>
 </template>
 <script>
-import { MenuIcon, EditIcon, CloseIcon } from 'vue-bytesize-icons';
+import { MenuIcon, EditIcon, CloseIcon, SettingsIcon } from 'vue-bytesize-icons';
+import ColumnsSlider from './ColumnsSlider';
+import ModalSlider from 'components/ui/ModalSlider';
 
 export default {
     components: {
         MenuIcon,
         EditIcon,
         CloseIcon,
+        SettingsIcon,
+        ColumnsSlider,
+        ModalSlider,
     },
 
     props: {
         columns: {
             type: Array,
+            required: true,
 
             validator(value) {
                 return value.filter(item => !item).length === 0;
@@ -84,7 +97,7 @@ export default {
             const items = [...this.items];
 
             return items.sort(column.type === 'double' || column.type === 'integer' ? this.sortDouble : this.sortString);
-        }
+        },
     },
 
     methods: {
@@ -110,12 +123,16 @@ export default {
             const valueB = parseFloat(b[this.sort]);
 
             return (valueA - valueB) * this.order;
-        }
+        },
     },
 }
 </script>
 
 <style lang="scss" scoped="">
+table {
+    white-space: nowrap;
+}
+
 table thead th {
     cursor: pointer;
 }

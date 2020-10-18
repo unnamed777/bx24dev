@@ -1,15 +1,5 @@
 <template>
 <div>
-    <!--<nav class="navbar navbar-light">
-      <a class="navbar-brand">
-          <div v-if="activeAppId" class="b24app">
-              <div class="b24app__title">
-                  {{ apps[activeAppId].title }}
-              </div>
-              <div class="b24app__portal">{{ apps[activeAppId].portal }}</div>
-          </div>
-      </a>
-    </nav>-->
     <div class="container-fluid" style="height: calc(100%);">
         <div class="row">
             <div class="sidebar col-2 bg-light">
@@ -151,6 +141,10 @@ html, body {
     height: 100%;
 }
 
+body {
+    position: relative;
+}
+
 *:focus {
     outline: none;
 }
@@ -243,7 +237,5 @@ html, body {
     background-color: #eff1f2;
     border-color: #eff1f2;
 }
-
-
 //@import "vue-select/src/scss/vue-select.scss";
 </style>

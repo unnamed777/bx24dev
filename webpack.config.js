@@ -31,6 +31,8 @@ const config = {
             lib: path.resolve(__dirname, 'src/lib'),
             components: path.resolve(__dirname, 'src/tab/components'),
             mixins: path.resolve(__dirname, 'src/tab/mixins'),
+            // Required for Vue Portal, because it imports another Vue and creates an error in runtime
+            'vue$': require.resolve('vue/dist/vue.esm.js'),
         },
         extensions: ['.js', '.vue'],
     },

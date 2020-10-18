@@ -372,7 +372,7 @@ export default {
     }*/
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 10;
     height: 100%;
     min-height: calc(100vh);
     max-height: 100vh;

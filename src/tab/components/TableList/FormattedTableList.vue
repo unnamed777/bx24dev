@@ -1,14 +1,23 @@
 <template>
-<BaseTableList
-    :columns="columns"
-    :items="preparedItems"
-    :rowActions="rowActions"
-/>
+    <BaseTableList
+        :columns="columns"
+        :items="preparedItems"
+        :rowActions="rowActions"
+    >
+        <template v-for="(_, slot) in $slots">
+            <template :slot="slot">
+              <slot :name="slot"></slot>
+            </template>
+        </template>
+
+        <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="slotProps">
+            <slot :name="slot" v-bind="slotProps" />
+        </template>
+    </BaseTableList>
 </template>
 <script>
 import BaseTableList from './BaseTableList';
 import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
-import {mapState, mapActions, mapMutations} from 'vuex';
 
 export default {
     components: {
@@ -25,6 +34,7 @@ export default {
                 return value.filter(item => !item).length === 0;
             }
         },
+
         items: Array,
         rowActions: Array,
     },
@@ -81,6 +91,8 @@ export default {
 
     async mounted() {
         await this.preloadFieldTypeValues(this.columns);
+        console.log(this.$slots);
+        console.log(this.$scopedSlots);
     },
 };
 </script>
