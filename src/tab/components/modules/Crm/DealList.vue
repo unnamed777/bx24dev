@@ -1,4 +1,44 @@
 <template>
+    <AbstractEntryList
+        :loadEntries="loadEntries"
+        :loadFieldsAction="'dealFields/load'"
+        :fieldsGetter="fieldsGetter"
+        :visibleColumns="['ID', 'TITLE', 'OPPORTUNITY', 'STAGE_ID']"
+        :breadcrumb="['CRM', 'Сделки', 'Список']"
+    />
+</template>
+
+<script>
+import Deal from 'lib/entities/Crm/Deal';
+import AbstractEntryList from 'components/modules/AbstractEntryList';
+
+export default {
+    components: {
+        AbstractEntryList,
+    },
+
+    methods: {
+        async loadEntries({sort, filter, page = 1}) {
+            let collection = (await Deal.load({
+                order: sort,
+                filter: filter,
+            }, {
+                page: page,
+            }));
+
+            return {
+                entries: collection.getAll(),
+                total: collection.total,
+            };
+        },
+
+        fieldsGetter($store) {
+            return $store.state.dealFields.items;
+        },
+    }
+};
+</script>
+<!--<template>
 <div>
     <div class="row">
         <div class="col-10">
@@ -10,7 +50,6 @@
         </div>
         <div class="col-2 d-flex justify-content-end">
             <div>
-                <!-- buttons -->
             </div>
         </div>
     </div>
@@ -84,6 +123,7 @@ export default {
     },
 
     async mounted() {
+        window.aaa = this;
         // noinspection ES6MissingAwait
         this.loadFields();
         this.setBreadcrumb(['CRM', 'Сделки', 'Список']);
@@ -121,4 +161,4 @@ export default {
         })
     }
 };
-</script>
+</script>-->
