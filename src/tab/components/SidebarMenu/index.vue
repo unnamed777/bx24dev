@@ -2,6 +2,7 @@
 <div class="nav flex-column mb-4">
     <SidebarMenuItem
         v-for="(item, index) in items"
+        v-if="!item.hidden"
         :item="item"
         :key="item._id"
         :ref="`item_${item._id}`"
@@ -42,6 +43,7 @@ export default {
                 ],
             },
             {
+                id: 'crm',
                 label: 'CRM',
                 children: [
                     {
@@ -155,6 +157,7 @@ export default {
                 ]
             },
             {
+                id: 'users',
                 label: 'Пользователи',
                 children: [
                     {
@@ -164,6 +167,7 @@ export default {
                 ]
             },
             {
+                id: 'events',
                 label: 'События',
                 children: [
                     {
@@ -173,6 +177,7 @@ export default {
                 ]
             },
             {
+                id: 'placements',
                 label: 'Placement',
                 children: [
                     {
@@ -187,6 +192,7 @@ export default {
             },
         ];
 
+        items.map(item => item.hidden = false);
         this.assignInternalIds(items);
 
         return {
@@ -232,6 +238,7 @@ export default {
 
         ...mapState({
             entities: store => store.entities.items,
+            scope: store => store.scope,
         }),
     },
 
@@ -242,6 +249,19 @@ export default {
 
         entities() {
             this.rebuildEntitiesMenu();
+        },
+
+        scope() {
+            let itemToScope = {
+                'entities': 'entity',
+                'users': 'user',
+                'events': 'event',
+                'placements': 'placement',
+            };
+
+            for (let [itemId, scopeCode] of Object.entries(itemToScope)) {
+                this.itemsMap.id[itemId].hidden = this.scope.indexOf(scopeCode) === -1;
+            }
         },
 
         $route(value) {

@@ -92,10 +92,15 @@ export default {
                     break;
 
                 case 'user':
-                    component = 'UserValue';
-                    extra = {
-                        users: this.$store.state.users.items,
-                    };
+                    if (this.$store.state.users.items.length > 0) {
+                        component = 'UserValue';
+                        extra = {
+                            users: this.$store.state.users.items,
+                        };
+                    } else {
+                        // No privileges
+                        component = 'DefaultValue';
+                    }
                     break;
 
                 case 'crm_status':

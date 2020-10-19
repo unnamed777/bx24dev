@@ -1,7 +1,6 @@
 import messageListener from "lib/MessageListener";
 import { alert } from 'lib/functions';
 import { getExposedPromise } from 'lib/functions';
-import testOauthApp from "../../../.secret";
 
 export default class OAuthProvider {
     constructor({tabId, frameId}) {
@@ -44,12 +43,10 @@ export default class OAuthProvider {
             result = (await browser.tabs.executeScript(this.tabId, {
                 frameId: this.frameId,
                 code: `(function () {
-                    let input = document.querySelector('input[name="APP_NAME"]');
-                    let appName = input.value;
-                    let appUrl = document.querySelector('input[name="APP_URL"]').value;
-                    let html = input.closest('tbody').querySelector('tr:first-of-type td').innerHTML;
-                    let clientId = /Код приложения: ([\\w.]+)/.exec(html)[1];
-                    let clientSecret = /Ключ приложения: ([\\w.\-_=+]+)/.exec(html)[1];
+                    let appName = document.querySelector('#pagetitle').innerHTML.trim();
+                    let appUrl = document.querySelector('input[name="APPLICATION_URL_HANDLER"]').value;
+                    let clientId = document.querySelector('input[name="APPLICATION_DATA_CLIENT_ID"]').value;
+                    let clientSecret = document.querySelector('input[name="APPLICATION_DATA_CLIENT_SECRET"]').value;
                     // or host with port?
                     let domain = (new URL(document.location.href)).hostname;
                     
@@ -64,7 +61,7 @@ export default class OAuthProvider {
             }))[0];
         } catch (ex) {
             console.error(ex);
-            this.alert('Ошибка получения данных OAuth со страницы редактирования приложения');
+            alert('Ошибка получения данных OAuth со страницы редактирования приложения');
             throw ex;
         }
 

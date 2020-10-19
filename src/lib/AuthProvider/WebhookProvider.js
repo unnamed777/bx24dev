@@ -27,6 +27,17 @@ export default class WebhookProvider {
 
     async onUrlSubmit({type, payload}) {
         let result = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)/.exec(payload);
+        console.log(result);
+
+        // That's not an url, may be just host, user and key
+        if (result === null) {
+            result = /^([^\s]+) ([^\s]+) ([^\s]+)/.exec(payload);
+            console.log(result);
+
+            if (result !== null) {
+                result[0] = `https://${result[1]}/rest/${result[2]}/${result[3]}/`;
+            }
+        }
 
         this.authData = {
             url: result[0],

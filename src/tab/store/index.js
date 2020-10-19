@@ -24,6 +24,7 @@ const store = new Vuex.Store({
         activeAppId: null,
         activeModule: null,
         breadcrumb: [],
+        scope: [],
     },
 
     mutations: {
@@ -33,6 +34,10 @@ const store = new Vuex.Store({
 
         setActiveModule(state, payload) {
             state.activeModule = payload;
+        },
+
+        setScope(state, payload) {
+            state.scope = payload;
         },
 
         setBreadcrumb(state, payload) {

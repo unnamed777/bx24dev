@@ -71,7 +71,7 @@ export default {
             response = await this.request(method, data);
 
             if (response.error) {
-                alert(response.error_description + `(${response.error})`);
+                alert(`${method}: ${response.error_description} (${response.error})`);
                 throw new Error('BX24 Error: ' + response.error_description);
             }
 

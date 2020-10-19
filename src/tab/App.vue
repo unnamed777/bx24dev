@@ -70,10 +70,6 @@ export default {
     watch: {
         $route(newValue) {
             console.log('route changed', newValue);
-
-            if (newValue.name === 'oauth') {
-                this.useOAuthToken();
-            }
         }
     },
 
@@ -81,6 +77,7 @@ export default {
         window.BX24 = BX24;
 
         await this.obtainAuth();
+        await this.loadScope();
 
         if (this.$root.onReadyToRoute) {
             this.$root.onReadyToRoute();
@@ -127,9 +124,16 @@ export default {
             BX24.setAuth(appData.auth);
         },
 
+        async loadScope() {
+            const scope = await BX24.fetch('scope');
+            console.log('App scope', scope);
+            this.setScope(scope);
+        },
+
         ...mapMutations({
             setActiveModule: 'setActiveModule',
-            setActiveAppId: 'setActiveAppId'
+            setActiveAppId: 'setActiveAppId',
+            setScope: 'setScope',
         }),
     },
 

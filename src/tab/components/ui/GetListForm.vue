@@ -1,5 +1,5 @@
 <template>
-<div v-if="fieldsLoaded">
+<div v-if="fieldsLoaded" class="mb-4">
     <div class="row">
         <div class="col-6">
             <div class="mb-2 font-weight-bold">Фильтр</div>
