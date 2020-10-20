@@ -43,6 +43,7 @@
 </div>
 </template>
 <script>
+import browser from 'webextension-polyfill';
 import {mapState, mapMutations} from 'vuex';
 import BX24 from '../lib/BX24';
 //import messageListener from '../lib/MessageListener';

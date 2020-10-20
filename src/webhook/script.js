@@ -1,5 +1,5 @@
 const submit = () => {
-    browser.runtime.sendMessage(null, {
+    (window.browser || chrome).runtime.sendMessage(null, {
         type: 'webhookAuthSubmitUrl',
         payload: document.getElementById('url').value,
     });

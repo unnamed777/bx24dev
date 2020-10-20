@@ -1,6 +1,7 @@
-import messageListener from "lib/MessageListener";
+import messageListener from 'lib/MessageListener';
 import { alert } from 'lib/functions';
 import { getExposedPromise } from 'lib/functions';
+import browser from 'webextension-polyfill';
 
 export default class OAuthProvider {
     constructor({tabId, frameId}) {

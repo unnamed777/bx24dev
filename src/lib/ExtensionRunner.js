@@ -1,9 +1,9 @@
-import BX24 from "./BX24";
-import messageListener from '../lib/MessageListener';
+import messageListener from 'lib/MessageListener';
 import { alert } from 'lib/functions';
 import AppProvider from 'lib/AuthProvider/AppProvider';
 import OAuthProvider from 'lib/AuthProvider/OAuthProvider';
 import WebhookProvider from 'lib/AuthProvider/WebhookProvider';
+import browser from 'webextension-polyfill';
 
 messageListener.init();
 

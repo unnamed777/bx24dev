@@ -1,5 +1,6 @@
-import messageListener from "lib/MessageListener";
+import messageListener from 'lib/MessageListener';
 import { alert, getExposedPromise } from 'lib/functions';
+import browser from 'webextension-polyfill';
 
 export default class WebhookProvider {
     constructor({tabId, frameId}) {
