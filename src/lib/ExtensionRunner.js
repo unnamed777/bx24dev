@@ -55,7 +55,8 @@ export default class ExtensionRunner {
 
         this.provider = new (this.constructor.providers[this.pageType])({
             tabId: this.tabId,
-            frameId: this.frameId
+            frameId: this.frameId,
+            instanceId: this.id,
         });
 
         try {
@@ -64,6 +65,8 @@ export default class ExtensionRunner {
             alert(ex.toString());
             return;
         }
+
+        console.log('auth', this.auth);
 
         if (!this.auth) {
             alert('Авторизация не была получена');
@@ -153,6 +156,8 @@ export default class ExtensionRunner {
         if (!sender.tab || sender.tab.id !== this.extensionTab.id) {
             return;
         }
+
+        console.log('onExtensionRefreshAuth', message, sender);
 
         try {
             this.auth = await this.provider.refresh();

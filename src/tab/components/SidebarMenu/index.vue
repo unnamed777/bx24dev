@@ -178,7 +178,7 @@ export default {
             },
             {
                 id: 'placements',
-                label: 'Placement',
+                label: 'Встраивание приложений',
                 children: [
                     {
                         label: 'Список',

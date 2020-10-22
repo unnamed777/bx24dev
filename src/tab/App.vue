@@ -118,11 +118,11 @@ export default {
 
         async refreshAuth() {
             let appData = await browser.runtime.sendMessage({
-                type: 'getAppData',
+                type: 'refreshAuth',
             });
 
             console.log('appData from background', appData);
-            BX24.setAuth(appData.auth);
+            BX24.setAuth(appData.authType, appData.auth);
         },
 
         async loadScope() {

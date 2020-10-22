@@ -8,6 +8,7 @@ export default {
     },
 
     onMessage(message, sender, sendResponse) {
+        console.log('onMessage', message, sender);
         if (message.type) {
             this.notify(message, sender, sendResponse);
         }
@@ -22,11 +23,20 @@ export default {
         return this.subscribers[type].length - 1;
     },
 
+    unsubscribe(type, id) {
+        if (!this.subscribers[type]) {
+            return;
+        }
+
+        delete(this.subscribers[type][id]);
+    },
+
     notify({type, payload}, sender, sendResponse) {
         if (!this.subscribers[type]) {
             return;
         }
 
+        console.log('notify', type, this.subscribers[type]);
         this.subscribers[type].forEach(func => func({type, payload}, sender, sendResponse));
     }
 };

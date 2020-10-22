@@ -34,7 +34,7 @@ export default {
     methods: {
         async prepareData() {
             this.items = await BX24.fetch('placement.list');
-            this.setBreadcrumb(['Placement', 'Места']);
+            this.setBreadcrumb(['Встраивание приложений', 'Места']);
         },
 
         ...mapMutations({

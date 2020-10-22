@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 export function getExposedPromise() {
     let exportResolve, exportReject;
 
