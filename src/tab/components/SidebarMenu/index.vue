@@ -11,7 +11,6 @@
 </template>
 
 <script>
-import Entity from 'lib/entities/Entity/Entity';
 import {mapState, mapActions} from 'vuex';
 import SidebarMenuItem from './Item.vue';
 
@@ -30,10 +29,10 @@ export default {
                 label: 'test',
                 action: this.testCall,
             },*/
-            {
+            /*{
                 label: 'Refresh auth',
                 action: this.actions.refreshAuth,
-            },
+            },*/
             {
                 id: 'entities',
                 label: 'Хранилище',
@@ -190,6 +189,11 @@ export default {
                     },
                 ]
             },
+            {
+                id: 'info',
+                label: 'Информация',
+                route: this.getPath('info'),
+            },
         ];
 
         items.map(item => item.hidden = false);
@@ -244,7 +248,6 @@ export default {
 
     watch: {
         items() {
-            console.log('items changed');
         },
 
         entities() {
@@ -281,16 +284,19 @@ export default {
             }
 
             parents = parents.reverse();
-            console.log('Expand menu', parents);
-            let menuItem = this.$refs[`item_${parents[0]}`][0];
+            //console.log('Expand menu', parents);
 
-            for (let i = 1; i <= parents.length; i++) {
-                console.log('current item', menuItem, parents[i - 1]);
-                menuItem.toggle(true);
-                console.log('Get next parent', parents[i]);
+            if (parents.length > 0) {
+                let menuItem = this.$refs[`item_${parents[0]}`][0];
 
-                if (i !== parents.length) {
-                    menuItem = menuItem.$refs[`item_${parents[i]}`][0];
+                for (let i = 1; i <= parents.length; i++) {
+                    // console.log('current item', menuItem, parents[i - 1]);
+                    menuItem.toggle(true);
+                    // console.log('Get next parent', parents[i]);
+
+                    if (i !== parents.length) {
+                        menuItem = menuItem.$refs[`item_${parents[i]}`][0];
+                    }
                 }
             }
         }

@@ -31,6 +31,7 @@ import DepartmentList from 'components/modules/User/DepartmentList.vue';
 import EventList from 'components/modules/Event/EventList.vue';
 import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
+import Info from 'components/modules/Info/Info.vue';
 
 export default [
     {
@@ -197,5 +198,10 @@ export default [
         path: '/placement/types',
         name: 'placementTypes',
         component: PlacementTypes,
+    },
+    {
+        path: '/info',
+        name: 'info',
+        component: Info,
     },
 ]

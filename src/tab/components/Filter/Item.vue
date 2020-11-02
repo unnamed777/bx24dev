@@ -57,8 +57,6 @@ export default {
             default: () => { return {}; },
         },
         item: Object,
-        // @todo Move to a Store
-        users: Array,
     },
 
     data() {

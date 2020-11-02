@@ -8,7 +8,6 @@ export default {
     },
 
     onMessage(message, sender, sendResponse) {
-        console.log('onMessage', message, sender);
         if (message.type) {
             this.notify(message, sender, sendResponse);
         }
@@ -36,7 +35,6 @@ export default {
             return;
         }
 
-        console.log('notify', type, this.subscribers[type]);
         this.subscribers[type].forEach(func => func({type, payload}, sender, sendResponse));
     }
 };

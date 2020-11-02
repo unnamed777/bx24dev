@@ -66,7 +66,7 @@ export default class ExtensionRunner {
             return;
         }
 
-        console.log('auth', this.auth);
+        console.log('Auth from provider', this.auth);
 
         if (!this.auth) {
             alert('Авторизация не была получена');

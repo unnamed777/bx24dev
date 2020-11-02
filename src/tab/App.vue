@@ -46,9 +46,7 @@
 import browser from 'webextension-polyfill';
 import {mapState, mapMutations} from 'vuex';
 import BX24 from '../lib/BX24';
-//import messageListener from '../lib/MessageListener';
 import SidebarMenu from './components/SidebarMenu/index.vue';
-import testOauthApp from '../../.secret.js';
 
 export default {
     components: {

@@ -5,7 +5,6 @@
         v-model="filter[index]"
         :fields="fields"
         :key="index"
-        :users="users"
     />
 </form>
 </template>

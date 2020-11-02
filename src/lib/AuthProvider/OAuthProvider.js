@@ -44,7 +44,7 @@ export default class OAuthProvider {
             result = (await browser.tabs.executeScript(this.tabId, {
                 frameId: this.frameId,
                 code: `(function () {
-                    let appName = document.querySelector('#pagetitle').innerHTML.trim();
+                    let appName = document.querySelector('#pagetitle .ui-side-panel-wrap-title-name').innerHTML.trim();
                     let appUrl = document.querySelector('input[name="APPLICATION_URL_HANDLER"]').value;
                     let clientId = document.querySelector('input[name="APPLICATION_DATA_CLIENT_ID"]').value;
                     let clientSecret = document.querySelector('input[name="APPLICATION_DATA_CLIENT_SECRET"]').value;
@@ -89,6 +89,7 @@ export default class OAuthProvider {
         browser.tabs.update(authTab.id, { url: authUrl });
 
         // Wait here till authorization is provided
+        /** @var {String} */
         const redirectUrl = await promise;
 
         await browser.tabs.update(this.tabId, { active: true });
