@@ -101,6 +101,12 @@ export default {
                 portal: appData.portal,
             });
 
+            this.setAppData({
+                title: appData.title,
+                appUrl: appData.appUrl,
+                portal: appData.portal,
+            });
+
             this.setActiveAppId(this.apps.length - 1);
         },
 
@@ -132,6 +138,7 @@ export default {
         ...mapMutations({
             setActiveModule: 'setActiveModule',
             setActiveAppId: 'setActiveAppId',
+            setAppData: 'setAppData',
             setScope: 'setScope',
         }),
     },

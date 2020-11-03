@@ -12,6 +12,12 @@
                 :enums="rawFields[item.code].items"
             />
         </template>
+
+        <template v-slot:b24Edit="{ item, column }">
+            <template v-if="item.b24Edit">
+                <a :href="item.b24Edit" target="_blank">⬀</a>
+            </template>
+        </template>
     </TableList>
 </template>
 
@@ -29,10 +35,23 @@ export default {
 
     computed: {
         tableData() {
-            return prepareCrmEntityFields(this.rawFields);
+            let tableData = prepareCrmEntityFields(this.rawFields);
+
+            tableData.columns.push({
+                code: 'b24Edit',
+                label: 'B Б24',
+            });
+
+            tableData.items.forEach(item => item.b24Edit = item.code.substr(0, 3) === 'UF_' ? `https://${this.appData.portal}/crm/configs/fields/CRM_DEAL/edit/${item.code}/` : null);
+
+            return tableData;
         },
+
         ...mapState('dealFields', {
             rawFields: state => state.items
+        }),
+        ...mapState({
+            appData: state => state.appData,
         }),
     },
 

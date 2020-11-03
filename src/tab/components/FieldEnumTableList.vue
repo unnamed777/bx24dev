@@ -30,6 +30,7 @@ export default {
 
     td {
         padding: 0.15rem;
+        white-space: normal;
     }
 }
 </style>

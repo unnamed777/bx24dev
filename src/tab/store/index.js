@@ -25,11 +25,17 @@ const store = new Vuex.Store({
         activeModule: null,
         breadcrumb: [],
         scope: [],
+        appData: {},
     },
 
     mutations: {
+        // @todo get rid
         setActiveAppId(state, payload) {
             state.activeAppId = payload;
+        },
+
+        setAppData(state, payload) {
+            state.appData = payload;
         },
 
         setActiveModule(state, payload) {
