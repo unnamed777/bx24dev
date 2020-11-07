@@ -3,7 +3,7 @@
         <table class="table table-sm table-hover">
             <thead>
                 <tr>
-                    <th v-if="rowActions" class="action-cell"></th>
+                    <th v-if="rowActions" class="header-column"></th>
                     <th
                         v-for="column in columns" v-bind:title="column.code"
                         class="header-column"
@@ -21,7 +21,18 @@
                 <tr v-for="(item, index) in itemsSorted" :key="index">
                     <th v-if="rowActions" class="action-cell">
                         <div class="position-relative">
-                            <span class="table-row-action-trigger" data-toggle="dropdown" @click="toggleRowMenu(index)"><MenuIcon class="table-row-action-trigger__icon" /></span>
+                            <span
+                                v-if="showActionsForRow === undefined || showActionsForRow({row: item, index}) === true"
+                                class="table-row-action-trigger"
+                                data-toggle="dropdown"
+                                @click="toggleRowMenu(index)"
+                            >
+                                <MenuIcon class="table-row-action-trigger__icon" />
+                            </span>
+                            <span v-else class="table-row-action-trigger table-row-action-trigger--disabled">
+                                <MenuIcon class="table-row-action-trigger__icon" />
+                            </span>
+
                             <div v-if="activeRowMenuIndex === index" class="dropdown-menu">
                                 <button
                                     v-for="action of rowActions"
@@ -77,6 +88,8 @@ export default {
 
         // Example: { label: 'Удалить', onClick: this.onDeleteClick },
         rowActions: Array,
+
+        showActionsForRow: Function,
     },
 
     data() {
@@ -157,6 +170,11 @@ table thead th {
 
     &__icon {
         width: 16px;
+    }
+
+    &--disabled {
+        opacity: 0.2;
+        cursor: default;
     }
 }
 

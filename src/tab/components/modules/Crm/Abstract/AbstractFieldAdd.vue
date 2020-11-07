@@ -18,14 +18,34 @@
 
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
-//import Entity from 'lib/entities/Entity/Entity';
 import BX24 from 'lib/BX24';
 import Form from 'components/ui/Form.vue';
 
 export default {
     components: {
         Form,
-        //TableList,
+    },
+
+    props: {
+        breadcrumb: {
+            type: Array,
+            required: true,
+        },
+
+        addEndpoint: {
+            type: String,
+            required: true
+        },
+
+        reloadFieldsAction: {
+            type: String,
+            required: true,
+        },
+
+        listRoute: {
+            type: String,
+            required: true,
+        },
     },
 
     data() {
@@ -95,7 +115,7 @@ export default {
     },
 
     async mounted() {
-        this.setBreadcrumb(['CRM', 'Лид', 'Поля', 'Добавить']);
+        this.setBreadcrumb(this.breadcrumb);
     },
 
     methods: {
@@ -103,7 +123,7 @@ export default {
             let result;
 
             try {
-                result = await BX24.call('crm.invoice.userfield.add', {
+                result = await BX24.call(this.addEndpoint, {
                     fields: this.formData,
                 });
             } catch (ex) {
@@ -115,16 +135,12 @@ export default {
                 return;
             }
 
-            await this.reloadFields();
-            this.$router.push({name: 'crmInvoiceFields'});
+            await this.$store.dispatch(this.reloadFieldsAction);
+            await this.$router.push({ name: this.listRoute });
         },
 
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
-        }),
-
-        ...mapActions({
-            reloadFields: 'invoiceFields/reload',
         }),
     }
 };

@@ -1,18 +1,21 @@
 import IndexPage from 'components/IndexPage';
 import CrmDealList from 'components/modules/Crm/Deal/DealList.vue';
-import CrmDealFields from 'components/modules/Crm/Deal/DealFields.vue';
+import CrmDealFields from 'components/modules/Crm/Deal/DealFields';
+import CrmDealFieldAdd from 'components/modules/Crm/Deal/DealFieldAdd';
 import CrmDealStages from 'components/modules/Crm/Deal/DealStages.vue';
 import CrmLeadList from 'components/modules/Crm/Lead/LeadList.vue';
-import CrmLeadFields from 'components/modules/Crm/Lead/LeadFields.vue';
-import CrmLeadFieldAdd from 'components/modules/Crm/Lead/LeadFieldAdd.vue';
+import CrmLeadFields from 'components/modules/Crm/Lead/LeadFields';
+import CrmLeadFieldAdd from 'components/modules/Crm/Lead/LeadFieldAdd';
 import CrmLeadStatuses from 'components/modules/Crm/Lead/LeadStatuses.vue';
 import CrmCompanyList from 'components/modules/Crm/Company/CompanyList.vue';
-import CrmCompanyFields from 'components/modules/Crm/Company/CompanyFields.vue';
+import CrmCompanyFields from 'components/modules/Crm/Company/CompanyFields';
+import CrmCompanyFieldAdd from 'components/modules/Crm/Company/CompanyFieldAdd';
 import CrmContactList from 'components/modules/Crm/Contact/ContactList.vue';
-import CrmContactFields from 'components/modules/Crm/Contact/ContactFields.vue';
+import CrmContactFields from 'components/modules/Crm/Contact/ContactFields';
+import CrmContactFieldAdd from 'components/modules/Crm/Contact/ContactFieldAdd';
 import CrmInvoiceList from 'components/modules/Crm/Invoice/InvoiceList.vue';
-import CrmInvoiceFields from 'components/modules/Crm/Invoice/InvoiceFields.vue';
-import CrmInvoiceFieldAdd from 'components/modules/Crm/Invoice/InvoiceFieldAdd.vue';
+import CrmInvoiceFields from 'components/modules/Crm/Invoice/InvoiceFields';
+import CrmInvoiceFieldAdd from 'components/modules/Crm/Invoice/InvoiceFieldAdd';
 import CrmInvoiceStatuses from 'components/modules/Crm/Invoice/InvoiceStatuses.vue';
 import CrmActivityList from 'components/modules/Crm/Activity/ActivityList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
@@ -43,6 +46,11 @@ export default [
         path: '/crm/deal/fields',
         name: 'crmDealFields',
         component: CrmDealFields,
+    },
+    {
+        path: '/crm/deal/fields/add',
+        name: 'crmDealFieldAdd',
+        component: CrmDealFieldAdd,
     },
     {
         path: '/crm/deal/list',
@@ -80,6 +88,11 @@ export default [
         component: CrmCompanyFields,
     },
     {
+        path: '/crm/company/fields/add',
+        name: 'crmCompanyFieldAdd',
+        component: CrmCompanyFieldAdd,
+    },
+    {
         path: '/crm/company/list',
         name: 'crmCompanyList',
         component: CrmCompanyList,
@@ -88,6 +101,11 @@ export default [
         path: '/crm/contact/fields',
         name: 'crmContactFields',
         component: CrmContactFields,
+    },
+    {
+        path: '/crm/contact/fields/add',
+        name: 'crmContactFieldAdd',
+        component: CrmContactFieldAdd,
     },
     {
         path: '/crm/contact/list',
