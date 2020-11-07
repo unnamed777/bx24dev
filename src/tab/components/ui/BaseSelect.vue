@@ -1,5 +1,5 @@
 <template>
-    <select class="form-control form-control-sm" v-model="currentValue">
+    <select ref="select" class="form-control form-control-sm" v-model="currentValue">
         <option v-for="option of currentOptions" :value="option.value">{{ option.label }}</option>
     </select>
     <!--<v-select :options="currentOptions" v-model="currentValue"/>-->
@@ -16,20 +16,19 @@ export default {
         options: [Object, Array],
         value: [String, Number],
         extra: Object,
+        search: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     computed: {
         currentOptions() {
             if (this.options) {
-                return this.convertValues(this.options);
-            } else if (this.extra && this.extra.options) {
-                return this.convertValues(this.extra.options);
-            }
-            /*if (this.options) {
                 return this.options;
             } else if (this.extra && this.extra.options) {
                 return this.extra.options;
-            }*/
+            }
         },
 
         currentValue: {
@@ -43,20 +42,24 @@ export default {
         }
     },
 
-    methods: {
-        convertValues(values) {
-            return values;
-            const newValues = [];
+    mounted() {
+        $(this.$refs['select'])
+            .select2({
+                dropdownAutoWidth: true,
+                minimumResultsForSearch: this.search ? 0 : Infinity,
+                //width: 'auto',
+            })
+            .on('change', (e) => this.$emit('change', $(e.currentTarget).val()));
 
-            for (let item of Object.values(values)) {
-                newValues.push({
-                    code: item.value,
-                    label: item.label,
-                });
-            }
-
-            return newValues;
+        // Fix: when click on select to open dropdown, search input loses focus after mouseup event
+        if (this.search) {
+            $(this.$refs['select']).on('select2:open', (e) => {
+                setTimeout(() => $(e.currentTarget).data('select2').$dropdown.find('.select2-search__field').focus(), 500);
+            });
         }
+    },
+
+    methods: {
     },
 }
 </script>

@@ -2,7 +2,11 @@
 <div class="filter-item form-group row">
     <label class="col-6">
         <template>
-            <BaseSelect :options="fieldsSorted" v-model="code" />
+            <BaseSelect
+                :options="fieldsSorted"
+                :search="true"
+                v-model="code"
+            />
         </template>
         <!--<template v-else>
             <a href="#" v-on:click.prevent="editMode = true">{{ fields[code].label }}</a>

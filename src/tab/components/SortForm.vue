@@ -3,6 +3,7 @@
     <label class="col-6">
         <BaseSelect
             :options="availableFields"
+            :search="true"
             v-model="field"
         />
     </label>

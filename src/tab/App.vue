@@ -247,5 +247,34 @@ body {
     background-color: #eff1f2;
     border-color: #eff1f2;
 }
+
+// select2 default theme
+.select2, .select2-dropdown {
+    font-size: 14px;
+    line-height: 1.3em;
+}
+
+.select2-container {
+    &--default .select2-selection--single {
+        height: 31px;
+        border-radius: 0.2rem;
+
+        .select2-selection__arrow {
+            height: 30px;
+        }
+
+        // Disable left border radius if select is in group (ex. filter values)
+        .input-group & {
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
+    }
+
+    &--open .select2-dropdown--below {
+        border-top: 1px solid #aaa;
+        margin-top: -1px;
+    }
+}
+
 //@import "vue-select/src/scss/vue-select.scss";
 </style>
