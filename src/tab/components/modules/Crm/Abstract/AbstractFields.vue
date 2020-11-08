@@ -40,7 +40,7 @@ import {mapState, mapActions, mapMutations} from 'vuex';
 import TableList from 'components/TableList/BaseTableList.vue';
 import FieldEnumTableList from 'components/FieldEnumTableList.vue';
 import {prepareCrmEntityFields} from 'lib/functions';
-import EntityProperty from "lib/entities/Entity/Property";
+import BX24 from "lib/BX24";
 
 export default {
     components: {
@@ -55,6 +55,9 @@ export default {
         rawFields: Object,
         addFieldRoute: String,
         editFieldRoute: String,
+        deleteEndpoint: String,
+        listEndpoint: String,
+        reloadFieldsAction: String,
     },
 
     data() {
@@ -73,6 +76,7 @@ export default {
                     onClick: this.onDeleteClick,
                 },
             ],
+            userFields: {},
         };
     },
 
@@ -88,10 +92,22 @@ export default {
 
     async mounted() {
         await this.load();
+        await this.loadUserFields();
         this.setBreadcrumb(this.breadcrumb);
     },
 
     methods: {
+        async loadUserFields() {
+            let result = await BX24.fetch(this.listEndpoint);
+            const userFields = {};
+
+            for (let field of result) {
+                userFields[field.FIELD_NAME] = field;
+            }
+
+            this.userFields = userFields;
+        },
+
         showActionsForRow({row, index}) {
             return row.code.substr(0, 3) === 'UF_';
         },
@@ -110,16 +126,28 @@ export default {
         },
 
         async onDeleteClick({row, index}) {
-            if (!confirm(`Удалить поле ${row.PROPERTY}?`)) {
+            const userField = this.userFields[row.code];
+
+            if (!confirm(`Удалить поле ${userField.FIELD_NAME}?`)) {
                 return;
             }
 
-            /*await EntityProperty.delete({
-                ENTITY: this.entity.ENTITY,
-                PROPERTY: row.PROPERTY,
-            });
+            let result;
 
-            this.fillProperties();*/
+            try {
+                result = await BX24.call(this.deleteEndpoint, {
+                    id: userField.ID,
+                });
+            } catch (ex) {
+                console.error(ex);
+                alert(ex.toString());
+            }
+
+            if (!result) {
+                return;
+            }
+
+            await this.$store.dispatch(this.reloadFieldsAction);
         },
 
         ...mapMutations({

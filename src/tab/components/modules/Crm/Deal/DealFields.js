@@ -1,4 +1,5 @@
 import AbstractFields from 'components/modules/Crm/Abstract/AbstractFields.vue';
+import DealUserField from "lib/entities/Crm/DealUserField";
 
 export default {
     name: 'DealFields',
@@ -11,6 +12,9 @@ export default {
                 b24EditEntity: 'CRM_DEAL',
                 rawFields: this.$store.state.dealFields.items,
                 addFieldRoute: 'crmDealFieldAdd',
+                listEndpoint: DealUserField.listEndpoint,
+                deleteEndpoint: DealUserField.deleteEndpoint,
+                reloadFieldsAction: 'dealFields/reload',
             },
         });
     },

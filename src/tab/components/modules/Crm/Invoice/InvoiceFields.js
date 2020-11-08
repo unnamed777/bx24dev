@@ -1,4 +1,5 @@
 import AbstractFields from 'components/modules/Crm/Abstract/AbstractFields.vue';
+import InvoiceUserField from "lib/entities/Crm/InvoiceUserField";
 
 export default {
     name: 'InvoiceFields',
@@ -11,6 +12,9 @@ export default {
                 b24EditEntity: 'CRM_INVOICE',
                 rawFields: this.$store.state.invoiceFields.items,
                 addFieldRoute: 'crmInvoiceFieldAdd',
+                listEndpoint: InvoiceUserField.listEndpoint,
+                deleteEndpoint: InvoiceUserField.deleteEndpoint,
+                reloadFieldsAction: 'invoiceFields/reload',
             },
         });
     },

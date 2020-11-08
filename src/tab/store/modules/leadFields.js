@@ -1,6 +1,5 @@
 import Lead from 'lib/entities/Crm/Lead';
 import mixin from './cachedItemsLoaderMixin';
-import Deal from "../../../lib/entities/Crm/Deal";
 
 export default {
     namespaced: true,
@@ -18,7 +17,7 @@ export default {
         ...mixin.actions,
 
         forceLoad: mixin.helpers.makeForceLoad(() => {
-            return Lead.getFields();
+            return Lead.getFields({ reload: true });
         }),
     }
 };

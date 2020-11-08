@@ -161,8 +161,8 @@ export default class AbstractEntry {
      * Fetches entity fields, transforms a bit for convenience and caches
      * @returns {Promise<Object>}
      */
-    static async getFields() {
-        if (this.rawFields) {
+    static async getFields({ reload = false } = {}) {
+        if (this.rawFields && reload === false) {
             return { ...this.rawFields };
         }
 

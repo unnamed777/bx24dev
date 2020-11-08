@@ -258,6 +258,7 @@ body {
     &--default .select2-selection--single {
         height: 31px;
         border-radius: 0.2rem;
+        border: 1px solid #ced4da;
 
         .select2-selection__arrow {
             height: 30px;
@@ -270,8 +271,12 @@ body {
         }
     }
 
+    &--open .select2-selection--single {
+        border-color: #000000;
+    }
+
     &--open .select2-dropdown--below {
-        border-top: 1px solid #aaa;
+        border: 1px solid #000;
         margin-top: -1px;
     }
 }

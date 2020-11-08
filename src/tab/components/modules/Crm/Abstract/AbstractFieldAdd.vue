@@ -50,7 +50,14 @@ export default {
 
     data() {
         return {
-            formData: {},
+            formData: {
+                MANDATORY: 'N',
+                MULTIPLE: 'N',
+                SORT: 100,
+                SHOW_IN_LIST: 'Y',
+                SHOW_FILTER: 'Y',
+                EDIT_IN_LIST: 'Y',
+            },
             form: {
                 fields: [
                     {
@@ -67,8 +74,12 @@ export default {
                         label: 'Название в списке',
                     },
                     {
+                        code: 'LIST_FILTER_LABEL',
+                        label: 'Название в фильтре',
+                    },
+                    {
                         code: 'XML_ID',
-                        label: 'XML ID',
+                        label: 'XML_ID',
                     },
                     {
                         code: 'USER_TYPE_ID',
@@ -104,6 +115,33 @@ export default {
                     {
                         code: 'SORT',
                         label: 'Сортировка',
+                    },
+                    {
+                        code: 'SHOW_IN_LIST',
+                        type: 'enumeration',
+                        label: 'Показывать в списке',
+                        items: [
+                            { ID: 'Y', VALUE: 'Да' },
+                            { ID: 'N', VALUE: 'Нет' },
+                        ],
+                    },
+                    {
+                        code: 'SHOW_FILTER',
+                        type: 'enumeration',
+                        label: 'Показывать в фильтре',
+                        items: [
+                            { ID: 'Y', VALUE: 'Да' },
+                            { ID: 'N', VALUE: 'Нет' },
+                        ],
+                    },
+                    {
+                        code: 'EDIT_IN_LIST',
+                        type: 'enumeration',
+                        label: 'Разрешить редактирование пользователем',
+                        items: [
+                            { ID: 'Y', VALUE: 'Да' },
+                            { ID: 'N', VALUE: 'Нет' },
+                        ],
                     },
                 ],
                 ui: {

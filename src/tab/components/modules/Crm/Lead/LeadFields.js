@@ -1,4 +1,5 @@
 import AbstractFields from 'components/modules/Crm/Abstract/AbstractFields.vue';
+import LeadUserField from 'lib/entities/Crm/LeadUserField';
 
 export default {
     name: 'LeadFields',
@@ -11,6 +12,9 @@ export default {
                 b24EditEntity: 'CRM_LEAD',
                 rawFields: this.$store.state.leadFields.items,
                 addFieldRoute: 'crmLeadFieldAdd',
+                listEndpoint: LeadUserField.listEndpoint,
+                deleteEndpoint: LeadUserField.deleteEndpoint,
+                reloadFieldsAction: 'leadFields/reload',
             },
         });
     },

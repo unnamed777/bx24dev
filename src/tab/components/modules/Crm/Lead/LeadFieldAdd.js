@@ -8,7 +8,7 @@ export default {
             props: {
                 breadcrumb: ['CRM', 'Лиды', 'Поля', 'Добавить'],
                 addEndpoint: 'crm.lead.userfield.add',
-                reloadFieldsAction: 'leadFields/forceLoad',
+                reloadFieldsAction: 'leadFields/reload',
                 listRoute: 'crmLeadFields',
             },
         });

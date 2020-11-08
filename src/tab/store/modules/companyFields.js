@@ -17,7 +17,7 @@ export default {
         ...mixin.actions,
 
         forceLoad: mixin.helpers.makeForceLoad(() => {
-            return Company.getFields();
+            return Company.getFields({ reload: true });
         }),
     }
 };
