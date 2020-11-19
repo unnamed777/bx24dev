@@ -1,17 +1,19 @@
 <template>
 <div class="filter-item form-group row">
-    <label class="col-6">
+    <!-- Don't use <label>, it has an issue with focus on select2 search input -->
+    <div class="col-6 mb-2">
         <template>
             <BaseSelect
                 :options="fieldsSorted"
                 :search="true"
+                :optionTemplate="optionFieldSelect2Template"
                 v-model="code"
             />
         </template>
         <!--<template v-else>
             <a href="#" v-on:click.prevent="editMode = true">{{ fields[code].label }}</a>
         </template>-->
-    </label>
+    </div>
     <div class="col-6 position-relative">
         <template v-if="code">
             <component
@@ -40,6 +42,7 @@ import DefaultValue from './DefaultValue.vue';
 import EnumValue from './EnumValue.vue';
 import UserValue from './UserValue.vue';
 import CrmStatusValue from './CrmStatusValue.vue';
+import optionFieldSelect2TemplateMixin from 'mixins/optionFieldSelect2TemplateMixin';
 
 export default {
     components: {
@@ -49,6 +52,10 @@ export default {
         CrmStatusValue,
         BaseSelect,
     },
+
+    mixins: [
+        optionFieldSelect2TemplateMixin
+    ],
 
     model: {
         prop: 'item',
@@ -66,7 +73,7 @@ export default {
     data() {
         return {
             code: null,
-            values: [{operator: '', value: null}]
+            values: [{operator: '', value: null}],
         };
     },
 
@@ -76,6 +83,7 @@ export default {
                 sort((a, b) => a.sort - b.sort)
                 .map((item) => ({
                     value: item.code,
+                    name: item.label,
                     label: `${item.label} (${item.code})`,
                 }));
         },
@@ -156,9 +164,27 @@ export default {
             this.values.push({operator: '', value: null});
         },
 
+        jQuery() {
+            return window.jQuery.apply(window.jQuery, arguments);
+        },
+
         /*...mapGetters({
             getCrmStatusByEntityId: 'crmStatus/getByEntityId',
         }),*/
     }
 };
 </script>
+
+<style lang="scss">
+.option-field {
+    &__name {
+        margin-top: -1px;
+    }
+
+    &__code {
+        font-size: 80%;
+        line-height: 1em;
+        opacity: 0.7;
+    }
+}
+</style>

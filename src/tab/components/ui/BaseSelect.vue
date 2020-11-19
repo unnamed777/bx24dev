@@ -20,6 +20,7 @@ export default {
             type: Boolean,
             default: false,
         },
+        optionTemplate: Function,
     },
 
     computed: {
@@ -47,16 +48,10 @@ export default {
             .select2({
                 dropdownAutoWidth: true,
                 minimumResultsForSearch: this.search ? 0 : Infinity,
+                templateResult: this.optionTemplate || undefined,
                 //width: 'auto',
             })
             .on('change', (e) => this.$emit('change', $(e.currentTarget).val()));
-
-        // Fix: when click on select to open dropdown, search input loses focus after mouseup event
-        if (this.search) {
-            $(this.$refs['select']).on('select2:open', (e) => {
-                setTimeout(() => $(e.currentTarget).data('select2').$dropdown.find('.select2-search__field').focus(), 500);
-            });
-        }
     },
 
     methods: {

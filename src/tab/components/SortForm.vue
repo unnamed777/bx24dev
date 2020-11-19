@@ -4,6 +4,7 @@
         <BaseSelect
             :options="availableFields"
             :search="true"
+            :optionTemplate="optionFieldSelect2Template"
             v-model="field"
         />
     </label>
@@ -18,11 +19,16 @@
 
 <script>
 import BaseSelect from 'components/ui/BaseSelect.vue';
+import optionFieldSelect2TemplateMixin from "mixins/optionFieldSelect2TemplateMixin";
 
 export default {
     components: {
         BaseSelect,
     },
+
+    mixins: [
+        optionFieldSelect2TemplateMixin
+    ],
 
     props: {
         fields: {
