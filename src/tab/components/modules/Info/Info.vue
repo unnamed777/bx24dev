@@ -43,12 +43,12 @@ export default {
     data() {
         return {
             info: {},
-            methods: [],
         };
     },
 
     computed: mapState({
         scope: state => state.scope,
+        methods: state => state.availableMethods,
     }),
 
     mounted() {
@@ -59,7 +59,6 @@ export default {
         async prepareData() {
             this.setBreadcrumb(['Информация']);
             this.info = await BX24.fetch('app.info');
-            this.methods = await BX24.fetch('methods');
         },
 
         ...mapMutations({

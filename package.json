@@ -1,6 +1,6 @@
 {
   "name": "bx24dev",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Bitrix24 Dev extension",
   "author": "Andrey Neyman <andrey@neyman.tel>",
   "engines": {
@@ -16,6 +16,7 @@
     "watch:dev": "cross-env HMR=true npm run build:dev -- --watch"
   },
   "dependencies": {
+    "json-formatter-js": "^2.3.4",
     "lodash-es": "^4.17.15",
     "qs": "^6.9.1",
     "vue": "^2.6.11",

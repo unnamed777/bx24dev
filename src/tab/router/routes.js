@@ -35,6 +35,7 @@ import EventList from 'components/modules/Event/EventList.vue';
 import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
 import Info from 'components/modules/Info/Info.vue';
+import Console from 'components/modules/Console/Console.vue';
 
 export default [
     {
@@ -221,5 +222,10 @@ export default [
         path: '/info',
         name: 'info',
         component: Info,
+    },
+    {
+        path: '/console',
+        name: 'console',
+        component: Console,
     },
 ]

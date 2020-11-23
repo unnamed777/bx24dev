@@ -76,7 +76,7 @@ export default {
         window.BX24 = BX24;
 
         await this.obtainAuth();
-        await this.loadScope();
+        await this.loadInitialData();
 
         if (this.$root.onReadyToRoute) {
             this.$root.onReadyToRoute();
@@ -129,10 +129,14 @@ export default {
             BX24.setAuth(appData.authType, appData.auth);
         },
 
-        async loadScope() {
+        async loadInitialData() {
+            // @todo make batch
             const scope = await BX24.fetch('scope');
             console.log('App scope', scope);
             this.setScope(scope);
+
+            const methods = await BX24.fetch('methods');
+            this.setAvailableMethods(methods);
         },
 
         ...mapMutations({
@@ -140,6 +144,7 @@ export default {
             setActiveAppId: 'setActiveAppId',
             setAppData: 'setAppData',
             setScope: 'setScope',
+            setAvailableMethods: 'setAvailableMethods',
         }),
     },
 
@@ -161,6 +166,10 @@ body {
 
 .form-control:focus {
     border-color: #000;
+    box-shadow: none !important;
+}
+
+.btn-light {
     box-shadow: none !important;
 }
 
@@ -271,6 +280,10 @@ body {
         }
     }
 
+    .select2-results > .select2-results__options {
+        max-height: 350px;
+    }
+
     &--open .select2-selection--single {
         border-color: #000000;
     }
@@ -281,5 +294,27 @@ body {
     }
 }
 
-//@import "vue-select/src/scss/vue-select.scss";
+body .json-formatter-row {
+    font-size: 14px;
+
+    .json-formatter-key {
+        color: #2E75E0;
+        // color: #B52F24;
+    }
+
+    .json-formatter-boolean {
+        color: #3D8825;
+        // color: #1317C8;
+    }
+
+    .json-formatter-number {
+        color: #3D8825;
+        // color: #1317C8;
+    }
+
+    .json-formatter-string {
+        color: #CB2FA4;
+        // color: #B52F24;
+    }
+}
 </style>

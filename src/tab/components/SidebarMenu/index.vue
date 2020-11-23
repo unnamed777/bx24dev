@@ -190,6 +190,11 @@ export default {
                 ]
             },
             {
+                id: 'console',
+                label: 'Консоль',
+                route: this.getPath('console'),
+            },
+            {
                 id: 'info',
                 label: 'Информация',
                 route: this.getPath('info'),
