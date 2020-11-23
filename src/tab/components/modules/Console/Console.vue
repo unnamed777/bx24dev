@@ -93,6 +93,9 @@ export default {
             });
 
             this.$refs['output_pretty'].appendChild(formatter.render());
+
+            // Reset state after result re-render
+            this.prettyExpanded = true;
         }
     },
 
