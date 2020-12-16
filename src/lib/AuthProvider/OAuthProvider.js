@@ -79,6 +79,8 @@ export default class OAuthProvider {
         let authTab = await browser.tabs.create({
             url: 'about:blank',
             active: true,
+            // Required to inherit cookieStoreId (firefox containers)
+            openerTabId: this.tabId,
         });
 
         browser.webRequest.onBeforeRequest.addListener(this.redirectCallback, {
