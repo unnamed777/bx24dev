@@ -43,6 +43,14 @@ export default {
         }
     },
 
+    watch: {
+        value(newValue) {
+            if ($(this.$refs['select']).hasClass("select2-hidden-accessible")) {
+                setTimeout(() => $(this.$refs['select']).select2(), 10);
+            }
+        }
+    },
+
     mounted() {
         $(this.$refs['select'])
             .select2({

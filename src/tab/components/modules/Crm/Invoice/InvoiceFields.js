@@ -12,6 +12,7 @@ export default {
                 b24EditEntity: 'CRM_INVOICE',
                 rawFields: this.$store.state.invoiceFields.items,
                 addFieldRoute: 'crmInvoiceFieldAdd',
+                editFieldRoute: 'crmInvoiceFieldEdit',
                 listEndpoint: InvoiceUserField.listEndpoint,
                 deleteEndpoint: InvoiceUserField.deleteEndpoint,
                 reloadFieldsAction: 'invoiceFields/reload',

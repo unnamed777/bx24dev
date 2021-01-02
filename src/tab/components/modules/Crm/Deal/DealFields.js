@@ -12,6 +12,7 @@ export default {
                 b24EditEntity: 'CRM_DEAL',
                 rawFields: this.$store.state.dealFields.items,
                 addFieldRoute: 'crmDealFieldAdd',
+                editFieldRoute: 'crmDealFieldEdit',
                 listEndpoint: DealUserField.listEndpoint,
                 deleteEndpoint: DealUserField.deleteEndpoint,
                 reloadFieldsAction: 'dealFields/reload',

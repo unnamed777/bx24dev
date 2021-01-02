@@ -2,20 +2,25 @@ import IndexPage from 'components/IndexPage';
 import CrmDealList from 'components/modules/Crm/Deal/DealList.vue';
 import CrmDealFields from 'components/modules/Crm/Deal/DealFields';
 import CrmDealFieldAdd from 'components/modules/Crm/Deal/DealFieldAdd';
+import CrmDealFieldEdit from 'components/modules/Crm/Deal/DealFieldEdit';
 import CrmDealStages from 'components/modules/Crm/Deal/DealStages.vue';
 import CrmLeadList from 'components/modules/Crm/Lead/LeadList.vue';
 import CrmLeadFields from 'components/modules/Crm/Lead/LeadFields';
 import CrmLeadFieldAdd from 'components/modules/Crm/Lead/LeadFieldAdd';
+import CrmLeadFieldEdit from 'components/modules/Crm/Lead/LeadFieldEdit';
 import CrmLeadStatuses from 'components/modules/Crm/Lead/LeadStatuses.vue';
 import CrmCompanyList from 'components/modules/Crm/Company/CompanyList.vue';
 import CrmCompanyFields from 'components/modules/Crm/Company/CompanyFields';
 import CrmCompanyFieldAdd from 'components/modules/Crm/Company/CompanyFieldAdd';
+import CrmCompanyFieldEdit from 'components/modules/Crm/Company/CompanyFieldEdit';
 import CrmContactList from 'components/modules/Crm/Contact/ContactList.vue';
 import CrmContactFields from 'components/modules/Crm/Contact/ContactFields';
 import CrmContactFieldAdd from 'components/modules/Crm/Contact/ContactFieldAdd';
+import CrmContactFieldEdit from 'components/modules/Crm/Contact/ContactFieldEdit';
 import CrmInvoiceList from 'components/modules/Crm/Invoice/InvoiceList.vue';
 import CrmInvoiceFields from 'components/modules/Crm/Invoice/InvoiceFields';
 import CrmInvoiceFieldAdd from 'components/modules/Crm/Invoice/InvoiceFieldAdd';
+import CrmInvoiceFieldEdit from 'components/modules/Crm/Invoice/InvoiceFieldEdit';
 import CrmInvoiceStatuses from 'components/modules/Crm/Invoice/InvoiceStatuses.vue';
 import CrmActivityList from 'components/modules/Crm/Activity/ActivityList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
@@ -54,6 +59,11 @@ export default [
         component: CrmDealFieldAdd,
     },
     {
+        path: '/crm/deal/fields/edit/:fieldId',
+        name: 'crmDealFieldEdit',
+        component: CrmDealFieldEdit,
+    },
+    {
         path: '/crm/deal/list',
         name: 'crmDealList',
         component: CrmDealList,
@@ -72,6 +82,11 @@ export default [
         path: '/crm/lead/fields/add',
         name: 'crmLeadFieldAdd',
         component: CrmLeadFieldAdd,
+    },
+    {
+        path: '/crm/lead/fields/edit/:fieldId',
+        name: 'crmLeadFieldEdit',
+        component: CrmLeadFieldEdit,
     },
     {
         path: '/crm/lead/list',
@@ -94,6 +109,11 @@ export default [
         component: CrmCompanyFieldAdd,
     },
     {
+        path: '/crm/company/fields/edit/:fieldId',
+        name: 'crmCompanyFieldEdit',
+        component: CrmCompanyFieldEdit,
+    },
+    {
         path: '/crm/company/list',
         name: 'crmCompanyList',
         component: CrmCompanyList,
@@ -109,6 +129,11 @@ export default [
         component: CrmContactFieldAdd,
     },
     {
+        path: '/crm/contact/fields/edit/:fieldId',
+        name: 'crmContactFieldEdit',
+        component: CrmContactFieldEdit,
+    },
+    {
         path: '/crm/contact/list',
         name: 'crmContactList',
         component: CrmContactList,
@@ -122,6 +147,11 @@ export default [
         path: '/crm/invoice/fields/add',
         name: 'crmInvoiceFieldAdd',
         component: CrmInvoiceFieldAdd,
+    },
+    {
+        path: '/crm/invoice/fields/edit/:fieldId',
+        name: 'crmInvoiceFieldEdit',
+        component: CrmInvoiceFieldEdit,
     },
     {
         path: '/crm/invoice/list',

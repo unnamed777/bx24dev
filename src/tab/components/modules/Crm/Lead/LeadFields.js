@@ -12,6 +12,7 @@ export default {
                 b24EditEntity: 'CRM_LEAD',
                 rawFields: this.$store.state.leadFields.items,
                 addFieldRoute: 'crmLeadFieldAdd',
+                editFieldRoute: 'crmLeadFieldEdit',
                 listEndpoint: LeadUserField.listEndpoint,
                 deleteEndpoint: LeadUserField.deleteEndpoint,
                 reloadFieldsAction: 'leadFields/reload',

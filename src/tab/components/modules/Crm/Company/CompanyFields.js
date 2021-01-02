@@ -12,6 +12,7 @@ export default {
                 b24EditEntity: 'CRM_COMPANY',
                 rawFields: this.$store.state.companyFields.items,
                 addFieldRoute: 'crmCompanyFieldAdd',
+                editFieldRoute: 'crmCompanyFieldEdit',
                 listEndpoint: CompanyUserField.listEndpoint,
                 deleteEndpoint: CompanyUserField.deleteEndpoint,
                 reloadFieldsAction: 'companyFields/reload',

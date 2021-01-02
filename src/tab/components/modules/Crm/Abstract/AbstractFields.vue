@@ -113,10 +113,12 @@ export default {
         },
 
         onChangeClick({row, index}) {
+            const userField = this.userFields[row.code];
+
             this.$router.push({
                 name: this.editFieldRoute,
                 params: {
-                    code: row.CODE,
+                    fieldId: userField.ID,
                 },
             });
         },

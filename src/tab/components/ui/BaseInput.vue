@@ -1,5 +1,10 @@
 <template>
-<input type="text" class="form-control form-control-sm" v-model="currentValue">
+<input
+    type="text"
+    class="form-control form-control-sm"
+    :readonly="readOnly"
+    v-model="currentValue"
+/>
 </template>
 
 <script>
@@ -11,9 +16,14 @@ export default {
 
     props: {
         value: [String, Number],
+        field: Object,
     },
 
     computed: {
+        readOnly() {
+            return this.field && this.field.readOnly === true;
+        },
+
         currentValue: {
             get() {
                 return this.value;

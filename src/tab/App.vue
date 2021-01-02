@@ -67,9 +67,9 @@ export default {
     }),
 
     watch: {
-        $route(newValue) {
+        /*$route(newValue) {
             console.log('route changed', newValue);
-        }
+        }*/
     },
 
     async mounted() {
