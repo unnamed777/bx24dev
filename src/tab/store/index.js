@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from 'vuex';
 import router from '../router';
+import fieldTypes from './fieldTypes';
 import dealFields from "./modules/dealFields";
 import dealStages from "./modules/dealStages";
 import leadFields from "./modules/leadFields";
@@ -11,11 +12,14 @@ import invoiceFields from "./modules/invoiceFields";
 import invoiceStatuses from "./modules/invoiceStatuses";
 import activityFields from "./modules/activityFields";
 import activityOwnerTypes from "./modules/activityOwnerTypes";
+import catalogFields from "./modules/catalogFields";
+import productSectionFields from "./modules/productSectionFields";
+import productFields from "./modules/productFields";
 import crmStatuses from "./modules/crmStatuses";
 import entities from "./modules/entities";
 import entityProperties from "./modules/entityProperties";
 import users from "./modules/users";
-import fieldTypes from './fieldTypes';
+import orderFields from "./modules/orderFields";
 
 Vue.use(Vuex);
 
@@ -82,11 +86,15 @@ const store = new Vuex.Store({
         invoiceStatuses,
         activityFields,
         activityOwnerTypes,
+        catalogFields,
+        productSectionFields,
+        productFields,
         crmStatuses,
         entities,
         entityProperties,
         users,
         fieldTypes,
+        orderFields,
     }
 });
 

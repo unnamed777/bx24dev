@@ -72,7 +72,7 @@ export function prepareCrmEntityFields(crmFields) {
  * @returns {String}
  */
 export function getFieldLabel(field) {
-    return field.formLabel || field.title;
+    return field.formLabel || field.title || field.code;
 }
 
 export function alert(message) {

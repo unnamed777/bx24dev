@@ -44,8 +44,17 @@ export default {
         let returnResult;
 
         if (options.total) {
+            let resultItems;
+
+            if (options.getter) {
+                // Sale module is "special" one
+                resultItems = options.getter(response);
+            } else {
+                resultItems = response.result;
+            }
+
             returnResult = {
-                entries: response.result,
+                entries: resultItems,
                 total: response.total,
             };
         } else {
@@ -73,6 +82,15 @@ export default {
             if (response.error) {
                 alert(`${method}: ${response.error_description} (${response.error})`);
                 throw new Error('BX24 Error: ' + response.error_description);
+            }
+
+            let currentStepItems;
+
+            if (options.getter) {
+                // Sale module is "special" one
+                currentStepItems = options.getter(response);
+            } else {
+                currentStepItems = response.result;
             }
 
             items = items.concat(response.result);

@@ -137,6 +137,18 @@ export default {
                         ]
                     },
                     {
+                        label: 'Каталоги',
+                        route: this.getPath('crmCatalogList'),
+                    },
+                    {
+                        label: 'Разделы',
+                        route: this.getPath('crmProductSectionList'),
+                    },
+                    {
+                        label: 'Товары',
+                        route: this.getPath('crmProductList'),
+                    },
+                    {
                         label: 'Справочники',
                         children: [
                             {
@@ -152,6 +164,16 @@ export default {
                                 route: this.getPath('crmIndustries'),
                             },
                         ]
+                    },
+                ]
+            },
+            {
+                id: 'sale',
+                label: 'Интернет-магазин',
+                children: [
+                    {
+                        label: 'Заказы',
+                        route: this.getPath('saleOrderList'),
                     },
                 ]
             },
@@ -265,6 +287,7 @@ export default {
                 'users': 'user',
                 'events': 'event',
                 'placements': 'placement',
+                'sale': 'sale',
             };
 
             for (let [itemId, scopeCode] of Object.entries(itemToScope)) {

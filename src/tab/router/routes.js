@@ -23,6 +23,9 @@ import CrmInvoiceFieldAdd from 'components/modules/Crm/Invoice/InvoiceFieldAdd';
 import CrmInvoiceFieldEdit from 'components/modules/Crm/Invoice/InvoiceFieldEdit';
 import CrmInvoiceStatuses from 'components/modules/Crm/Invoice/InvoiceStatuses.vue';
 import CrmActivityList from 'components/modules/Crm/Activity/ActivityList.vue';
+import CrmCatalogList from 'components/modules/Crm/Catalog/CatalogList.vue';
+import CrmProductSectionList from 'components/modules/Crm/ProductSection/ProductSectionList.vue';
+import CrmProductList from 'components/modules/Crm/Product/ProductList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
 import CrmIndustries from 'components/modules/Crm/Industries.vue';
@@ -41,6 +44,7 @@ import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
 import Info from 'components/modules/Info/Info.vue';
 import Console from 'components/modules/Console/Console.vue';
+import SaleOrderList from 'components/modules/Sale/OrderList.vue';
 
 export default [
     {
@@ -169,6 +173,21 @@ export default [
         component: CrmActivityList,
     },
     {
+        path: '/crm/catalog/list',
+        name: 'crmCatalogList',
+        component: CrmCatalogList,
+    },
+    {
+        path: '/crm/product_section/list',
+        name: 'crmProductSectionList',
+        component: CrmProductSectionList,
+    },
+    {
+        path: '/crm/product/list',
+        name: 'crmProductList',
+        component: CrmProductList,
+    },
+    {
         path: '/crm/status/types',
         name: 'crmStatusTypes',
         component: CrmStatusTypes,
@@ -257,5 +276,10 @@ export default [
         path: '/console',
         name: 'console',
         component: Console,
+    },
+    {
+        path: '/sale/order/list',
+        name: 'saleOrderList',
+        component: SaleOrderList,
     },
 ]
