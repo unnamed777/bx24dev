@@ -20,13 +20,24 @@
                 </textarea>
             </div>
             <div class="mt-2 d-flex justify-content-end">
+                <div class="form-check mr-auto">
+                    <small>
+                        <input
+                            class="form-check-input"
+                            id="showManual"
+                            type="checkbox"
+                            style="margin-top: 6px;"
+                            v-model="showManual"
+                        />
+                        <label class="form-check-label" for="showManual">Показать документацию</label>
+                    </small>
+                </div>
                 <button class="btn btn-primary" @click="execute()">Выполнить</button>
             </div>
 
-            <div v-if="method" class="mt-4 mb-4">
-                <div></div>
+            <div class="mt-4 mb-4">
                 <iframe
-                    v-if="method"
+                    v-if="!!method && showManual"
                     :src="'https://util.bitrixsoft.com/example_b24/redirect.php?lang=ru&method=' + method"
                     width="100%"
                     height="600"
@@ -84,6 +95,7 @@ export default {
             callResult: {},
             prettyExpanded: true,
             runtimeMethods: [],
+            showManual: false,
         };
     },
 
