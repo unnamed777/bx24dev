@@ -22,6 +22,7 @@ import CrmInvoiceFields from 'components/modules/Crm/Invoice/InvoiceFields';
 import CrmInvoiceFieldAdd from 'components/modules/Crm/Invoice/InvoiceFieldAdd';
 import CrmInvoiceFieldEdit from 'components/modules/Crm/Invoice/InvoiceFieldEdit';
 import CrmInvoiceStatuses from 'components/modules/Crm/Invoice/InvoiceStatuses.vue';
+import CrmInvoicePersonTypeList from 'components/modules/Crm/Invoice/PersonTypeList.vue';
 import CrmActivityList from 'components/modules/Crm/Activity/ActivityList.vue';
 import CrmCatalogList from 'components/modules/Crm/Catalog/CatalogList.vue';
 import CrmProductSectionList from 'components/modules/Crm/ProductSection/ProductSectionList.vue';
@@ -166,6 +167,11 @@ export default [
         path: '/crm/invoice/statuses',
         name: 'crmInvoiceStatuses',
         component: CrmInvoiceStatuses,
+    },
+    {
+        path: '/crm/invoice/person_type',
+        name: 'crmInvoicePersonTypeList',
+        component: CrmInvoicePersonTypeList,
     },
     {
         path: '/crm/activity/list',

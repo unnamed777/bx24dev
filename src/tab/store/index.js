@@ -52,7 +52,33 @@ const store = new Vuex.Store({
         },
 
         setAvailableMethods(state, payload) {
-            state.availableMethods = payload;
+            let methods = [...payload];
+            // Dirty hack to have sale.* methods, because "methods" doesn't return them
+            if (state.scope && state.scope.indexOf('sale')) {
+                methods = methods.concat([
+                    'sale.basketItem.getFieldsCatalogProduct', 'sale.basketItem.list', 'sale.basketProperties.get', 'sale.basketitem.add', 'sale.basketitem.addCatalogProduct',
+                    'sale.basketitem.delete', 'sale.basketitem.get', 'sale.basketitem.getFields', 'sale.basketitem.update', 'sale.basketproperties.add',
+                    'sale.basketproperties.delete', 'sale.basketproperties.getFields', 'sale.basketproperties.list', 'sale.basketproperties.update', 'sale.businessValuePersonDomain.add',
+                    'sale.businessValuePersonDomain.deleteByFilter', 'sale.businessValuePersonDomain.getFields', 'sale.businessValuePersonDomain.list', 'sale.order.add', 'sale.order.delete',
+                    'sale.order.get', 'sale.order.getFields', 'sale.order.list', 'sale.order.tryadd', 'sale.order.tryupdate',
+                    'sale.order.update', 'sale.payment.add', 'sale.payment.delete', 'sale.payment.get', 'sale.payment.getFields',
+                    'sale.payment.list', 'sale.payment.update', 'sale.persontype.add', 'sale.persontype.delete', 'sale.persontype.get',
+                    'sale.persontype.getFields', 'sale.persontype.list', 'sale.persontype.update', 'sale.property.add', 'sale.property.delete',
+                    'sale.property.get', 'sale.property.getFieldsByType', 'sale.property.list', 'sale.property.update', 'sale.propertyRelation.add',
+                    'sale.propertyRelation.deleteByFilter', 'sale.propertyRelation.getFields', 'sale.propertyRelation.list', 'sale.propertyVariant.add', 'sale.propertyVariant.delete',
+                    'sale.propertyVariant.get', 'sale.propertyVariant.getFields', 'sale.propertyVariant.list', 'sale.propertyVariant.update', 'sale.propertygroup.add',
+                    'sale.propertygroup.delete', 'sale.propertygroup.get', 'sale.propertygroup.getFields', 'sale.propertygroup.list', 'sale.propertygroup.update',
+                    'sale.propertyvalue.delete', 'sale.propertyvalue.get', 'sale.propertyvalue.getFields', 'sale.propertyvalue.list', 'sale.propertyvalue.modify',
+                    'sale.shipment.add', 'sale.shipment.delete', 'sale.shipment.get', 'sale.shipment.getFields', 'sale.shipment.list',
+                    'sale.shipment.update', 'sale.shipmentitem.add', 'sale.shipmentitem.delete', 'sale.shipmentitem.get', 'sale.shipmentitem.getFields',
+                    'sale.shipmentitem.list', 'sale.shipmentitem.update', 'sale.status.add', 'sale.status.delete', 'sale.status.get',
+                    'sale.status.getFields', 'sale.status.list', 'sale.status.update', 'sale.statusLang.add', 'sale.statusLang.deleteByFilter',
+                    'sale.statusLang.getFields', 'sale.statusLang.getListLangs', 'sale.statusLang.list', 'sale.tradeBinding.getFields', 'sale.tradeBinding.list',
+                    'sale.tradePlatform.getFields', 'sale.tradePlatform.list',
+                ]);
+            }
+
+            state.availableMethods = methods;
         },
 
         setBreadcrumb(state, payload) {

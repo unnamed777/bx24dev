@@ -4,6 +4,10 @@
             <BaseSelect
                 :options="availableMethods"
                 :search="true"
+                :select2Options="{
+                    //tags: true,
+                    //insertTag: addCustomMethod,
+                }"
                 v-model="method"
             />
             <div class="mt-2">
@@ -11,11 +15,24 @@
                     class="form-control textarea-data"
                     rows="10"
                     v-model="request"
+                    @keydown="onKeyPress"
                 >
                 </textarea>
             </div>
             <div class="mt-2 d-flex justify-content-end">
                 <button class="btn btn-primary" @click="execute()">Выполнить</button>
+            </div>
+
+            <div v-if="method" class="mt-4 mb-4">
+                <div></div>
+                <iframe
+                    v-if="method"
+                    :src="'https://util.bitrixsoft.com/example_b24/redirect.php?lang=ru&method=' + method"
+                    width="100%"
+                    height="600"
+                    frameborder="0"
+                    style="border: 1px solid #ccc"
+                ></iframe>
             </div>
         </div>
         <div class="col-7">
@@ -51,6 +68,7 @@ import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import BX24 from 'lib/BX24';
 import BaseSelect from 'components/ui/BaseSelect.vue';
 import JSONFormatter from 'json-formatter-js';
+import Vue from 'vue';
 
 export default {
     components: {
@@ -60,17 +78,18 @@ export default {
     data() {
         return {
             info: {},
-            method: 'crm.lead.fields',
+            method: '',
             request: '',
             outputView: 'pretty',
             callResult: {},
             prettyExpanded: true,
+            runtimeMethods: [],
         };
     },
 
     computed: {
         availableMethods() {
-            return this.methods.map(item => ({ label: item, value: item }));
+            return this.methods.concat(this.runtimeMethods).map(item => ({ label: item, value: item }));
         },
 
         outputJson() {
@@ -87,7 +106,7 @@ export default {
             const $output = this.$refs['output_pretty'];
             $output.children.forEach((item) => $output.removeChild(item));
 
-            const formatter = new JSONFormatter(this.callResult, 2, {
+            const formatter = new JSONFormatter(this.callResult, 3, {
                 animateOpen: false,
                 animateClose: false,
             });
@@ -109,8 +128,9 @@ export default {
         },
 
         async execute() {
+            this.callResult = {};
             let requestObject = this.requestToObject(this.request);
-            this.callResult = await BX24.call(this.method, requestObject);
+            this.callResult = await BX24.request(this.method, requestObject);
         },
 
         requestToObject(request) {
@@ -146,6 +166,36 @@ export default {
             });
         },
 
+        /**
+         * Dirty workaround to be able to use methods, which aren't listed
+         * in "methods", but available by scope (sale.* i.e.)
+         */
+        addCustomMethod(data, tag) {
+            data.push(tag);
+            this.runtimeMethods = [tag];
+        },
+
+        onKeyPress(e) {
+            switch (true) {
+                // Tab
+                case e.key === 'Tab' && e.shiftKey === false && e.altKey === false && e.ctrlKey === false && e.metaKey === false:
+                    e.preventDefault();
+                    let start = e.target.selectionStart;
+                    let end = e.target.selectionEnd;
+
+                    e.target.value = e.target.value.substring(0, start) + "\t" + e.target.value.substring(end);
+                    e.target.selectionStart = e.target.selectionEnd = start + 1;
+
+                    break;
+
+                // Ctrl+Enter or Cmd+Enter
+                case e.key === 'Enter' && e.shiftKey === false && e.altKey === false && (e.ctrlKey === true || e.metaKey === true):
+                    e.preventDefault();
+                    this.execute();
+                    break;
+            }
+        },
+
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
         }),
@@ -157,6 +207,9 @@ export default {
 .textarea-data {
     font-family: monospace;
     font-size: 14px;
+
+    -moz-tab-size: 2;
+    tab-size: 2;
 }
 
 pre {

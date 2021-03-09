@@ -128,7 +128,6 @@ export default class AppProvider {
         const {promise, resolve } = getExposedPromise();
         this.refreshResolve = resolve;
 
-        // @todo add promise which will be resolved when refreshAuth callback fired
         try {
             browser.tabs.executeScript(this.tabId, {
                 frameId: this.frameId,

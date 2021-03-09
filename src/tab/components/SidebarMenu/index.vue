@@ -120,6 +120,10 @@ export default {
                             {
                                 label: 'Статусы',
                                 route: this.getPath('crmInvoiceStatuses'),
+                            },
+                            {
+                                label: 'Типы плательщиков',
+                                route: this.getPath('crmInvoicePersonTypeList'),
                             }
                         ]
                     },
@@ -339,7 +343,7 @@ export default {
             }
 
             return {
-                expand: true,
+                expand: null,
             };
         },
 
@@ -353,7 +357,7 @@ export default {
         rebuildEntitiesMenu() {
             const items = [];
 
-            // Routes are translates into links.
+            // Routes are translated into links.
             // It's needed to match sidebar items with current route and expand them.
             for (let entity of Object.values(this.entities)) {
                 items.push({

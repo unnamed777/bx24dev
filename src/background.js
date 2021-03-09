@@ -1,6 +1,9 @@
 import browser from 'webextension-polyfill';
-import ExtensionRunner from 'lib/ExtensionRunner';
+import Manager from 'lib/Manager';
+
+Manager.init();
 
 browser.browserAction.onClicked.addListener((tab) => {
-    (ExtensionRunner.createInstance({ tab })).run();
+    // noinspection JSIgnoredPromiseFromCall
+    Manager.openByButton({ callerTab: tab });
 });

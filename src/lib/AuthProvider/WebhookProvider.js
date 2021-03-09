@@ -3,37 +3,16 @@ import { alert, getExposedPromise } from 'lib/functions';
 import browser from 'webextension-polyfill';
 
 export default class WebhookProvider {
-    constructor({tabId, frameId}) {
-        this.tabId = tabId;
-        this.frameId = frameId;
+    constructor({ url }) {
+        this.url = url;
     }
 
-    /**
-     * @returns {Promise<B24Auth>}
-     */
-    async obtain() {
-        messageListener.subscribe('webhookAuthSubmitUrl', this.onUrlSubmit.bind(this));
-        let result;
-
-        this.webhookTab = await browser.tabs.create({
-            url: '/webhook/index.html',
-            //openerTabId: this.callerTab.id,
-        });
-
-        const {promise, resolve} = getExposedPromise();
-        this.submitResolve = resolve;
-
-        return promise;
-    }
-
-    async onUrlSubmit({type, payload}) {
-        let result = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)/.exec(payload);
-        console.log(result);
+    obtain() {
+        let result = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)/.exec(this.url);
 
         // That's not an url, may be just host, user and key
         if (result === null) {
-            result = /^([^\s]+) ([^\s]+) ([^\s]+)/.exec(payload);
-            console.log(result);
+            result = /^([^\s]+) ([^\s]+) ([^\s]+)/.exec(this.url);
 
             if (result !== null) {
                 result[0] = `https://${result[1]}/rest/${result[2]}/${result[3]}/`;
@@ -51,31 +30,15 @@ export default class WebhookProvider {
         this.domain = this.authData.domain;
         this.type = 'webhook';
 
-        await browser.tabs.remove(this.webhookTab.id);
-        this.submitResolve(this.authData);
+        return this.authData;
     }
 
     async refresh() {
     }
 
     onRefresh({payload}) {
-        if (payload.id !== this.id) {
-            return;
-        }
-
-        console.log('onRefreshAppAuth');
-        clearTimeout(this.refreshTimeout);
-        alert('onRefreshAppAuth happened...');
-        this.refreshResolve(payload.auth);
-        delete this.refreshResolve;
     }
 
     onRefreshFailed() {
-        alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
-
-        if (this.refreshResolve) {
-            this.refreshResolve(null);
-            delete this.refreshResolve;
-        }
     }
 }

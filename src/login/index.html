@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>bx24dev: webhook address</title>
+    <style>
+    * {
+        font-size: 20px;
+        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
+    }
+
+    .mb-5 {
+        margin-bottom: 5px;
+    }
+
+    form {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    input {
+        border: 1px solid #a0a0a0;
+    }
+
+    .submit {
+        height: 36px;
+        box-sizing: border-box;
+        padding: 5px;
+        margin-left: 10px;
+    }
+    </style>
+</head>
+<body>
+<h3>Вебхук</h3>
+<form class="webhook-form">
+    <input id="webhookUrl" type="text" name="url" placeholder="&quot;webhook url&quot; или &quot;domain user_id key&quot;" style="width: 600px; height: 20px; padding: 5px;" />
+    <button class="submit" type="submit">Открыть</button>
+</form>
+<br/>
+<h3>Токен</h3>
+<form class="token-form" id="tokenForm">
+    <div class="mb-5">
+        <input id="tokenDomain" type="text" name="domain" placeholder="domain" style="width: 600px; height: 20px; padding: 5px;" /><br/>
+    </div>
+    <div class="mb-5">
+        <input id="tokenToken" type="text" name="token" placeholder="access_token" style="width: 600px; height: 20px; padding: 5px;" />
+        <button class="submit" type="submit">Открыть</button>
+    </div>
+</form>
+<script src="script.js"></script>
+</body>
+</html>

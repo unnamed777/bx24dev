@@ -61,7 +61,10 @@ export default {
                 return;
             }
 
-            const result = await this.item.action();
+            const result = await this.item.action({
+                expanded: this.expanded,
+                toggle: this.toggle,
+            });
 
             if (!result) {
                 return;

@@ -113,18 +113,12 @@ export default class OAuthProvider {
     }
 
     async obtainFirstToken() {
-        let params = {
+        const urlParams = this.createUrlParamsFromObject({
             grant_type: 'authorization_code',
             client_id: this.credentials.clientId,
             client_secret: this.credentials.clientSecret,
             code: this.code,
-        };
-
-        const urlParams = new URLSearchParams;
-
-        for (let [param, value] of Object.entries(params)) {
-            urlParams.append(param, value);
-        }
+        });
 
         const tokenUrl = 'https://oauth.bitrix.info/oauth/token/?' + urlParams.toString();
         let result;
@@ -150,4 +144,41 @@ export default class OAuthProvider {
             refresh_token: result.refresh_token,
         };
     }
+
+    async refresh() {
+        const urlParams = this.createUrlParamsFromObject({
+            grant_type: 'refresh_token',
+            client_id: this.credentials.clientId,
+            client_secret: this.credentials.clientSecret,
+            refresh_token: this.auth.refresh_token,
+        });
+
+        const refreshUrl = `https://oauth.bitrix.info/oauth/token/?${urlParams.toString()}`;
+        const result = await fetch(refreshUrl).then(response => response.json());
+
+        if (result.error) {
+            console.error('Refresh token error', result);
+            throw new Error(`Ошибка получения нового токена через OAuth\n${result.error_description} (${result.error})`);
+        }
+
+        this.auth.refresh_token = result.refresh_token;
+        this.auth.expires_in = result.expires_in;
+
+        return this.auth;
+    }
+
+    /**
+     *
+     * @param {Object} obj
+     */
+    createUrlParamsFromObject(obj) {
+        const urlParams = new URLSearchParams;
+
+        for (let [param, value] of Object.entries(obj)) {
+            urlParams.append(param, value);
+        }
+
+        return urlParams;
+    }
+
 }

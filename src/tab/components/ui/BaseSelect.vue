@@ -21,6 +21,12 @@ export default {
             default: false,
         },
         optionTemplate: Function,
+        select2Options: {
+            type: Object,
+            default() {
+                return {};
+            },
+        }
     },
 
     computed: {
@@ -58,6 +64,7 @@ export default {
                 minimumResultsForSearch: this.search ? 0 : Infinity,
                 templateResult: this.optionTemplate || undefined,
                 //width: 'auto',
+                ...this.select2Options
             })
             .on('change', (e) => this.$emit('change', $(e.currentTarget).val()));
     },
