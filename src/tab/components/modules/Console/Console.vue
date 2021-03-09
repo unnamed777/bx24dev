@@ -35,14 +35,13 @@
                 <button class="btn btn-primary" @click="execute()">Выполнить</button>
             </div>
 
-            <div class="mt-4 mb-4">
+            <div v-if="!!method && showManual" class="mt-4 mb-4 resizer">
                 <iframe
-                    v-if="!!method && showManual"
                     :src="'https://util.bitrixsoft.com/example_b24/redirect.php?lang=ru&method=' + method"
                     width="100%"
-                    height="600"
                     frameborder="0"
                     style="border: 1px solid #ccc"
+                    class="resized"
                 ></iframe>
             </div>
         </div>
@@ -226,5 +225,21 @@ export default {
 
 pre {
     font-size: 12px;
+}
+
+.resizer {
+    display: flex;
+    height: 550px;
+    margin: 0;
+    padding: 0;
+    resize: vertical;
+    overflow: hidden;
+}
+
+.resizer > .resized {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    border: 0
 }
 </style>
