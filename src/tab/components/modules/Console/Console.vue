@@ -122,7 +122,17 @@ export default {
                 animateClose: false,
             });
 
-            this.$refs['output_pretty'].appendChild(formatter.render());
+            let renderResult = formatter.render();
+
+            // Get rid of links
+            renderResult.querySelectorAll('.json-formatter-url').forEach(el => {
+                let span = document.createElement('span');
+                span.setAttribute('class', 'json-formatter-string');
+                span.innerHTML = el.innerHTML;
+                el.replaceWith(span);
+            });
+
+            this.$refs['output_pretty'].appendChild(renderResult);
 
             // Reset state after result re-render
             this.prettyExpanded = true;
