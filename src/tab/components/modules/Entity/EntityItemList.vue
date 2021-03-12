@@ -139,7 +139,6 @@ export default {
     },
 
     async mounted() {
-        window.testComponent = this;
         await this.loadEntities();
         this.fields = await EntityItem.getFields();
         await this.fillProperties();

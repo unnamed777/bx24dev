@@ -104,8 +104,20 @@ export default {
         },
 
         fields() {
-            return this.fieldsGetter(this.$store);
+            let fields = this.fieldsGetter(this.$store);
+
+            if (Object.entries(fields).length === 0) {
+                console.warn('fieldsGetter() returns no fields');
+            }
+
+            return fields;
         },
+    },
+
+    watch: {
+        breadcrumb() {
+            this.setBreadcrumb(this.breadcrumb);
+        }
     },
 
     async mounted() {

@@ -141,16 +141,12 @@ export default {
                         ]
                     },
                     {
+                        id: 'crmCatalogs',
                         label: 'Каталоги',
-                        route: this.getPath('crmCatalogList'),
-                    },
-                    {
-                        label: 'Разделы',
-                        route: this.getPath('crmProductSectionList'),
-                    },
-                    {
-                        label: 'Товары',
-                        route: this.getPath('crmProductList'),
+                        action: this.onCrmCatalogsClick,
+                        children: [
+                            {label: 'Загрузка...'}
+                        ],
                     },
                     {
                         label: 'Справочники',
@@ -273,6 +269,7 @@ export default {
 
         ...mapState({
             entities: store => store.entities.items,
+            crmCatalogs: store => store.crmCatalogs.items,
             scope: store => store.scope,
         }),
     },
@@ -285,9 +282,14 @@ export default {
             this.rebuildEntitiesMenu();
         },
 
+        crmCatalogs() {
+            this.rebuildCrmCatalogsMenu();
+        },
+
         scope() {
             let itemToScope = {
                 'entities': 'entity',
+                'crm': 'crm',
                 'users': 'user',
                 'events': 'event',
                 'placements': 'placement',
@@ -347,6 +349,18 @@ export default {
             };
         },
 
+        onCrmCatalogsClick() {
+            this.loadCrmCatalogs();
+
+            if (this.$router.currentRoute.name !== 'crmCatalogList') {
+                this.$router.push({name: 'crmCatalogList'});
+            }
+
+            return {
+                expand: null,
+            };
+        },
+
         getPath(route, params) {
             return this.$router.resolve({
                 name: route,
@@ -392,6 +406,33 @@ export default {
             this.itemsMap.id.entities.children = items;
         },
 
+        rebuildCrmCatalogsMenu() {
+            const items = [];
+
+            // Routes are translated into links.
+            // It's needed to match sidebar items with current route and expand them.
+            for (let catalog of Object.values(this.crmCatalogs)) {
+                items.push({
+                    id: `crmCatalog_${catalog.ID}`,
+                    label: `${catalog.NAME} (${catalog.ID})`,
+                    children: [
+                        {
+                            label: 'Товары',
+                            route: this.getPath('crmProductList', { catalogId: catalog.ID }),
+                        },
+                        {
+                            label: 'Разделы',
+                            route: this.getPath('crmProductSectionList', { catalogId: catalog.ID }),
+                        },
+                    ],
+                });
+            }
+
+            this.assignInternalIds(items);
+
+            this.itemsMap.id.crmCatalogs.children = items;
+        },
+
         assignInternalIds(items) {
             let queue = [...items];
 
@@ -412,6 +453,7 @@ export default {
 
         ...mapActions({
             loadEntities: 'entities/load',
+            loadCrmCatalogs: 'crmCatalogs/load',
         })
     }
 }

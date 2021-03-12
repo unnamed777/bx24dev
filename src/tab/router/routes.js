@@ -184,14 +184,14 @@ export default [
         component: CrmCatalogList,
     },
     {
-        path: '/crm/product_section/list',
-        name: 'crmProductSectionList',
-        component: CrmProductSectionList,
-    },
-    {
-        path: '/crm/product/list',
+        path: '/crm/catalog/:catalogId/products',
         name: 'crmProductList',
         component: CrmProductList,
+    },
+    {
+        path: '/crm/catalog/:catalogId/sections',
+        name: 'crmProductSectionList',
+        component: CrmProductSectionList,
     },
     {
         path: '/crm/status/types',

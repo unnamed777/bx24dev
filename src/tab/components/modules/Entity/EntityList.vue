@@ -34,14 +34,10 @@ export default {
 
     async mounted() {
         await this.loadEntities();
+        this.setBreadcrumb(['Хранилище', 'Список']);
     },
 
     methods: {
-        async prepareData() {
-            await this.loadEntities();
-            this.setBreadcrumb(['Хранилище', 'Список']);
-        },
-
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
         }),

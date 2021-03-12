@@ -4,21 +4,41 @@
         :loadFieldsAction="'productSectionFields/load'"
         :fieldsGetter="fieldsGetter"
         :visibleColumns="['ID', 'NAME', 'SECTION_ID', 'XML_ID']"
-        :breadcrumb="['CRM', 'Разделы товаров', 'Список']"
+        :breadcrumb="['CRM', 'Каталоги', this.catalog ? this.catalog.NAME : 'Каталог', 'Разделы']"
     />
 </template>
 
 <script>
 import ProductSection from 'lib/entities/Crm/ProductSection';
 import AbstractEntryList from 'components/modules/AbstractEntryList';
+import { mapActions } from 'vuex';
 
 export default {
     components: {
         AbstractEntryList,
     },
 
+    computed: {
+        catalogId() {
+            return this.$route.params.catalogId;
+        },
+
+        catalog() {
+            return this.$store.state.crmCatalogs.items[this.catalogId];
+        },
+    },
+
+    mounted() {
+        this.loadCatalogs();
+    },
+
     methods: {
         async loadEntries({sort, filter, page = 1}) {
+            filter = {
+                ...filter,
+                CATALOG_ID: this.catalogId,
+            };
+
             let collection = (await ProductSection.load({
                 order: sort,
                 select: ['*'],
@@ -34,8 +54,14 @@ export default {
         },
 
         fieldsGetter($store) {
-            return $store.state.productSectionFields.items;
+            let fields = $store.state.productSectionFields.items;
+            delete fields.CATALOG_ID;
+            return fields;
         },
+
+        ...mapActions({
+            loadCatalogs: 'crmCatalogs/load',
+        })
     }
 };
 </script>

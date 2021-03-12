@@ -13,6 +13,7 @@ import invoiceStatuses from "./modules/invoiceStatuses";
 import activityFields from "./modules/activityFields";
 import activityOwnerTypes from "./modules/activityOwnerTypes";
 import catalogFields from "./modules/catalogFields";
+import crmCatalogs from "./modules/crmCatalogs";
 import productSectionFields from "./modules/productSectionFields";
 import productFields from "./modules/productFields";
 import crmStatuses from "./modules/crmStatuses";
@@ -112,6 +113,7 @@ const store = new Vuex.Store({
         invoiceStatuses,
         activityFields,
         activityOwnerTypes,
+        crmCatalogs,
         catalogFields,
         productSectionFields,
         productFields,

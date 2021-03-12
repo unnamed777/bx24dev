@@ -27,7 +27,7 @@
                 <SidebarMenu v-if="activeAppId !== null" :actions="{ refreshAuth }"/>
             </div>
             <div class="col-10 pt-3">
-                <nav aria-label="breadcrumb"  v-if="breadcrumb.length > 0">
+                <nav aria-label="breadcrumb" v-if="breadcrumb.length > 0">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
                             <template v-if="index === breadcrumb.length - 1">{{ item.text }}</template>
@@ -35,7 +35,7 @@
                         </li>
                     </ol>
                 </nav>
-                <Template v-bind:is="activeModule" v-if="activeModule"/>
+                <template v-bind:is="activeModule" v-if="activeModule"/>
                 <router-view></router-view>
             </div>
         </div>
