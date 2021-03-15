@@ -7,6 +7,7 @@
                     <th
                         v-for="column in columns" v-bind:title="column.code"
                         class="header-column"
+                        :class="{ 'cursor-pointer': sortOnClick, }"
                         @click="changeSort(column.code)"
                     >
                         <slot name="header-column" :column="column">
@@ -90,6 +91,11 @@ export default {
         rowActions: Array,
 
         showActionsForRow: Function,
+
+        sortOnClick: {
+            type: Boolean,
+            default: true,
+        }
     },
 
     data() {
@@ -119,6 +125,10 @@ export default {
         },
 
         changeSort(newSort) {
+            if (this.sortOnClick === false) {
+                return;
+            }
+
             if (this.sort === newSort) {
                 this.order = this.order === 1 ? -1 : 1;
             } else {
@@ -146,7 +156,7 @@ table {
     white-space: nowrap;
 }
 
-table thead th {
+.cursor-pointer {
     cursor: pointer;
 }
 

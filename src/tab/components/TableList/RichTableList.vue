@@ -158,44 +158,6 @@ export default {
 </script>
 
 <style lang="scss">
-table {
-    white-space: nowrap;
-}
-
-table thead th {
-    cursor: pointer;
-}
-
-.action-cell {
-    width: 40px;
-
-    .dropdown-item {
-        font-size: 14px;
-    }
-}
-
-.table-row-action-trigger {
-    display: flex;
-    width: 24px;
-    height: 24px;
-
-    justify-content: space-around;
-    align-items: center;
-
-    cursor: pointer;
-
-    &__icon {
-        width: 16px;
-    }
-}
-
-.header-column-code {
-    margin-bottom: 2px;
-    font-size: 60%;
-    font-weight: normal;
-    line-height: 1em;
-}
-
 .header-column {
     &__container {
         display: flex;

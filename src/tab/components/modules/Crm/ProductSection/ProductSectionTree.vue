@@ -1,11 +1,13 @@
 <template>
-    <div>
+    <div class="product-section-tree">
         <BaseTableList
             :columns="tableColumns"
             :items="items"
+            :sortOnClick="false"
         >
             <template v-slot:NAME="slotProps">
-                {{ ".&nbsp;&nbsp;".repeat(slotProps.item.DEPTH_LEVEL - 1) }}{{ slotProps.item.NAME }}
+                <span class="goto" @click="goto(slotProps.item.SECTION_ID)">{{ ".&nbsp;&nbsp;".repeat(slotProps.item.DEPTH_LEVEL - 1) }}</span><!--
+                --><span class="product-section-tree-anchor" :data-id="slotProps.item.ID">{{ slotProps.item.NAME }}</span>
             </template>
         </BaseTableList>
     </div>
@@ -72,6 +74,22 @@ export default {
             this.items = nestedSet.getFlat();
         },
 
+        goto(id) {
+            const anchor = document.querySelector(`.product-section-tree-anchor[data-id="${id}"]`);
+            anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Dirty
+            anchor.closest('tr').classList.add('transition', 'table-warning');
+
+            setTimeout(() => {
+                anchor.closest('tr').classList.remove('table-warning');
+
+                setTimeout(() => {
+                    anchor.closest('tr').classList.remove('transition');
+                }, 500);
+            }, 2000);
+        },
+
         fieldsGetter($store) {
             let fields = $store.state.productSectionFields.items;
             delete fields.CATALOG_ID;
@@ -88,3 +106,20 @@ export default {
     }
 };
 </script>
+
+<style scoped lang="scss">
+.goto {
+    cursor: pointer;
+}
+</style>
+
+<style lang="scss">
+.product-section-tree {
+    tr.transition,
+    tr.transition td,
+    tr.table-warning {
+        transition: background-color ease 0.5s;
+    }
+
+}
+</style>
