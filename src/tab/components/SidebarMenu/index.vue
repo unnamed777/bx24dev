@@ -424,6 +424,10 @@ export default {
                             label: 'Разделы',
                             route: this.getPath('crmProductSectionList', { catalogId: catalog.ID }),
                         },
+                        {
+                            label: 'Дерево',
+                            route: this.getPath('crmProductSectionTree', { catalogId: catalog.ID }),
+                        },
                     ],
                 });
             }

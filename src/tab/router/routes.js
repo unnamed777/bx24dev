@@ -26,6 +26,7 @@ import CrmInvoicePersonTypeList from 'components/modules/Crm/Invoice/PersonTypeL
 import CrmActivityList from 'components/modules/Crm/Activity/ActivityList.vue';
 import CrmCatalogList from 'components/modules/Crm/Catalog/CatalogList.vue';
 import CrmProductSectionList from 'components/modules/Crm/ProductSection/ProductSectionList.vue';
+import CrmProductSectionTree from 'components/modules/Crm/ProductSection/ProductSectionTree.vue';
 import CrmProductList from 'components/modules/Crm/Product/ProductList.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
@@ -192,6 +193,11 @@ export default [
         path: '/crm/catalog/:catalogId/sections',
         name: 'crmProductSectionList',
         component: CrmProductSectionList,
+    },
+    {
+        path: '/crm/catalog/:catalogId/tree',
+        name: 'crmProductSectionTree',
+        component: CrmProductSectionTree,
     },
     {
         path: '/crm/status/types',
