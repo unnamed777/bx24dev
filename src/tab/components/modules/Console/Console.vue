@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div class="row position-relative">
         <div class="col-5">
             <BaseSelect
                 :options="availableMethods"
@@ -32,7 +32,15 @@
                         <label class="form-check-label" for="showManual">Показать документацию</label>
                     </small>
                 </div>
-                <button class="btn btn-primary" @click="execute()">Выполнить</button>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary" @click="execute()">Выполнить</button>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="#" @click.prevent="exportAll" title="Все элементы будут получены с помощью постраничной навигации, а результат будет отдан в виде JSON-файла с массивом">Выгрузить всё в JSON...</a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div v-if="!!method && showManual" class="mt-4 mb-4 resizer">
@@ -70,6 +78,8 @@
             <div v-show="outputView === 'pretty'" ref="output_pretty"></div>
             <pre v-if="outputView === 'json'">{{ outputJson }}</pre>
         </div>
+
+        <div class="loading-overlay" v-show="isLoading"></div>
     </div>
 </template>
 
@@ -95,6 +105,7 @@ export default {
             prettyExpanded: true,
             runtimeMethods: [],
             showManual: false,
+            isLoading: false,
         };
     },
 
@@ -217,6 +228,28 @@ export default {
             }
         },
 
+        async exportAll() {
+            this.isLoading = true;
+
+            try {
+                let requestObject = this.requestToObject(this.request);
+                let result = await BX24.fetchAll(this.method, requestObject);
+
+                const blob = new Blob([JSON.stringify(result)], { type: "application/json" });
+
+                let link = document.createElement('a');
+                link.download = 'export.json';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (ex) {
+                console.error(ex);
+                alert('Что-то пошло не так');
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
         }),
@@ -251,5 +284,15 @@ pre {
     margin: 0;
     padding: 0;
     border: 0
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background-color: #FFFFFF99;
 }
 </style>
