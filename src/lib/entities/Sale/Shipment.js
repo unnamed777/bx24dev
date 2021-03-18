@@ -1,25 +1,25 @@
 import AbstractEntity from 'lib/entities/AbstractEntity';
 import BX24 from "lib/BX24";
 
-export default class Order extends AbstractEntity {
+export default class Shipment extends AbstractEntity {
     static get fieldsEndpoint() {
-        return 'sale.order.getFields';
+        return 'sale.shipment.getFields';
     }
 
     static get listEndpoint() {
-        return 'sale.order.list';
+        return 'sale.shipment.list';
     }
 
     static get endpoint() {
-        return 'sale.order.get';
+        return 'sale.shipment.get';
     }
 
     static get domain() {
-        return 'order';
+        return 'shipment';
     }
 
     static get listDomain() {
-        return 'orders';
+        return 'shipments';
     }
 
     static get pageNavigation() {

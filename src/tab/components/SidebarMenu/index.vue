@@ -175,6 +175,14 @@ export default {
                         label: 'Заказы',
                         route: this.getPath('saleOrderList'),
                     },
+                    {
+                        label: 'Оплаты',
+                        route: this.getPath('salePaymentList'),
+                    },
+                    {
+                        label: 'Отгрузки',
+                        route: this.getPath('saleShipmentList'),
+                    },
                 ]
             },
             {

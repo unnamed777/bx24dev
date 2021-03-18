@@ -81,7 +81,13 @@ export default {
             required: true,
 
             validator(value) {
-                return value.filter(item => !item).length === 0;
+                const result = value.filter(item => !item).length === 0;
+
+                if (result === false) {
+                    console.error('Some columns of BaseTableList are empty');
+                }
+
+                return result;
             }
         },
 

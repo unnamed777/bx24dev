@@ -1,4 +1,5 @@
 import qs from 'qs';
+import { sleep } from 'lib/functions';
 
 export default {
     setAuth(type, auth) {
@@ -77,6 +78,7 @@ export default {
         let response;
 
         while (true) {
+            let timeStart = (new Date).getTime();
             response = await this.request(method, data);
 
             if (response.error) {
@@ -105,6 +107,12 @@ export default {
             }
 
             data.start = response.next;
+
+            let timeDiff =  510 - ((new Date).getTime() - timeStart);
+
+            if (timeDiff > 0) {
+                await sleep(timeDiff);
+            }
         }
 
         let returnResult;

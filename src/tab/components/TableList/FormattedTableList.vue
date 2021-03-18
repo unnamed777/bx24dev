@@ -91,8 +91,6 @@ export default {
 
     async mounted() {
         await this.preloadFieldTypeValues(this.columns);
-        console.log(this.$slots);
-        console.log(this.$scopedSlots);
     },
 };
 </script>

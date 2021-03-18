@@ -1,5 +1,5 @@
-import Order from 'lib/entities/Sale/Order';
-import mixin from './cachedItemsLoaderMixin';
+import Shipment from 'lib/entities/Sale/Shipment';
+import mixin from '../cachedItemsLoaderMixin';
 
 export default {
     namespaced: true,
@@ -17,7 +17,7 @@ export default {
         ...mixin.actions,
 
         forceLoad: mixin.helpers.makeForceLoad(() => {
-            return Order.getFields();
+            return Shipment.getFields();
         }),
     }
 };

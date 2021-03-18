@@ -38,6 +38,30 @@ export default class AbstractEntry {
         return '';
     }
 
+    static get domain() {
+        return null;
+    }
+
+    static get listDomain() {
+        return null;
+    }
+
+    /**
+     * Describes how to handle option "page" for load() method.
+     * Should it be used directly or needs to be converted to items offset.
+     *
+     * start, item - page have to be converted to offset [page * api_limit] and result will be put into param "start"
+     * navigation, page - page number is put into param "navigation"
+     *
+     * @returns {{unit: string, name: string}}
+     */
+    static get pageNavigation() {
+        return {
+            name: 'start',
+            unit: 'item',
+        };
+    }
+
     /**
      * Returns original field name by alias
      *
@@ -110,6 +134,8 @@ export default class AbstractEntry {
     }
 
     /**
+     * Loads entries by listEndpoint. If options.page isn't defined,
+     * the method loads all entries.
      *
      * @param {Object} payload
      * @param options
@@ -122,19 +148,40 @@ export default class AbstractEntry {
         if (options.page !== undefined) {
             fetchMethod = 'fetch';
 
+            let page = parseInt(options.page, 10);
+
+            switch (this.pageNavigation.unit) {
+                case 'item':
+                    page = (page - 1) * this.PAGE_SIZE;
+                    break;
+
+                case 'page':
+                    page = Math.max(1, page);
+                    break;
+
+                default:
+                    throw new Error('Unknown page navigation unit');
+            }
+
             payload = {
                 ...payload,
-                start: parseInt(options.page - 1, 10) * this.PAGE_SIZE,
+                [this.pageNavigation.name]: page,
             };
         } else if (options.start) {
-            fetchMethod = 'fetch';
+            alert('AbstractEntry.load() with option.start!');
+            throw new Error('AbstractEntry.load() with option.start!');
+            /*fetchMethod = 'fetch';
 
             payload = {
                 ...payload,
                 start: options.start,
-            };
+            };*/
         } else {
             fetchMethod = 'fetchAll';
+        }
+
+        if (this.listDomain && options.getter === undefined) {
+            options.getter = (response) => response.result[this.listDomain];
         }
 
         return BX24[fetchMethod](
@@ -149,12 +196,18 @@ export default class AbstractEntry {
         });
     }
 
-    static loadFields() {
+    static async loadFields() {
         if (!this.fieldsEndpoint) {
             throw new Error('fieldsEndpoint is undefined');
         }
 
-        return BX24.fetch(this.fieldsEndpoint);
+        let result = await BX24.fetch(this.fieldsEndpoint);
+
+        if (this.domain) {
+            result = result[this.domain];
+        }
+
+        return result;
     }
 
     /**

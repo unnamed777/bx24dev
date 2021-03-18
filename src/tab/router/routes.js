@@ -47,6 +47,8 @@ import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
 import Info from 'components/modules/Info/Info.vue';
 import Console from 'components/modules/Console/Console.vue';
 import SaleOrderList from 'components/modules/Sale/OrderList.vue';
+import SalePaymentList from 'components/modules/Sale/PaymentList.vue';
+import SaleShipmentList from 'components/modules/Sale/ShipmentList.vue';
 
 export default [
     {
@@ -293,5 +295,15 @@ export default [
         path: '/sale/order/list',
         name: 'saleOrderList',
         component: SaleOrderList,
+    },
+    {
+        path: '/sale/payment/list',
+        name: 'salePaymentList',
+        component: SalePaymentList,
+    },
+    {
+        path: '/sale/shipment/list',
+        name: 'saleShipmentList',
+        component: SaleShipmentList,
     },
 ]

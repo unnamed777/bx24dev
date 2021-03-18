@@ -79,11 +79,13 @@ export function alert(message) {
     browser.tabs.executeScript({code : `alert(${JSON.stringify(message)});`});
 }
 
+/**
+ * @param {Number} delay ms
+ * @returns {Promise<unknown>}
+ */
 export function sleep(delay) {
     let resolve, reject;
     const promise = new Promise((_resolve, _reject) => { resolve = _resolve; reject = _reject; });
-
-    console.log('start sleeping for %dms', delay);
     setTimeout(resolve, delay);
 
     return promise;

@@ -20,7 +20,9 @@ import crmStatuses from "./modules/crmStatuses";
 import entities from "./modules/entities";
 import entityProperties from "./modules/entityProperties";
 import users from "./modules/users";
-import orderFields from "./modules/orderFields";
+import saleOrderFields from "./modules/sale/orderFields";
+import salePaymentFields from "./modules/sale/paymentFields";
+import saleShipmentFields from "./modules/sale/shipmentFields";
 
 Vue.use(Vuex);
 
@@ -122,7 +124,9 @@ const store = new Vuex.Store({
         entityProperties,
         users,
         fieldTypes,
-        orderFields,
+        saleOrderFields,
+        salePaymentFields,
+        saleShipmentFields,
     }
 });
 
