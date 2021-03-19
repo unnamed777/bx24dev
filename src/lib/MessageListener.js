@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 
-export default {
+const messageListener = {
     init() {
         this.subscribers = {};
 
@@ -38,3 +38,8 @@ export default {
         this.subscribers[type].forEach(func => func({type, payload}, sender, sendResponse));
     }
 };
+
+
+messageListener.init();
+
+export default messageListener;

@@ -235,7 +235,7 @@ export default {
                 let requestObject = this.requestToObject(this.request);
                 let result = await BX24.fetchAll(this.method, requestObject);
 
-                const blob = new Blob([JSON.stringify(result)], { type: "application/json" });
+                const blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
 
                 let link = document.createElement('a');
                 link.download = 'export.json';

@@ -7,6 +7,7 @@ export default class AppProvider {
         this.tabId = tabId;
         this.frameId = frameId;
         this.instanceId = instanceId;
+        this.authError = null;
     }
 
     /**
@@ -30,7 +31,7 @@ export default class AppProvider {
 
                 const {promise, resolve } = getExposedPromise();
                 this.getAuthResultResolve = resolve;
-                this.getAuthResultTimeout = setTimeout(this.onGetAuthResultFailed, 3000);
+                this.getAuthResultTimeout = setTimeout(this.onGetAuthResultFailed.bind(this), 3000);
 
                 // Inject a code to inject a code to run a code. Inception.jpg
                 await browser.tabs.executeScript(this.tabId, {
@@ -86,15 +87,11 @@ export default class AppProvider {
             }
 
         } catch (ex) {
-            alert('Ошибка получения авторизации из фрейма');
+            this.authError = 'Возможно, для этого приложения уже был запущен инстанс bx24dev';
+            //alert('Ошибка получения авторизации из фрейма');
             console.error(ex);
             return;
         }
-
-        // If auth is failed (expired in app), try to refresh it
-        /*if (result === false) {
-            result = await this.refresh();
-        }*/
 
         return result;
     }
@@ -114,7 +111,12 @@ export default class AppProvider {
     }
 
     onGetAuthResultFailed() {
-        alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
+        // Usually Tab instance is responsible for showing error, but just in case
+        // a provider can show own error message if Tab instance haven't done the job
+        if (this.suppressOwnAlert !== true) {
+            this.suppressOwnAlert = false;
+            alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
+        }
 
         if (this.getAuthResultResolve) {
             this.getAuthResultResolve(null);
