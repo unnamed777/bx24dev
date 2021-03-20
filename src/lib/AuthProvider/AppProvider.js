@@ -1,4 +1,4 @@
-import messageListener from 'lib/MessageListener';
+import { newMessageListener as messageListener } from 'lib/MessageListener';
 import { alert, getExposedPromise } from 'lib/functions';
 import browser from 'webextension-polyfill';
 
@@ -14,7 +14,8 @@ export default class AppProvider {
      * @returns {Promise<B24Auth>|null}
      */
     async obtain() {
-        messageListener.subscribe('AppProvider:authRefreshed', this.onAuthRefreshed.bind(this));
+        console.log('AppProvider.obtain()');
+        messageListener.subscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.onAuthRefreshed.bind(this));
         let result;
 
         const callerTab = (await browser.tabs.get(this.tabId));
@@ -22,12 +23,13 @@ export default class AppProvider {
         this.domain = (new URL(callerTab.url)).hostname;
         this.appUrl = (await browser.webNavigation.getFrame({ tabId: this.tabId, frameId: this.frameId })).url;
         this.type = 'oauth';
+        console.log('instanceId', this.instanceId);
 
         try {
             // Chrome version is too tangled, but seems to work with firefox too
             if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1 || true) {
                 // Chrome
-                this.returnAuthCallbackId = messageListener.subscribe('AppProvider:returnAuth', this.onReturnAuth.bind(this));
+                this.returnAuthCallbackId = messageListener.subscribe(`AppProvider_${this.instanceId}:returnAuth`, this.onReturnAuth.bind(this));
 
                 const {promise, resolve } = getExposedPromise();
                 this.getAuthResultResolve = resolve;
@@ -48,9 +50,27 @@ export default class AppProvider {
                             document.dispatchEvent(new CustomEvent('bx24dev_${this.instanceId}:getAuthResult', { detail: BX24.getAuth() }));
                         };
                         
+                        let injectRefreshFunction = function () {
+                            console.log('injectRefreshFunction');
+                            
+                            BX24.refreshAuth((auth) => {
+                                document.dispatchEvent(new CustomEvent('bx24dev_${this.instanceId}:getRefreshResult', { detail: auth }));
+                            });
+                        };
+                        
                         document.addEventListener('bx24dev_${this.instanceId}:getAuthResult', (e) => {
                             chrome.runtime.sendMessage({
-                                type: 'AppProvider:returnAuth',
+                                type: 'AppProvider_${this.instanceId}:returnAuth',
+                                payload: {
+                                    instanceId: ${this.instanceId},
+                                    auth: e.detail,
+                                },
+                            });
+                        });
+                        
+                        document.addEventListener('bx24dev_${this.instanceId}:getRefreshResult', (e) => {
+                            chrome.runtime.sendMessage({
+                                type: 'AppProvider_${this.instanceId}:authRefreshed',
                                 payload: {
                                     instanceId: ${this.instanceId},
                                     auth: e.detail,
@@ -72,7 +92,7 @@ export default class AppProvider {
                     code: `
                         function refreshAuthHelper(auth) {
                             browser.runtime.sendMessage({
-                                type: 'AppProvider:authRefreshed',
+                                type: 'AppProvider_${this.instanceId}:authRefreshed',
                                 payload: {
                                     id: ${this.instanceId},
                                     auth: auth,
@@ -97,12 +117,13 @@ export default class AppProvider {
     }
 
     onReturnAuth({ payload }) {
-        if (payload.instanceId !== this.instanceId) {
+        console.log('AppProvider.onReturnAuth()');
+        /*if (payload.instanceId !== this.instanceId) {
             return;
-        }
+        }*/
 
         // We don't need this eveny anymore
-        messageListener.unsubscribe('AppProvider:returnAuth', this.returnAuthCallbackId);
+        messageListener.unsubscribe(`AppProvider_${this.instanceId}:returnAuth`);
 
         console.log('Auth from iframe', payload.auth);
         this.getAuthResultResolve(payload.auth);
@@ -125,6 +146,44 @@ export default class AppProvider {
     }
 
     async refresh() {
+        let result;
+        console.log('provider.refresh()', this.instanceId);
+
+        const callerTab = (await browser.tabs.get(this.tabId));
+
+        try {
+            this.authRefreshedCallbackId = messageListener.subscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.onAuthRefreshed.bind(this));
+
+            const { promise, resolve } = getExposedPromise();
+            this.authRefreshedResultResolve = resolve;
+            this.authRefreshedResultTimeout = setTimeout(this.onRefreshFailed.bind(this), 3000);
+
+            await browser.tabs.executeScript(this.tabId, {
+                frameId: this.frameId,
+                code: `
+                    window.__tmpScript = document.createElement('script');
+                        
+                    window.__tmpScript.textContent = '(' + injectRefreshFunction.toString() + ')();';
+                    document.body.appendChild(window.__tmpScript);
+                    delete window.__tmpScript;
+                    false;
+                `,
+            });
+
+            result = promise;
+        } catch (ex) {
+            this.authError = 'Возможно, для этого приложения уже был запущен инстанс bx24dev';
+            //alert('Ошибка получения авторизации из фрейма');
+            console.error(ex);
+            return;
+        }
+
+        window.aaaa = this.authRefreshedResultResolve;
+        return result;
+    }
+
+    async refreshOld() {
+        console.log('provider.refresh()');
         // If b24 authorization is expired or other error happens, this call will notify of the problem
         this.refreshTimeout = setTimeout(this.onRefreshFailed, 3000);
         const {promise, resolve } = getExposedPromise();
@@ -144,21 +203,26 @@ export default class AppProvider {
     }
 
     onAuthRefreshed({payload}) {
-        if (payload.id !== this.instanceId) {
+        if (payload.instanceId !== this.instanceId) {
             return;
         }
 
-        clearTimeout(this.refreshTimeout);
-        this.refreshResolve(payload.auth);
-        delete this.refreshResolve;
+        console.log('onAuthRefreshed()', payload);
+
+        messageListener.unsubscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.authRefreshedCallbackId);
+        clearTimeout(this.authRefreshedResultTimeout);
+        console.log(1);
+        this.authRefreshedResultResolve(payload.auth);
+        console.log(2);
+        delete this.authRefreshedResultResolve;
     }
 
     onRefreshFailed() {
         alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
 
-        if (this.refreshResolve) {
-            this.refreshResolve(null);
-            delete this.refreshResolve;
+        if (this.authRefreshedResultResolve) {
+            this.authRefreshedResultResolve(null);
+            delete this.authRefreshedResultResolve;
         }
     }
 }

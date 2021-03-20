@@ -1,14 +1,20 @@
-import messageListener from 'lib/MessageListener';
+import { newMessageListener as messageListener, default as oldMessageListener } from 'lib/MessageListener';
 import Authorization from 'lib/Authorization';
 import browser from 'webextension-polyfill';
+import { alert } from "lib/functions";
+
+//oldMessageListener.init();
 
 class Manager {
     constructor() {
+        console.log('Manager.constructor()');
         messageListener.subscribe('createExtensionInstance', this.onMessageCreateExtensionInstance.bind(this));
         messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
+        messageListener.subscribe('refreshAuth', this.onMessageRefreshAuth.bind(this));
     }
 
     onMessageCreateExtensionInstance({ payload }) {
+        console.log('Manager.onMessageCreateExtensionInstance()');
         this.createTabInstance({
             providerName: payload.providerName,
             providerPayload: payload.providerPayload,
@@ -86,6 +92,8 @@ class Manager {
      * @returns {Authorization}
      */
     createTabInstance({ tab, providerName, providerPayload }) {
+        console.log('Manager.createTabInstance()');
+
         if (!this.instances) {
             this.instances = [null];
         }
@@ -105,13 +113,33 @@ class Manager {
         return instance;
     }
 
-    onMessageGetAuth({ payload: { authId } }, sender, sendResponse) {
+    onMessageGetAuth(payload, sender, sendResponse) {
+        // or instanceId? Just changed it
+        const authId = payload.payload.authId;
+        console.log('Manager.onMessageGetAuth()', authId, payload);
+
         if (!this.instances[authId]) {
             console.error(`Authorization with ID ${authId} not found`);
             return;
         }
 
+        console.log(this.instances[authId].getData());
         sendResponse(this.instances[authId].getData());
+    }
+
+    async onMessageRefreshAuth(payload, sender, sendResponse) {
+        const authId = payload.payload.authId;
+        console.log('Manager.onMessageRefreshAuth()', authId);
+
+        if (!this.instances[authId]) {
+            console.error(`Authorization with ID ${authId} not found`);
+            return;
+        }
+
+        let result = await this.instances[authId].refreshAuth();
+        console.log('Manager.onMessageRefreshAuth(), result', result);
+        return result;
+        //sendResponse(result);
     }
 }
 

@@ -7,6 +7,10 @@ export default {
         this.auth = auth;
     },
 
+    registerExpiredTokenHandler(func) {
+        this.expiredTokenHandler = func;
+    },
+
     async request(method, data) {
         data.auth = this.auth.access_token;
         //console.log(data);
@@ -22,10 +26,30 @@ export default {
             url = `https://${this.auth.domain}/rest/${method}.json`;
         }
 
-        return await fetch(url, {
+        let bxResult = await fetch(url, {
             method: 'post',
             body,
         }).then(response => response.json());
+
+        if (this.test === true) {
+            this.test = false;
+            //bxResult = {"error":"expired_token","error_description":"The access token provided has expired."};
+        }
+
+        if (bxResult.hasOwnProperty('error')) {
+            if (bxResult.error === 'expired_token' && this.expiredTokenHandler) {
+                console.log('expired error');
+                let refreshResult = await this.expiredTokenHandler();
+
+                if (refreshResult === true) {
+                    return this.request(method, data);
+                }
+            } else {
+                // Add optional handler
+            }
+        }
+
+        return bxResult;
     },
 
     async call(method, data = {}) {

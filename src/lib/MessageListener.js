@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 
-const messageListener = {
+export default {
     init() {
         this.subscribers = {};
 
@@ -30,16 +30,61 @@ const messageListener = {
         delete(this.subscribers[type][id]);
     },
 
-    notify({ type, payload }, sender, sendResponse) {
+    notify({type, payload}, sender, sendResponse) {
         if (!this.subscribers[type]) {
             return;
         }
 
-        this.subscribers[type].forEach(func => func({ type, payload }, sender, sendResponse));
+        this.subscribers[type].forEach(func => func({type, payload}, sender, sendResponse));
     }
 };
 
+export const newMessageListener = {
+    init() {
+        this.subscribers = {};
+    },
 
-messageListener.init();
+    onMessage(message, sender, sendResponse) {
+        if (message.type) {
+            this.notify(message, sender, sendResponse);
+        }
+    },
 
-export default messageListener;
+    subscribe(type, callback) {
+        if (this.subscribers[type]) {
+            console.warn(`"${type}" already have a subscriber, replace it with new one`);
+            browser.runtime.onMessage.removeListener(this.subscribers[type]);
+        }
+
+        // @todo Rewrite, dirty
+        this.subscribers[type] = (payload, sender, sendResponse) => {
+            //console.log('MessageListener', payload.type, type);
+            if (payload.type !== type) {
+                return;
+            }
+
+            return callback(payload, sender, sendResponse);
+        };
+
+        browser.runtime.onMessage.addListener(this.subscribers[type]);
+    },
+
+    unsubscribe(type) {
+        if (!this.subscribers[type]) {
+            return;
+        }
+
+        browser.runtime.onMessage.removeListener(this.subscribers[type]);
+        delete(this.subscribers[type]);
+    },
+
+    /*notify({type, payload}, sender, sendResponse) {
+        if (!this.subscribers[type]) {
+            return;
+        }
+
+        this.subscribers[type].forEach(func => func({type, payload}, sender, sendResponse));
+    }*/
+};
+
+newMessageListener.init();

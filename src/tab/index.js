@@ -5,7 +5,7 @@ import store from './store';
 import browser from 'webextension-polyfill';
 import BX24 from 'lib/BX24';
 
-(async () => {
+const getAuthId = () => {
     // The app needs to know id of Authorization before any routing
     let authId = document.location.hash.substr(2);
     let pos;
@@ -14,7 +14,12 @@ import BX24 from 'lib/BX24';
         authId = authId.substr(0, pos);
     }
 
+    return authId;
+}
+
+const obtainAuthData = async (authId) => {
     /** @var {AuthorizationData} */
+    console.log('obtainAuthData()');
     let authData = await browser.runtime.sendMessage({
         type: 'getAuth',
         payload: {
@@ -22,17 +27,53 @@ import BX24 from 'lib/BX24';
         },
     });
 
+    console.log('obtainAuthData(), got message response');
+
     await store.commit('setAppData', authData);
+    return authData;
+};
 
+const initBX24 = (authId, authData) => {
     BX24.setAuth(authData.authType, authData.auth);
-    window.BX24 = BX24;
 
+    BX24.registerExpiredTokenHandler(async () => {
+        console.log('expiredTokenHandler()', authData);
+
+        let authData = await browser.runtime.sendMessage({
+            type: 'refreshAuth',
+            payload: {
+                authId,
+            },
+        });
+
+        if (!authData || !authData.auth) {
+            console.error('Didn\'t get new token');
+            return false;
+        }
+
+        BX24.setAuth(authData.authType, authData.auth);
+    });
+
+    window.BX24 = BX24;
+};
+
+
+const getInitialData = async () => {
     // @todo make batch
     const scope = await BX24.fetch('scope');
     await store.commit('setScope', scope);
 
     const methods = await BX24.fetch('methods');
     await store.commit('setAvailableMethods', methods);
+}
+
+(async () => {
+    const authId = getAuthId();
+    const authData = await obtainAuthData(authId);
+    initBX24(authId, authData);
+    await getInitialData();
+
+    //setTimeout(() => { BX24.expiredTokenHandler(); }, 1000);
 
     window.app = new Vue({
         el: '#app',

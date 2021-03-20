@@ -34,6 +34,7 @@ export default class Authorization {
     }
 
     constructor({id, tab, providerName, providerPayload}) {
+        console.log('Authorization constructor()');
         this.id = id;
         this.callerTab = tab;
 
@@ -46,6 +47,7 @@ export default class Authorization {
 
     async run() {
         this.provider = new (this.constructor.providers[this.providerName])({
+            instanceId: this.id,
             ...this.providerPayload,
         });
 
@@ -64,7 +66,7 @@ export default class Authorization {
             return;
         }
 
-        messageListener.subscribe('refreshAuth', this.onExtensionRefreshAuth.bind(this));
+        //messageListener.subscribe('refreshAuth', this.onExtensionRefreshAuth.bind(this));
         await this.openExtensionPage();
     }
 
@@ -90,14 +92,8 @@ export default class Authorization {
         };
     }
 
-    // @todo rewrite
-    async onExtensionRefreshAuth(message, sender, sendResponse) {
-        // Listen to own extension tab only
-        if (!sender.tab || sender.tab.id !== this.extensionTab.id) {
-            return;
-        }
-
-        console.log('onExtensionRefreshAuth', message, sender);
+    async refreshAuth() {
+        console.log('Authorization.refreshAuth()');
 
         try {
             this.auth = await this.provider.refresh();
@@ -111,11 +107,8 @@ export default class Authorization {
             return;
         }
 
-        sendResponse({
-            title: this.provider.appName,
-            portal: this.provider.domain,
-            appUrl: this.provider.appUrl,
-            auth: this.auth,
-        });
+        console.log('refreshed auth', this.auth);
+
+        return this.getData();
     }
 }
