@@ -34,7 +34,7 @@
                                 <MenuIcon class="table-row-action-trigger__icon" />
                             </span>
 
-                            <div v-if="activeRowMenuIndex === index" class="dropdown-menu">
+                            <div v-if="true/* || activeRowMenuIndex === index*/" class="dropdown-menu">
                                 <button
                                     v-for="action of rowActions"
                                     class="dropdown-item"

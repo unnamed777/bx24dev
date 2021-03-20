@@ -22,6 +22,8 @@ import BX24 from 'lib/BX24';
         },
     });
 
+    await store.commit('setAppData', authData);
+
     BX24.setAuth(authData.authType, authData.auth);
     window.BX24 = BX24;
 
@@ -36,15 +38,18 @@ import BX24 from 'lib/BX24';
         el: '#app',
         router,
         store,
+
         render: h => h(App, {
             props: {
                 title: authData.title,
                 portal: authData.portal,
             },
         }),
+
         data: {
             authId: authId,
         },
+
         methods: {
             resolveRoute(route, params) {
                 params.authId = authId;

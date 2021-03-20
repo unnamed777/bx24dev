@@ -35,6 +35,10 @@ const store = new Vuex.Store({
     },
 
     mutations: {
+        setAppData(state, payload) {
+            state.appData = payload;
+        },
+
         setScope(state, payload) {
             state.scope = payload;
         },
