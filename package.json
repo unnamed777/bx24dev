@@ -1,6 +1,6 @@
 {
   "name": "bx24dev",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Bitrix24 Dev extension",
   "author": "Andrey Neyman <andrey@neyman.tel>",
   "engines": {
