@@ -1,5 +1,4 @@
 import AbstractEntity from 'lib/entities/AbstractEntity';
-import BX24 from "lib/BX24";
 
 export default class Order extends AbstractEntity {
     static get fieldsEndpoint() {
