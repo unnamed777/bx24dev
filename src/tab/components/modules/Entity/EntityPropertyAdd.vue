@@ -74,7 +74,7 @@ export default {
             }
 
             await this.reloadEntities();
-            this.$router.push({ name: 'entityProperties', params: { entityId: this.entityId } });
+            this.$root.goToRoute({ name: 'entityProperties', params: { entityId: this.entityId } });
         },
 
         ...mapMutations({

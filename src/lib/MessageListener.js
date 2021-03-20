@@ -30,12 +30,12 @@ const messageListener = {
         delete(this.subscribers[type][id]);
     },
 
-    notify({type, payload}, sender, sendResponse) {
+    notify({ type, payload }, sender, sendResponse) {
         if (!this.subscribers[type]) {
             return;
         }
 
-        this.subscribers[type].forEach(func => func({type, payload}, sender, sendResponse));
+        this.subscribers[type].forEach(func => func({ type, payload }, sender, sendResponse));
     }
 };
 

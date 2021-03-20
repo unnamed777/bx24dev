@@ -91,7 +91,7 @@ export default {
             }
 
             await this.$store.dispatch(this.reloadFieldsAction);
-            await this.$router.push({ name: this.listRoute });
+            await this.$root.goToRoute({ name: this.listRoute });
         },
 
         ...mapMutations({

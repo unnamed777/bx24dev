@@ -1,14 +1,14 @@
 import messageListener from 'lib/MessageListener';
-import Tab from 'lib/Tab';
+import Authorization from 'lib/Authorization';
 import browser from 'webextension-polyfill';
 
 class Manager {
     constructor() {
-        console.log('Manager initialized');
-        messageListener.subscribe('createExtensionInstance', this.onCreateExtensionInstance.bind(this));
+        messageListener.subscribe('createExtensionInstance', this.onMessageCreateExtensionInstance.bind(this));
+        messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
     }
 
-    onCreateExtensionInstance({ payload }) {
+    onMessageCreateExtensionInstance({ payload }) {
         this.createTabInstance({
             providerName: payload.providerName,
             providerPayload: payload.providerPayload,
@@ -21,7 +21,7 @@ class Manager {
 
         if (/bitrix24\.ru\/marketplace\/app\//i.test(callerTab.url) !== false) {
             // App's page
-            let frames = await browser.webNavigation.getAllFrames({tabId: callerTab.id});
+            let frames = await browser.webNavigation.getAllFrames({ tabId: callerTab.id });
             let appFound = false;
             let frame;
 
@@ -83,18 +83,35 @@ class Manager {
      *
      * @param tab
      * @param mode Seems to be obsolete
-     * @returns {Tab}
+     * @returns {Authorization}
      */
     createTabInstance({ tab, providerName, providerPayload }) {
         if (!this.instances) {
             this.instances = [null];
         }
 
-        let instance = new Tab({tab, providerName, providerPayload });
-        this.instances.push(instance);
-        instance.id = this.instances.length - 1;
+        this.instances.push(null);
+        const newInstanceId = this.instances.length - 1;
+
+        let instance = new Authorization({
+            id: newInstanceId,
+            tab,
+            providerName,
+            providerPayload
+        });
+
+        this.instances[newInstanceId] = instance;
 
         return instance;
+    }
+
+    onMessageGetAuth({ payload: { authId } }, sender, sendResponse) {
+        if (!this.instances[authId]) {
+            console.error(`Authorization with ID ${authId} not found`);
+            return;
+        }
+
+        sendResponse(this.instances[authId].getData());
     }
 }
 

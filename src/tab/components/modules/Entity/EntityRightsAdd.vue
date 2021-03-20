@@ -94,7 +94,7 @@ export default {
                 alert(ex.toString());
             }
 
-            this.$router.push({ name: 'entityRights', params: { entityId: this.entityId } });
+            this.$root.goToRoute({ name: 'entityRights', params: { entityId: this.entityId } });
         },
 
         ...mapMutations({

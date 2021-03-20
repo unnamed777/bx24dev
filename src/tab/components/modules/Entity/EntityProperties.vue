@@ -1,7 +1,7 @@
 <template>
 <div>
     <div class="mb-3">
-        <button class="btn btn-light" @click="$router.push({ name: 'entityPropertyAdd', params: { entityId } })">Создать свойство</button>
+        <button class="btn btn-light" @click="$root.goToRoute({ name: 'entityPropertyAdd', params: { entityId } })">Создать свойство</button>
         <button class="btn btn-light" @click.prevent>Экспорт</button>
     </div>
     <TableList
@@ -96,7 +96,7 @@ export default {
         },
 
         async onChangeClick({row, index}) {
-            this.$router.push({
+            this.$root.goToRoute({
                 name: 'entityPropertyEdit',
                 params: {
                     entityId: this.entity.ENTITY,

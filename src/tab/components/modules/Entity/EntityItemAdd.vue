@@ -86,7 +86,7 @@ export default {
                 alert(ex.toString());
             }
 
-            this.$router.push({
+            this.$root.goToRoute({
                 name: 'entityItemList',
                 params: { entityId: this.entityId },
                 query: { autoload: true }

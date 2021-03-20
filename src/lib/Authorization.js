@@ -14,7 +14,16 @@ import browser from 'webextension-polyfill';
  * @property {number} member_id
  * @property {string} refresh_token
  */
-export default class Tab {
+
+/**
+ * @typedef {Object} AuthorizationData
+ * @property {String} title
+ * @property {String} portal
+ * @property {String} appUrl
+ * @property {String} authType
+ * @property {B24Auth} auth
+ */
+export default class Authorization {
     static get providers() {
         return {
             'app': AppProvider,
@@ -24,7 +33,8 @@ export default class Tab {
         };
     }
 
-    constructor({tab, providerName, providerPayload}) {
+    constructor({id, tab, providerName, providerPayload}) {
+        this.id = id;
         this.callerTab = tab;
 
         this.providerName = providerName;
@@ -54,37 +64,33 @@ export default class Tab {
             return;
         }
 
-        // Add listener if obtaining authorization is successful only
-        messageListener.subscribe('getAppData', this.onExtensionRequestAuth.bind(this));
         messageListener.subscribe('refreshAuth', this.onExtensionRefreshAuth.bind(this));
         await this.openExtensionPage();
     }
 
     async openExtensionPage() {
         console.log('openExtensionPage()');
+        // Could be race condition for webhook + instance.id
         this.extensionTab = await browser.tabs.create({
-            url: '/tab/index.html',
+            url: '/tab/index.html#/' + this.id,
             openerTabId: this.callerTab ? this.callerTab.id : null,
         });
     }
 
-    onExtensionRequestAuth(message, sender, sendResponse) {
-        // Listen to own extension tab only
-        if (!sender.tab || sender.tab.id !== this.extensionTab.id) {
-            return;
-        }
-
-        console.log(this.provider);
-
-        sendResponse({
+    /**
+     * @returns {AuthorizationData}
+     */
+    getData() {
+        return {
             title: this.provider.appName,
             portal: this.provider.domain,
             appUrl: this.provider.appUrl,
             auth: this.auth,
             authType: this.provider.type,
-        });
+        };
     }
 
+    // @todo rewrite
     async onExtensionRefreshAuth(message, sender, sendResponse) {
         // Listen to own extension tab only
         if (!sender.tab || sender.tab.id !== this.extensionTab.id) {

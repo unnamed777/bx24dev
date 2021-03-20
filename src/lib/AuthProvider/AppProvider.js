@@ -111,8 +111,8 @@ export default class AppProvider {
     }
 
     onGetAuthResultFailed() {
-        // Usually Tab instance is responsible for showing error, but just in case
-        // a provider can show own error message if Tab instance haven't done the job
+        // Usually Authorization instance is responsible for showing error, but just in case
+        // a provider can show own error message if Authorization instance haven't done the job
         if (this.suppressOwnAlert !== true) {
             this.suppressOwnAlert = false;
             alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');

@@ -10,7 +10,7 @@
         </div>
         <div class="col-2 d-flex justify-content-end">
             <div>
-                <button class="btn btn-light" @click="$router.push({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
+                <button class="btn btn-light" @click="$root.goToRoute({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
             </div>
         </div>
     </div>

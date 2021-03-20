@@ -3,28 +3,14 @@
     <div class="container-fluid" style="height: calc(100%);">
         <div class="row">
             <div class="sidebar col-2 bg-light">
-                <div v-if="activeAppId" class="b24app">
+                <div class="b24app">
                     <div class="b24app__title">
-                        {{ apps[activeAppId].title }}
+                        {{ title }}
                     </div>
-                    <div class="b24app__portal">{{ apps[activeAppId].portal }}</div>
+                    <div class="b24app__portal">{{ portal }}</div>
                 </div>
-                <!--<div class="mt-3 mb-3">
-                    <div v-for="(tab, index) in apps">
-                        <a
-                            href="#"
-                            class="d-block"
-                            :class="activeAppId === index ? 'font-weight-bold' : null"
-                            :title="tab.appUrl"
-                            :data-id="index"
-                            v-on:click.prevent="onAppItemClick"
-                        >
-                            {{ tab.title }} / {{ tab.portal }}
-                        </a>
-                    </div>
-                </div>-->
 
-                <SidebarMenu v-if="activeAppId !== null" :actions="{ refreshAuth }"/>
+                <SidebarMenu />
             </div>
             <div class="col-10 pt-3">
                 <nav aria-label="breadcrumb" v-if="breadcrumb.length > 0">
@@ -35,7 +21,6 @@
                         </li>
                     </ol>
                 </nav>
-                <template v-bind:is="activeModule" v-if="activeModule"/>
                 <router-view></router-view>
             </div>
         </div>
@@ -43,111 +28,31 @@
 </div>
 </template>
 <script>
-import browser from 'webextension-polyfill';
-import {mapState, mapMutations} from 'vuex';
-import BX24 from '../lib/BX24';
-import SidebarMenu from './components/SidebarMenu/index.vue';
+import { mapState } from 'vuex';
+import SidebarMenu from 'components/SidebarMenu/SidebarMenu';
 
 export default {
     components: {
         SidebarMenu,
     },
 
+    props: {
+        title: String,
+        portal: String,
+    },
+
     data() {
         return {
-            apps: [null],
-            moduleData: {},
         }
     },
 
     computed: mapState({
-        activeModule: state => state.activeModule,
-        activeAppId: state => state.activeAppId,
         breadcrumb: state => state.breadcrumb,
     }),
 
-    watch: {
-        /*$route(newValue) {
-            console.log('route changed', newValue);
-        }*/
-    },
-
     async mounted() {
-        window.BX24 = BX24;
-
-        await this.obtainAuth();
-        await this.loadInitialData();
-
-        if (this.$root.onReadyToRoute) {
-            this.$root.onReadyToRoute();
-        }
-
-        document.title = document.title + ': ' + this.apps[this.activeAppId].title;
+        document.title = document.title + ': ' + this.title;
     },
-
-    methods: {
-        async obtainAuth() {
-            let appData = await browser.runtime.sendMessage({
-                type: 'getAppData',
-            });
-
-            console.log('appData from background', appData);
-            BX24.setAuth(appData.authType, appData.auth);
-
-            // Temporary
-            this.apps.push({
-                title: appData.title,
-                appUrl: appData.appUrl,
-                portal: appData.portal,
-            });
-
-            this.setAppData({
-                title: appData.title,
-                appUrl: appData.appUrl,
-                portal: appData.portal,
-            });
-
-            this.setActiveAppId(this.apps.length - 1);
-        },
-
-        onAppItemClick(e) {
-            this.selectApp(e.currentTarget.getAttribute('data-id') * 1);
-        },
-
-        async selectApp(appId) {
-            this.setActiveAppId(appId);
-            //this.getActiveAppAuth();
-            //this.activeModule = 'CrmDealList';
-        },
-
-        async refreshAuth() {
-            let appData = await browser.runtime.sendMessage({
-                type: 'refreshAuth',
-            });
-
-            console.log('appData from background', appData);
-            BX24.setAuth(appData.authType, appData.auth);
-        },
-
-        async loadInitialData() {
-            // @todo make batch
-            const scope = await BX24.fetch('scope');
-            console.log('App scope', scope);
-            this.setScope(scope);
-
-            const methods = await BX24.fetch('methods');
-            this.setAvailableMethods(methods);
-        },
-
-        ...mapMutations({
-            setActiveModule: 'setActiveModule',
-            setActiveAppId: 'setActiveAppId',
-            setAppData: 'setAppData',
-            setScope: 'setScope',
-            setAvailableMethods: 'setAvailableMethods',
-        }),
-    },
-
 }
 </script>
 

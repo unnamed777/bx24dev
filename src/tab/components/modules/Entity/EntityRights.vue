@@ -1,7 +1,7 @@
 <template>
 <div>
     <TableList :columns="tableColumns" :items="tableItems"/>
-    <button class="btn btn-primary" @click="$router.push({ name: 'entityRightsAdd', params: { entityId } })">Добавить</button>
+    <button class="btn btn-primary" @click="$root.goToRoute({ name: 'entityRightsAdd', params: { entityId } })">Добавить</button>
 </div>
 </template>
 

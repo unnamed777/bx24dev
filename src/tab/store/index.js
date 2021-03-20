@@ -28,8 +28,6 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
-        activeAppId: null,
-        activeModule: null,
         breadcrumb: [],
         appData: {},
         scope: [],
@@ -37,19 +35,6 @@ const store = new Vuex.Store({
     },
 
     mutations: {
-        // @todo get rid
-        setActiveAppId(state, payload) {
-            state.activeAppId = payload;
-        },
-
-        setAppData(state, payload) {
-            state.appData = payload;
-        },
-
-        setActiveModule(state, payload) {
-            state.activeModule = payload;
-        },
-
         setScope(state, payload) {
             state.scope = payload;
         },

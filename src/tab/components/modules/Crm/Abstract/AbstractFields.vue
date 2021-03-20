@@ -5,7 +5,7 @@
             </div>
             <div class="col-2 d-flex justify-content-end">
                 <div>
-                    <button class="btn btn-light" @click="$router.push({ name: addFieldRoute })">Создать поле</button>
+                    <button class="btn btn-light" @click="$root.toGoRoute({ name: addFieldRoute })">Создать поле</button>
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@ export default {
         onChangeClick({row, index}) {
             const userField = this.userFields[row.code];
 
-            this.$router.push({
+            this.$root.goToRoute({
                 name: this.editFieldRoute,
                 params: {
                     fieldId: userField.ID,

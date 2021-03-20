@@ -295,18 +295,7 @@ export default {
         },
 
         scope() {
-            let itemToScope = {
-                'entities': 'entity',
-                'crm': 'crm',
-                'users': 'user',
-                'events': 'event',
-                'placements': 'placement',
-                'sale': 'sale',
-            };
-
-            for (let [itemId, scopeCode] of Object.entries(itemToScope)) {
-                this.itemsMap.id[itemId].hidden = this.scope.indexOf(scopeCode) === -1;
-            }
+            this.hideUnavailableModules();
         },
 
         $route(value) {
@@ -344,12 +333,31 @@ export default {
         }
     },
 
+    mounted() {
+        this.hideUnavailableModules();
+    },
+
     methods: {
+        hideUnavailableModules() {
+            let itemToScope = {
+                'entities': 'entity',
+                'crm': 'crm',
+                'users': 'user',
+                'events': 'event',
+                'placements': 'placement',
+                'sale': 'sale',
+            };
+
+            for (let [itemId, scopeCode] of Object.entries(itemToScope)) {
+                this.itemsMap.id[itemId].hidden = this.scope.indexOf(scopeCode) === -1;
+            }
+        },
+
         onEntitiesClick() {
             this.loadEntities();
 
             if (this.$router.currentRoute.name !== 'entityList') {
-                this.$router.push({name: 'entityList'});
+                this.$root.goToRoute({name: 'entityList'});
             }
 
             return {
@@ -361,7 +369,7 @@ export default {
             this.loadCrmCatalogs();
 
             if (this.$router.currentRoute.name !== 'crmCatalogList') {
-                this.$router.push({name: 'crmCatalogList'});
+                this.$root.goToRoute({name: 'crmCatalogList'});
             }
 
             return {
@@ -369,11 +377,8 @@ export default {
             };
         },
 
-        getPath(route, params) {
-            return this.$router.resolve({
-                name: route,
-                params,
-            }).route.path;
+        getPath(route, params = {}) {
+            return this.$root.resolveRoute(route, params);
         },
 
         rebuildEntitiesMenu() {
