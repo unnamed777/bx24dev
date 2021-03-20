@@ -146,6 +146,8 @@ export default class OAuthProvider {
     }
 
     async refresh() {
+        console.log('OAuthProvider.refresh()');
+
         const urlParams = this.createUrlParamsFromObject({
             grant_type: 'refresh_token',
             client_id: this.credentials.clientId,
@@ -161,6 +163,7 @@ export default class OAuthProvider {
             throw new Error(`Ошибка получения нового токена через OAuth\n${result.error_description} (${result.error})`);
         }
 
+        this.auth.access_token = result.access_token;
         this.auth.refresh_token = result.refresh_token;
         this.auth.expires_in = result.expires_in;
 

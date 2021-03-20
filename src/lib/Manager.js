@@ -1,5 +1,5 @@
 import { newMessageListener as messageListener, default as oldMessageListener } from 'lib/MessageListener';
-import Authorization from 'lib/Authorization';
+import AuthController from 'lib/AuthController';
 import browser from 'webextension-polyfill';
 import { alert } from "lib/functions";
 
@@ -89,7 +89,7 @@ class Manager {
      *
      * @param tab
      * @param mode Seems to be obsolete
-     * @returns {Authorization}
+     * @returns {AuthController}
      */
     createTabInstance({ tab, providerName, providerPayload }) {
         console.log('Manager.createTabInstance()');
@@ -101,7 +101,7 @@ class Manager {
         this.instances.push(null);
         const newInstanceId = this.instances.length - 1;
 
-        let instance = new Authorization({
+        let instance = new AuthController({
             id: newInstanceId,
             tab,
             providerName,

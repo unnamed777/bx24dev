@@ -6,7 +6,7 @@ import browser from 'webextension-polyfill';
 import BX24 from 'lib/BX24';
 
 const getAuthId = () => {
-    // The app needs to know id of Authorization before any routing
+    // The app needs to know id of AuthController before any routing
     let authId = document.location.hash.substr(2);
     let pos;
 
@@ -48,6 +48,7 @@ const initBX24 = (authId, authData) => {
 
         if (!authData || !authData.auth) {
             console.error('Didn\'t get new token');
+            alert('Не удалось обновить ключ авторизации');
             return false;
         }
 

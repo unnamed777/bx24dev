@@ -23,7 +23,7 @@ import browser from 'webextension-polyfill';
  * @property {String} authType
  * @property {B24Auth} auth
  */
-export default class Authorization {
+export default class AuthController {
     static get providers() {
         return {
             'app': AppProvider,
@@ -34,7 +34,7 @@ export default class Authorization {
     }
 
     constructor({id, tab, providerName, providerPayload}) {
-        console.log('Authorization constructor()');
+        console.log('AuthController constructor()');
         this.id = id;
         this.callerTab = tab;
 
@@ -47,6 +47,7 @@ export default class Authorization {
 
     async run() {
         this.provider = new (this.constructor.providers[this.providerName])({
+            authController: this,
             instanceId: this.id,
             ...this.providerPayload,
         });
@@ -93,7 +94,7 @@ export default class Authorization {
     }
 
     async refreshAuth() {
-        console.log('Authorization.refreshAuth()');
+        console.log('AuthController.refreshAuth()');
 
         try {
             this.auth = await this.provider.refresh();

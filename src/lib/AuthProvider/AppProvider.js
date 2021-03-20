@@ -3,7 +3,7 @@ import { alert, getExposedPromise } from 'lib/functions';
 import browser from 'webextension-polyfill';
 
 export default class AppProvider {
-    constructor({tabId, frameId, instanceId}) {
+    constructor({ tabId, frameId, instanceId, authController }) {
         this.tabId = tabId;
         this.frameId = frameId;
         this.instanceId = instanceId;
@@ -122,9 +122,9 @@ export default class AppProvider {
             return;
         }*/
 
-        // We don't need this eveny anymore
+        // We don't need this event anymore
         messageListener.unsubscribe(`AppProvider_${this.instanceId}:returnAuth`);
-
+        this.auth = payload.auth;
         console.log('Auth from iframe', payload.auth);
         this.getAuthResultResolve(payload.auth);
         clearTimeout(this.getAuthResultTimeout);
@@ -132,8 +132,8 @@ export default class AppProvider {
     }
 
     onGetAuthResultFailed() {
-        // Usually Authorization instance is responsible for showing error, but just in case
-        // a provider can show own error message if Authorization instance haven't done the job
+        // Usually AuthController instance is responsible for showing error, but just in case
+        // a provider can show own error message if AuthController instance haven't done the job
         if (this.suppressOwnAlert !== true) {
             this.suppressOwnAlert = false;
             alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');
@@ -178,28 +178,7 @@ export default class AppProvider {
             return;
         }
 
-        window.aaaa = this.authRefreshedResultResolve;
         return result;
-    }
-
-    async refreshOld() {
-        console.log('provider.refresh()');
-        // If b24 authorization is expired or other error happens, this call will notify of the problem
-        this.refreshTimeout = setTimeout(this.onRefreshFailed, 3000);
-        const {promise, resolve } = getExposedPromise();
-        this.refreshResolve = resolve;
-
-        try {
-            browser.tabs.executeScript(this.tabId, {
-                frameId: this.frameId,
-                code: `window.wrappedJSObject.BX24.refreshAuth(window.wrappedJSObject.refreshAuthHelper);`,
-            });
-        } catch (ex) {
-            alert('Ошибка получения авторизации из фрейма');
-            console.error(ex);
-        }
-
-        return promise;
     }
 
     onAuthRefreshed({payload}) {
@@ -211,9 +190,7 @@ export default class AppProvider {
 
         messageListener.unsubscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.authRefreshedCallbackId);
         clearTimeout(this.authRefreshedResultTimeout);
-        console.log(1);
         this.authRefreshedResultResolve(payload.auth);
-        console.log(2);
         delete this.authRefreshedResultResolve;
     }
 

@@ -33,7 +33,7 @@ export default {
 
         if (this.test === true) {
             this.test = false;
-            //bxResult = {"error":"expired_token","error_description":"The access token provided has expired."};
+            bxResult = {"error":"expired_token","error_description":"The access token provided has expired."};
         }
 
         if (bxResult.hasOwnProperty('error')) {
