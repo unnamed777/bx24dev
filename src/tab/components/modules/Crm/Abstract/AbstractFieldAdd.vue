@@ -8,6 +8,7 @@
         />
         <div class="form-group row">
             <div class="col-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-link mr-3" v-on:click="goToList">Отмена</button>
                 <button type="button" class="btn btn-primary" v-on:click="create">Создать</button>
             </div>
         </div>
@@ -91,7 +92,11 @@ export default {
             }
 
             await this.$store.dispatch(this.reloadFieldsAction);
-            await this.$root.goToRoute({ name: this.listRoute });
+            await this.goToList();
+        },
+
+        goToList() {
+            return this.$root.goToRoute({ name: this.listRoute });
         },
 
         ...mapMutations({

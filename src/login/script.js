@@ -11,9 +11,18 @@ const create = (name, payload) => {
 const webhookSubmit = (e) => {
     e.preventDefault();
 
+    const webhook = document.getElementById('webhookUrl').value;
+
+    if (/^https:\/\/[^/]+\/rest\/[0-9]+\/[^/]+/.test(webhook) === false && /^\S+ [0-9]+ \S+$/.test(webhook)) {
+        alert('Неверный формат данных для вебхука');
+        return;
+    }
+
     create('webhook', {
         url: document.getElementById('webhookUrl').value,
     });
+
+    setTimeout(() => window.close(), 50);
 }
 
 const tokenSubmit = (e) => {
