@@ -4,6 +4,7 @@
         <div class="col-6">
             <div class="mb-2 font-weight-bold">Фильтр</div>
             <FilterForm
+                ref="filter"
                 :fields="fields"
                 @change="onFilterChange"
             />
@@ -24,6 +25,7 @@
     </div>
     <div class="row">
         <div class="col-6 d-flex justify-content-end">
+            <button v-show="Object.entries(filter).length > 0" type="button" class="btn btn-link mr-3" v-on:click="reset()">Сброс</button>
             <button type="button" class="btn btn-primary" v-on:click="$emit('submit')">Показать</button>
         </div>
     </div>
@@ -76,6 +78,13 @@ export default {
                 preview: this.preview,
                 sort: this.sort,
             });
+        },
+
+        reset() {
+            this.filter = {};
+            // Dirty
+            this.$refs.filter.reset();
+            this.notify();
         }
     },
 }
