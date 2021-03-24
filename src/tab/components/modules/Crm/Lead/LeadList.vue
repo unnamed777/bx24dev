@@ -1,5 +1,5 @@
 <template>
-    <AbstractEntryList
+    <AbstractEntryListPage
         :loadEntries="loadEntries"
         :loadFieldsAction="'leadFields/load'"
         :fieldsGetter="fieldsGetter"
@@ -10,11 +10,11 @@
 
 <script>
 import Lead from 'lib/entities/Crm/Lead';
-import AbstractEntryList from 'components/modules/AbstractEntryList';
+import AbstractEntryListPage from 'components/modules/AbstractEntryListPage';
 
 export default {
     components: {
-        AbstractEntryList,
+        AbstractEntryListPage,
     },
 
     methods: {

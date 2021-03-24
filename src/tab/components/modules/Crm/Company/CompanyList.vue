@@ -1,5 +1,5 @@
 <template>
-    <AbstractEntryList
+    <AbstractEntryListPage
         :loadEntries="loadEntries"
         :loadFieldsAction="'companyFields/load'"
         :fieldsGetter="fieldsGetter"
@@ -10,11 +10,11 @@
 
 <script>
 import Company from 'lib/entities/Crm/Company';
-import AbstractEntryList from 'components/modules/AbstractEntryList';
+import AbstractEntryListPage from 'components/modules/AbstractEntryListPage';
 
 export default {
     components: {
-        AbstractEntryList,
+        AbstractEntryListPage,
     },
 
     methods: {

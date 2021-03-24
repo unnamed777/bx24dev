@@ -1,5 +1,5 @@
 <template>
-    <AbstractEntryList
+    <AbstractEntryListPage
         :loadEntries="loadEntries"
         :loadFieldsAction="'saleOrderFields/load'"
         :fieldsGetter="fieldsGetter"
@@ -10,11 +10,11 @@
 
 <script>
 import Order from 'lib/entities/Sale/Order';
-import AbstractEntryList from 'components/modules/AbstractEntryList';
+import AbstractEntryListPage from 'components/modules/AbstractEntryListPage';
 
 export default {
     components: {
-        AbstractEntryList,
+        AbstractEntryListPage,
     },
 
     methods: {

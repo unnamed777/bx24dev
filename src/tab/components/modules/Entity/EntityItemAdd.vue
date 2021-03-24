@@ -75,8 +75,20 @@ export default {
 
             try {
                 let result;
+                let formData = { ...this.formData };
+                formData.PROPERTY_VALUES = {};
 
-                result = await EntityItem.add(this.entityId, this.formData);
+                for (let key of Object.keys(formData)) {
+                    if (key === 'PROPERTY_VALUES' || key.indexOf('PROPERTY_') !== 0) {
+                        continue;
+                    }
+
+                    let code = key.substr(9);
+                    formData.PROPERTY_VALUES[code] = formData[key];
+                    delete formData[key];
+                }
+
+                result = await EntityItem.add(this.entityId, formData);
 
                 if (!result) {
                     return;

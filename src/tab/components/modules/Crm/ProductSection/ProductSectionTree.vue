@@ -16,14 +16,12 @@
 <script>
 import ProductSection from 'lib/entities/Crm/ProductSection';
 import BX24 from 'lib/BX24';
-import AbstractEntryList from 'components/modules/AbstractEntryList';
 import BaseTableList from 'components/TableList/BaseTableList';
 import NestedSet from 'lib/NestedSet';
 import { mapActions, mapMutations } from 'vuex';
 
 export default {
     components: {
-        AbstractEntryList,
         BaseTableList,
     },
 

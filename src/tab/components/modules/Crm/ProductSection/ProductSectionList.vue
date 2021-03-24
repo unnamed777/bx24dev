@@ -1,5 +1,5 @@
 <template>
-    <AbstractEntryList
+    <AbstractEntryListPage
         :loadEntries="loadEntries"
         :loadFieldsAction="'productSectionFields/load'"
         :fieldsGetter="fieldsGetter"
@@ -10,12 +10,12 @@
 
 <script>
 import ProductSection from 'lib/entities/Crm/ProductSection';
-import AbstractEntryList from 'components/modules/AbstractEntryList';
+import AbstractEntryListPage from 'components/modules/AbstractEntryListPage';
 import { mapActions } from 'vuex';
 
 export default {
     components: {
-        AbstractEntryList,
+        AbstractEntryListPage,
     },
 
     computed: {

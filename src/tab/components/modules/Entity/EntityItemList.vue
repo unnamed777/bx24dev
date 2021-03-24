@@ -1,76 +1,37 @@
 <template>
 <div>
-    <div class="row">
-        <div class="col-10">
-            <GetListForm
-                :fields="fields"
-                @change="onFormChange"
-                @submit="onSubmit"
-            />
-        </div>
-        <div class="col-2 d-flex justify-content-end">
-            <div>
-                <button class="btn btn-light" @click="$root.goToRoute({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
-            </div>
-        </div>
-    </div>
-    <div v-if="items.length > 0">
-        <TableColumns
-            :items="fields"
-            :selected="visibleColumns"
-            @change="setVisibleColumns"
-        />
-
-        <PageNavigation
-            v-if="totalPages > 1"
-            :total="totalPages"
-            :current="currentPage"
-            @change="onPageChange"
-        />
-
-        <div style="max-width: 100%; overflow-x: scroll;">
-            <TableList
-                :columns="columns"
-                :rowActions="tableRowActions"
-                :items="tableItems"
-            />
-        </div>
-
-        <PageNavigation
-            v-if="totalPages > 1"
-            :total="totalPages"
-            :current="currentPage"
-            @change="onPageChange"
-        />
-    </div>
+    <AbstractEntryListPage
+        ref="component"
+        :loadEntries="loadEntries"
+        :fieldsGetter="fieldsGetter"
+        :visibleColumns="visibleColumns"
+        :rowActions="rowActions"
+        :breadcrumb="breadcrumb"
+    >
+        <template v-slot:page-actions>
+            <button class="btn btn-light" @click="$root.goToRoute({ name: 'entityItemAdd', params: { entityId } })">Создать элемент</button>
+        </template>
+    </AbstractEntryListPage>
 </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
-import { getFieldLabel } from 'lib/functions';
 import EntityItem from 'lib/entities/Entity/Item';
-import GetListForm from 'components/ui/GetListForm.vue';
-import TableList from 'components/TableList/BaseTableList.vue';
-import TableColumns from 'components/TableList/Columns.vue';
-import entriesPageNavMixin from 'mixins/entriesPageNavMixin';
-import cloneDeep from 'lodash-es/cloneDeep';
+import AbstractEntryListPage from 'components/modules/AbstractEntryListPage';
 
 export default {
     components: {
-        GetListForm,
-        TableList,
-        TableColumns,
+        AbstractEntryListPage,
     },
-
-    mixins: [entriesPageNavMixin],
 
     data() {
         return {
+            breadcrumb: ['Хранилище'],
             items: [],
             visibleColumns: ['ID', 'NAME'],
             fields: {},
-            tableRowActions: [
+            rowActions: [
                 {
                     label: 'Удалить',
                     onClick: this.onDeleteClick,
@@ -98,13 +59,6 @@ export default {
             return this.$store.state.entityProperties.items[this.entityId];
         },
 
-        availableColumns() {
-            return Object.values(this.fields).map(item => ({
-                code: item.field,
-                label: getFieldLabel(item)
-            }));
-        },
-
         columns() {
             let columns = [];
 
@@ -113,22 +67,6 @@ export default {
             }
 
             return columns;
-        },
-
-        tableItems() {
-            const items = cloneDeep(this.items);
-
-            items.map(item => {
-                if (!item.PROPERTY_VALUES) {
-                    return;
-                }
-
-                for (let [property, value] of Object.entries(item.PROPERTY_VALUES)) {
-                    item[`PROPERTY_${property}`] = value;
-                }
-            });
-
-            return items;
         },
     },
 
@@ -140,34 +78,31 @@ export default {
 
     async mounted() {
         await this.loadEntities();
-        this.fields = await EntityItem.getFields();
-        await this.fillProperties();
+        await this.loadMergedFields();
+        this.setVisibleColumns();
 
-        this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Элементы']);
+        this.breadcrumb = ['Хранилище', this.entity.NAME, 'Элементы'];
 
         if (this.$route.query.autoload) {
-            this.loadEntries();
+            this.$refs.component.submit();
         }
     },
 
     methods: {
+        async loadMergedFields() {
+            await EntityItem.getFields();
+            await this.fillProperties();
+        },
+
+        fieldsGetter($store) {
+            return this.fields;
+        },
+
         async fillProperties() {
             await this.loadProperties(this.entityId);
 
             this.mergedFields = await EntityItem.getMergedFields(this.entityId, this.properties);
             this.fields = this.mergedFields;
-
-            // Add all properties to visible columns
-            this.visibleColumns = this.visibleColumns.concat(
-                Object.values(this.fields)
-                    .filter(item => item.isProperty)
-                    .map(item => item.code)
-            );
-        },
-
-        async onSubmit() {
-            this.currentPage = 1;
-            this.loadEntries();
         },
 
         async loadEntries() {
@@ -179,18 +114,32 @@ export default {
                 page: this.currentPage,
             });
 
-            this.items = collection.getAll();
-            this.totalPages = Math.ceil(collection.total / EntityItem.PAGE_SIZE);
+            let items = collection.getAll();
+
+            items.map(item => {
+                if (!item.PROPERTY_VALUES) {
+                    return;
+                }
+
+                for (let [property, value] of Object.entries(item.PROPERTY_VALUES)) {
+                    item[`PROPERTY_${property}`] = value;
+                }
+            });
+
+            return {
+                entries: items,
+                total: collection.total,
+            };
         },
 
-        setVisibleColumns(columns) {
-            this.visibleColumns = columns;
-        },
-
-        onFormChange({filter, sort}) {
-            console.log('onFormChange', filter, sort);
-            this.filter = filter;
-            this.sort = sort;
+        setVisibleColumns() {
+            this.visibleColumns = this.visibleColumns.concat(
+                Object.values(this.fields)
+                    .filter(item => item.isProperty)
+                    // Limit amount of visible properties by default
+                    .slice(0, 10)
+                    .map(item => item.code)
+            );
         },
 
         async onDeleteClick({index, row}) {
@@ -199,14 +148,8 @@ export default {
             }
 
             await EntityItem.delete(this.entity.ENTITY, row.ID);
-
-            let itemIndex = this.items.findIndex((item) => item.ID === row.ID);
-            this.items = [].concat(this.items.slice(0, itemIndex), this.items.slice(itemIndex + 1));
+            this.$refs.component.removeItem((items) => items.findIndex((item) => item.ID === row.ID));
         },
-
-        ...mapMutations({
-            setBreadcrumb: 'setBreadcrumb',
-        }),
 
         ...mapActions({
             loadEntities: 'entities/load',

@@ -10,7 +10,7 @@
             </div>
             <div class="col-2 d-flex justify-content-end">
                 <div>
-                    <!-- buttons -->
+                    <slot name="page-actions" />
                 </div>
             </div>
         </div>
@@ -28,6 +28,7 @@
                     :availableColumns="availableColumns"
                     :visibleColumns="visibleColumns"
                     :items="items"
+                    :rowActions="rowActions"
                     :hasSettings="true"
                 />
             </div>
@@ -64,7 +65,6 @@ export default {
 
         loadFieldsAction: {
             type: String,
-            required: true,
         },
 
         fieldsGetter: {
@@ -82,6 +82,9 @@ export default {
             required: true,
         },
 
+        rowActions: {
+            type: Array,
+        },
     },
 
     data() {
@@ -121,15 +124,24 @@ export default {
     },
 
     async mounted() {
-        // noinspection ES6MissingAwait
-        this.$store.dispatch(this.loadFieldsAction);
+        if (this.loadFieldsAction) {
+            // noinspection ES6MissingAwait
+            this.$store.dispatch(this.loadFieldsAction);
+        }
+
         this.setBreadcrumb(this.breadcrumb);
     },
 
     methods: {
         async onSubmit() {
-            this.currentPage = 1;
+            await this.submit();
+        },
 
+        /**
+         * Could be called from parent component
+         */
+        async submit() {
+            this.currentPage = 1;
             await this.loadEntriesWrapper();
         },
 
@@ -153,6 +165,22 @@ export default {
         onPageChange(page) {
             this.currentPage = page;
             this.loadEntriesWrapper();
+        },
+
+        /**
+         * Removes item from item list
+         * Method for parent components with ability to physically delete items (like EntityItemList)
+         *
+         * @param {Function} findFunc Search function which should return index of removed item
+         */
+        removeItem(findFunc) {
+            let itemIndex = findFunc(this.items);
+
+            if (!Number.isInteger(itemIndex)) {
+                return;
+            }
+
+            this.items = [].concat(this.items.slice(0, itemIndex), this.items.slice(itemIndex + 1));
         },
 
         ...mapMutations({
