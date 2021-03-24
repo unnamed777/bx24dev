@@ -13,6 +13,7 @@
 import FilterItem from './Item.vue';
 import isNil from 'lodash-es/isnil';
 import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
+import Vue from 'vue';
 
 export default {
     components: {
@@ -156,6 +157,10 @@ export default {
                 '"': '&quot;',
                 "'": '&#39;'
             })[match]);
+        },
+
+        reset() {
+            this.filter = [{code: null}];
         }
     }
 };

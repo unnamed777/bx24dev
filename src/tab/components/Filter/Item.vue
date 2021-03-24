@@ -139,6 +139,14 @@ export default {
     },
 
     watch: {
+        // For dirty attempt to reset form
+        'item.code'(value) {
+            if (value === null) {
+                this.code = null;
+                this.values = [{operator: '', value: null}];
+            }
+        },
+
         code() {
             this.notify();
         },
