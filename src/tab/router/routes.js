@@ -290,6 +290,10 @@ export default [
         path: '/:authId/console',
         name: 'console',
         component: Console,
+        props: (route) => ({
+            queryMethod: route.params.method,
+            queryCode: route.params.code,
+        }),
     },
     {
         path: '/:authId/sale/order/list',

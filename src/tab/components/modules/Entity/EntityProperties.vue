@@ -1,8 +1,8 @@
 <template>
 <div>
     <div class="mb-3">
-        <button class="btn btn-light" @click="$root.goToRoute({ name: 'entityPropertyAdd', params: { entityId } })">Создать свойство</button>
-        <button class="btn btn-light" @click.prevent>Экспорт</button>
+        <button class="btn btn-light" @click="add()">Создать свойство</button>
+        <button class="btn btn-light" @click.prevent="exportProps()">Экспорт</button>
     </div>
     <TableList
         :columns="tableColumns"
@@ -116,6 +116,25 @@ export default {
             });
 
             this.fillProperties();
+        },
+
+        add() {
+            this.$root.goToRoute({
+                name: 'entityPropertyAdd',
+                params: {
+                    entityId: this.entityId,
+                },
+            });
+        },
+
+        exportProps() {
+            this.$root.goToRoute({
+                name: 'console',
+                params: {
+                    method: EntityProperty.listEndpoint,
+                    code: `{\n\tENTITY: '${this.entityId}'\n}`,
+                },
+            });
         },
 
         ...mapMutations({

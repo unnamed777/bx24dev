@@ -14,7 +14,7 @@
                 <textarea
                     class="form-control textarea-data"
                     rows="10"
-                    v-model="request"
+                    v-model="body"
                     @keydown="onKeyPress"
                 >
                 </textarea>
@@ -78,7 +78,6 @@
             <div v-show="outputView === 'pretty'" ref="output_pretty"></div>
             <pre v-if="outputView === 'json'">{{ outputJson }}</pre>
         </div>
-
         <div class="loading-overlay" v-show="isLoading"></div>
     </div>
 </template>
@@ -88,18 +87,22 @@ import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import BX24 from 'lib/BX24';
 import BaseSelect from 'components/ui/BaseSelect.vue';
 import JSONFormatter from 'json-formatter-js';
-import Vue from 'vue';
 
 export default {
     components: {
         BaseSelect,
     },
 
+    props: {
+        queryMethod: String,
+        queryCode: [String, Object],
+    },
+
     data() {
         return {
             info: {},
-            method: '',
-            request: '',
+            method: this.queryMethod || '',
+            body: this.queryCode ? (typeof this.queryCode === 'object' ? JSON.stringify(this.queryCode, null, 2) : this.queryCode) : '',
             outputView: 'pretty',
             callResult: {},
             prettyExpanded: true,
@@ -161,7 +164,7 @@ export default {
 
         async execute() {
             this.callResult = {};
-            let requestObject = this.requestToObject(this.request);
+            let requestObject = this.requestToObject(this.body);
             this.callResult = await BX24.request(this.method, requestObject);
         },
 
@@ -232,7 +235,7 @@ export default {
             this.isLoading = true;
 
             try {
-                let requestObject = this.requestToObject(this.request);
+                let requestObject = this.requestToObject(this.body);
                 let result = await BX24.fetchAll(this.method, requestObject);
 
                 const blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
