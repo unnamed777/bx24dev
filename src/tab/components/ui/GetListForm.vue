@@ -19,6 +19,8 @@
             <div class="mb-2 font-weight-bold">Сортировка</div>
             <SortForm
                 :fields="fields"
+                :defaultField="sortDefaultField"
+                :defaultOrder="sortDefaultOrder"
                 @change="onSortChange"
             />
         </div>
@@ -44,6 +46,8 @@ export default {
 
     props: {
         fields: Object,
+        sortDefaultField: String,
+        sortDefaultOrder: String,
     },
 
     data() {

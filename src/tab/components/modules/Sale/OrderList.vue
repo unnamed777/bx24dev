@@ -4,6 +4,7 @@
         :loadFieldsAction="'saleOrderFields/load'"
         :fieldsGetter="fieldsGetter"
         :visibleColumns="['id', 'lid', 'dateInsert', 'statusId', 'price']"
+        :sortDefaultField="'id'"
         :breadcrumb="['Интернет-магазин', 'Заказы']"
     />
 </template>

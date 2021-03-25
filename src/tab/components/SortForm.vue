@@ -35,12 +35,14 @@ export default {
             type: [Object],
             default: () => { return {}; },
         },
+        defaultField: String,
+        defaultOrder: String,
     },
 
     data() {
         return {
-            field: 'ID',
-            order: 'DESC',
+            field: this.defaultField || 'ID',
+            order: this.defaultOrder || 'DESC',
             availableOrder: {
                 'ASC': {
                     value: 'ASC',

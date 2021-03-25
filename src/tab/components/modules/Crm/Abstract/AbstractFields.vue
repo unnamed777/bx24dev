@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="row mb-4">
+        <div class="row mb-3">
             <div class="col-12 d-flex">
                 <div>
                     <button class="btn btn-light" @click="$root.goToRoute({ name: addFieldRoute })">Создать поле</button>

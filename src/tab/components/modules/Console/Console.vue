@@ -33,7 +33,7 @@
                     </small>
                 </div>
                 <div class="btn-group" role="group">
-                    <button class="btn btn-primary" @click="execute()">Выполнить</button>
+                    <button class="btn btn-primary" @click="execute()" title="Ctrl+Enter">Выполнить</button>
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -128,28 +128,8 @@ export default {
 
     watch: {
         callResult() {
-            const $output = this.$refs['output_pretty'];
-            $output.children.forEach((item) => $output.removeChild(item));
-
-            const formatter = new JSONFormatter(this.callResult, 3, {
-                animateOpen: false,
-                animateClose: false,
-            });
-
-            let renderResult = formatter.render();
-
-            // Get rid of links
-            renderResult.querySelectorAll('.json-formatter-url').forEach(el => {
-                let span = document.createElement('span');
-                span.setAttribute('class', 'json-formatter-string');
-                span.innerHTML = el.innerHTML;
-                el.replaceWith(span);
-            });
-
-            this.$refs['output_pretty'].appendChild(renderResult);
-
-            // Reset state after result re-render
             this.prettyExpanded = true;
+            this.jsonFormatter();
         }
     },
 
@@ -181,24 +161,31 @@ export default {
             };
         },
 
+        jsonFormatter() {
+            const $output = this.$refs['output_pretty'];
+            $output.children.forEach((item) => $output.removeChild(item));
+
+            const formatter = new JSONFormatter(this.callResult, this.prettyExpanded ? 4 : 1, {
+                animateOpen: false,
+                animateClose: false,
+            });
+
+            let renderResult = formatter.render();
+
+            // Get rid of links
+            renderResult.querySelectorAll('.json-formatter-url').forEach(el => {
+                let span = document.createElement('span');
+                span.setAttribute('class', 'json-formatter-string');
+                span.innerHTML = el.innerHTML;
+                el.replaceWith(span);
+            });
+
+            this.$refs['output_pretty'].appendChild(renderResult);
+        },
+
         togglePretty() {
             this.prettyExpanded = !this.prettyExpanded;
-
-            let selector = '.json-formatter-row';
-
-            if (this.prettyExpanded) {
-                selector += ':not(.json-formatter-open)';
-            } else {
-                selector += '.json-formatter-open';
-            }
-
-            selector += ' > .json-formatter-toggler-link';
-
-            const event = new Event('click');
-
-            this.$refs['output_pretty'].querySelector(':scope .json-formatter-children').querySelectorAll(selector).forEach((item) => {
-                item.dispatchEvent(event);
-            });
+            this.jsonFormatter();
         },
 
         /**

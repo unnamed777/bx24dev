@@ -15,10 +15,7 @@
             <div class="col-10 pt-3">
                 <nav aria-label="breadcrumb" v-if="breadcrumb.length > 0">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">
-                            <template v-if="index === breadcrumb.length - 1">{{ item.text }}</template>
-                            <template v-else><a :href="item.link">{{ item.text }}</a></template>
-                        </li>
+                        <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">{{ item.text }}</li>
                     </ol>
                 </nav>
                 <router-view></router-view>
@@ -67,6 +64,10 @@ body {
 
 *:focus {
     outline: none;
+}
+
+.btn:focus {
+    box-shadow: none !important;
 }
 
 .form-control:focus {
@@ -132,6 +133,7 @@ body {
 }
 
 .breadcrumb {
+    margin-top: -5px;
     padding: 0px;
     background-color: transparent;
 }

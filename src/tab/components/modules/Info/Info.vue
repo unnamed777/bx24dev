@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h5>app.info</h5>
+        <b>app.info</b>
         <table class="table table-sm table-hover">
             <tbody>
                 <tr v-for="(value, key) of this.info">
@@ -10,7 +10,7 @@
             </tbody>
         </table>
 
-        <h5>scope</h5>
+        <b>scope</b>
         <table class="table table-sm table-hover">
             <tbody>
                 <tr v-for="value of this.scope">
@@ -19,7 +19,7 @@
             </tbody>
         </table>
 
-        <h5>methods</h5>
+        <b>methods</b>
         <table class="table table-sm table-hover">
             <tbody>
                 <tr v-for="value of this.methods">

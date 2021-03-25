@@ -4,6 +4,8 @@
             <div class="col-10">
                 <GetListForm
                     :fields="fields"
+                    :sortDefaultField="sortDefaultField"
+                    :sortDefaultOrder="sortDefaultOrder"
                     @change="onFormChange"
                     @submit="onSubmit"
                 />
@@ -85,6 +87,9 @@ export default {
         rowActions: {
             type: Array,
         },
+
+        sortDefaultField: String,
+        sortDefaultOrder: String,
     },
 
     data() {
