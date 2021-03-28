@@ -23,6 +23,7 @@ import users from "./modules/users";
 import saleOrderFields from "./modules/sale/orderFields";
 import salePaymentFields from "./modules/sale/paymentFields";
 import saleShipmentFields from "./modules/sale/shipmentFields";
+import console from './modules/console';
 
 Vue.use(Vuex);
 
@@ -116,6 +117,7 @@ const store = new Vuex.Store({
         saleOrderFields,
         salePaymentFields,
         saleShipmentFields,
+        console,
     }
 });
 

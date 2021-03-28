@@ -199,6 +199,10 @@ body {
         border: 1px solid #000;
         margin-top: -1px;
     }
+
+    .select2-results__group {
+        font-weight: 600;
+    }
 }
 
 body .json-formatter-row {
