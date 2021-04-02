@@ -2,7 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>bx24dev: webhook address</title>
+    <title>bx24dev</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/bootstrap.min.css" crossorigin="anonymous">
     <style>
     * {
         font-size: 20px;
@@ -31,22 +32,41 @@
     </style>
 </head>
 <body>
-<h3>Вебхук</h3>
-<form class="webhook-form">
-    <input id="webhookUrl" type="text" name="url" placeholder="&quot;webhook url&quot; или &quot;domain user_id key&quot;" style="width: 600px; height: 20px; padding: 5px;" />
-    <button class="submit" type="submit">Открыть</button>
-</form>
-<br/>
-<h3>Токен</h3>
-<form class="token-form" id="tokenForm">
-    <div class="mb-5">
-        <input id="tokenDomain" type="text" name="domain" placeholder="domain" style="width: 600px; height: 20px; padding: 5px;" /><br/>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-5 mt-4">
+            <h1 class="mb-4">bx24dev</h1>
+            <h4>Вебхук</h4>
+            <form class="webhook-form">
+                <div class="form-row mb-5">
+                    <div class="col">
+                        <input class="form-control" id="webhookUrl" type="text" name="url" placeholder="&quot;webhook url&quot; или &quot;domain user_id key&quot;" />
+                    </div>
+                    <div class="col-1">
+                        <button class="btn btn-primary" type="submit">➤</button>
+                    </div>
+                </div>
+            </form>
+            <h4>Токен</h4>
+            <form class="token-form" id="tokenForm">
+                <div class="form-row">
+                    <div class="col">
+                        <input class="form-control" id="tokenDomain" type="text" name="domain" placeholder="domain" /><br/>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <input class="form-control" id="tokenToken" type="text" name="token" placeholder="access_token" />
+                    </div>
+                    <div class="col-1">
+                        <button class="btn btn-primary" type="submit">➤</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="mb-5">
-        <input id="tokenToken" type="text" name="token" placeholder="access_token" style="width: 600px; height: 20px; padding: 5px;" />
-        <button class="submit" type="submit">Открыть</button>
-    </div>
-</form>
+</div>
 <script src="script.js"></script>
 </body>
 </html>

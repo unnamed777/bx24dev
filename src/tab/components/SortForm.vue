@@ -43,16 +43,16 @@ export default {
         return {
             field: this.defaultField || 'ID',
             order: this.defaultOrder || 'DESC',
-            availableOrder: {
-                'ASC': {
+            availableOrder: [
+                {
                     value: 'ASC',
                     label: 'По возрастанию',
                 },
-                'DESC': {
+                {
                     value: 'DESC',
                     label: 'По убыванию',
                 },
-            },
+            ],
         };
     },
 
