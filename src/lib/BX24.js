@@ -52,8 +52,21 @@ export default {
         return bxResult;
     },
 
+    /**
+     * Calls a method and returns result. If error happens, error is thrown.
+     * To get pure b24 response use request()
+     *
+     * @param method
+     * @param data
+     * @returns {Promise<*>}
+     */
     async call(method, data = {}) {
         let result = await this.request(method, data);
+
+        if (result.error || result.error_description) {
+            throw new Error(`Error on call: [${result.error}] ${result.error_description}`);
+        }
+
         return result.result;
     },
 

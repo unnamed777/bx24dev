@@ -1,10 +1,10 @@
 <template>
-<input
-    type="text"
-    class="form-control form-control-sm"
-    :readonly="readOnly"
-    v-model="currentValue"
-/>
+    <input
+        type="text"
+        class="form-control form-control-sm"
+        :readonly="readOnly"
+        v-model="currentValue"
+    />
 </template>
 
 <script>

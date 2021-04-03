@@ -4,14 +4,8 @@
         <Form
             v-model="formData"
             :fields="form.fields"
-            :ui="form.ui"
+            :buttons="form.buttons"
         />
-        <div class="form-group row">
-            <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" v-on:click="create">Создать</button>
-            </div>
-        </div>
-        {{ formData }}
     </div>
 </div>
 </template>
@@ -44,10 +38,18 @@ export default {
                         label: 'Название',
                     }
                 ],
-                ui: {
-                    labelCols: 3,
-                    valueCols: 9,
-                }
+                buttons: [
+                    {
+                        type: 'cancel',
+                        label: 'Отмена',
+                        action: this.goToList,
+                    },
+                    {
+                        type: 'submit',
+                        label: 'Сохранить',
+                        action: this.create,
+                    },
+                ],
             },
         };
     },
@@ -74,7 +76,11 @@ export default {
             }
 
             await this.reloadEntities();
-            this.$root.goToRoute({name: 'entityList'});
+            this.goToList();
+        },
+
+        goToList() {
+            return this.$root.goToRoute({name: 'entityList'});
         },
 
         ...mapMutations({

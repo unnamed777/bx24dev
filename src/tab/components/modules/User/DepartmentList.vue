@@ -8,7 +8,7 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import BX24 from 'lib/BX24';
-import FormattedTableList from 'components/TableList/FormattedTableList.vue';
+import FormattedTableList from 'components/ui/TableList/FormattedTableList.vue';
 
 export default {
     components: {

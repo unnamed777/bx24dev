@@ -14,7 +14,7 @@
 
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
-import TableList from 'components/TableList/BaseTableList.vue';
+import TableList from 'components/ui/TableList/BaseTableList.vue';
 import EntityProperty from 'lib/entities/Entity/Property';
 
 export default {

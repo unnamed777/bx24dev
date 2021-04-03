@@ -15,6 +15,17 @@
             />
         </div>
     </div>
+    <div v-if="buttons" class="form-group row">
+        <div class="col-12 d-flex justify-content-end">
+            <button
+                v-for="(button, index) of buttons"
+                type="button"
+                class="btn"
+                :class="buttonsClasses[index]"
+                @click="button.action"
+            >{{ button.label }}</button>
+        </div>
+    </div>
 </div>
 </template>
 
@@ -42,8 +53,45 @@ export default {
                 return {
                     labelCols: 3,
                     valueCols: 9,
+                    buttonClasses: {
+                        submit: ['btn-primary'],
+                        cancel: ['btn-link', 'mr-3'],
+                    },
                 };
             }
+        },
+        buttons: {
+            type: Array,
+
+            /**
+             * [{ label: String, action: Function, classes: String[], type: 'submit'|'cancel'|null }]
+             */
+            validator(value) {
+                if (value === undefined) {
+                    return true;
+                }
+
+                for (let index in value) {
+                    const button = value[index];
+
+                    if (!button.label) {
+                        console.error(`No label for button #${index}`);
+                        return false;
+                    }
+
+                    if (!button.action) {
+                        console.error(`No action for button #${index}`);
+                        return false;
+                    }
+
+                    if (button.type && ['submit', 'cancel'].indexOf(button.type) === -1) {
+                        console.error(`Unknown type for button #${index}`);
+                        return false;
+                    }
+                }
+
+                return true;
+            },
         },
     },
 
@@ -85,7 +133,28 @@ export default {
             get() {
                 return this.model;
             }
-        }
+        },
+
+        buttonsClasses() {
+            if (!Array.isArray(this.buttons)) {
+                return [];
+            }
+
+            const result = [];
+
+            for (let index in this.buttons) {
+                const button = this.buttons[index];
+                result[index] = [];
+
+                if (button.classes) {
+                    result[index] = result[index].concat(button.classes);
+                } else if (button.type) {
+                    result[index] = result[index].concat(this.ui.buttonClasses[button.type]);
+                }
+            }
+
+            return result;
+        },
     },
 
     watch: {

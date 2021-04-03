@@ -49,7 +49,7 @@
 import { mapState, mapActions, mapMutations } from 'vuex';
 import { getFieldLabel } from 'lib/functions';
 import GetListForm from 'components/ui/GetListForm.vue';
-import RichTableList from 'components/TableList/RichTableList.vue';
+import RichTableList from 'components/ui/TableList/RichTableList.vue';
 import PageNavigation from 'components/ui/PageNavigation.vue';
 
 export default {

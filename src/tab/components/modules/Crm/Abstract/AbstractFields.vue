@@ -35,7 +35,7 @@
 
 <script>
 import {mapState, mapActions, mapMutations} from 'vuex';
-import TableList from 'components/TableList/BaseTableList.vue';
+import TableList from 'components/ui/TableList/BaseTableList.vue';
 import FieldEnumTableList from 'components/FieldEnumTableList.vue';
 import {prepareCrmEntityFields} from 'lib/functions';
 import BX24 from "lib/BX24";

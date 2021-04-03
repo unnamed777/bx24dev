@@ -16,7 +16,7 @@
 <script>
 import ProductSection from 'lib/entities/Crm/ProductSection';
 import BX24 from 'lib/BX24';
-import BaseTableList from 'components/TableList/BaseTableList';
+import BaseTableList from 'components/ui/TableList/BaseTableList';
 import NestedSet from 'lib/NestedSet';
 import { mapActions, mapMutations } from 'vuex';
 

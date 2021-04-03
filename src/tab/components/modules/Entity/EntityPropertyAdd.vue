@@ -4,13 +4,8 @@
         <Form
             v-model="formData"
             :fields="form.fields"
-            :ui="form.ui"
+            :buttons="form.buttons"
         />
-        <div class="form-group row">
-            <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" v-on:click="create">Создать</button>
-            </div>
-        </div>
     </div>
 </div>
 </template>
@@ -34,10 +29,18 @@ export default {
             },
             form: {
                 fields: [],
-                ui: {
-                    labelCols: 3,
-                    valueCols: 9,
-                }
+                buttons: [
+                    {
+                        type: 'cancel',
+                        label: 'Отмена',
+                        action: this.goToList,
+                    },
+                    {
+                        type: 'submit',
+                        label: 'Создать',
+                        action: this.create,
+                    },
+                ],
             },
         };
     },
@@ -55,6 +58,7 @@ export default {
     async mounted() {
         await this.loadEntities();
         this.form.fields = Object.values(await EntityProperty.getFields());
+        this.form.fields.find(item => item.code === 'ENTITY').readOnly = true;
         this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Свойства', 'Новое']);
     },
 
@@ -66,7 +70,7 @@ export default {
                 result = await EntityProperty.add(this.formData);
             } catch (ex) {
                 console.error(ex);
-                alert(ex.toString());
+                alert('Ошибка при создании свойства\n' + ex);
             }
 
             if (result !== true) {
@@ -74,7 +78,16 @@ export default {
             }
 
             await this.reloadEntities();
-            this.$root.goToRoute({ name: 'entityProperties', params: { entityId: this.entityId } });
+            this.goToList();
+        },
+
+        goToList() {
+            return this.$root.goToRoute({
+                name: 'entityProperties',
+                params: {
+                    entityId: this.entityId,
+                }
+            });
         },
 
         ...mapMutations({

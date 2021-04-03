@@ -5,13 +5,11 @@
             v-model="formData"
             :fields="form.fields"
             :ui="form.ui"
+            :buttons="form.buttons"
         />
-        <div class="form-group row">
-            <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" v-on:click="save">Изменить</button>
-            </div>
-        </div>
-        {{ formData }}
+
+        <div>Превью:</div>
+        <pre>{{ formData }}</pre>
     </div>
 </div>
 </template>
@@ -19,7 +17,7 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import BX24 from 'lib/BX24';
-import Form from 'components/ui/Form.vue';
+import Form from 'components/ui/Form';
 import getFieldFields from './getFieldFields';
 
 export default {
@@ -75,10 +73,18 @@ export default {
             },
             form: {
                 fields: fieldFields,
-                ui: {
-                    labelCols: 3,
-                    valueCols: 9,
-                }
+                buttons: [
+                    {
+                        type: 'cancel',
+                        label: 'Отмена',
+                        action: this.goToList,
+                    },
+                    {
+                        type: 'submit',
+                        label: 'Изменить',
+                        action: this.save,
+                    },
+                ],
             },
         };
     },
@@ -130,7 +136,7 @@ export default {
                 });
             } catch (ex) {
                 console.error(ex);
-                alert(ex.toString());
+                alert('Ошибка сохранения поля\n' + ex);
             }
 
             if (!result) {
@@ -138,7 +144,11 @@ export default {
             }
 
             await this.$store.dispatch(this.reloadFieldsAction);
-            await this.$root.goToRoute({ name: this.listRoute });
+            this.goToList();
+        },
+
+        goToList() {
+            return this.$root.goToRoute({ name: this.listRoute });
         },
 
         ...mapMutations({

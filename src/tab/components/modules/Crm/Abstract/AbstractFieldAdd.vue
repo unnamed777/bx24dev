@@ -5,14 +5,10 @@
             v-model="formData"
             :fields="form.fields"
             :ui="form.ui"
+            :buttons="form.buttons"
         />
-        <div class="form-group row">
-            <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-link mr-3" v-on:click="goToList">Отмена</button>
-                <button type="button" class="btn btn-primary" v-on:click="create">Создать</button>
-            </div>
-        </div>
-        {{ formData }}
+        <div>Превью:</div>
+        <pre>{{ formData }}</pre>
     </div>
 </div>
 </template>
@@ -62,10 +58,18 @@ export default {
             },
             form: {
                 fields: getFieldFields(),
-                ui: {
-                    labelCols: 3,
-                    valueCols: 9,
-                }
+                buttons: [
+                    {
+                        type: 'cancel',
+                        label: 'Отмена',
+                        action: this.goToList,
+                    },
+                    {
+                        type: 'submit',
+                        label: 'Сохранить',
+                        action: this.create,
+                    },
+                ],
             },
         };
     },
@@ -84,7 +88,7 @@ export default {
                 });
             } catch (ex) {
                 console.error(ex);
-                alert(ex.toString());
+                alert('Ошибка сохранения поля\n' + ex);
             }
 
             if (!result) {

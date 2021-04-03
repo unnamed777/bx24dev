@@ -27,7 +27,7 @@
     </div>
 </template>
 <script>
-import FormattedTableList from 'components/TableList/FormattedTableList';
+import FormattedTableList from 'components/ui/TableList/FormattedTableList';
 import ColumnsSlider from './ColumnsSlider';
 import ModalSlider from 'components/ui/ModalSlider';
 import { SettingsIcon } from 'vue-bytesize-icons';

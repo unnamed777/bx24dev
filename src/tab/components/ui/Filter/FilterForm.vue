@@ -13,7 +13,6 @@
 import FilterItem from './Item.vue';
 import isNil from 'lodash-es/isnil';
 import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
-import Vue from 'vue';
 
 export default {
     components: {

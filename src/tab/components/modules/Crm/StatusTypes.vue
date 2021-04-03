@@ -4,7 +4,7 @@
 
 <script>
 import BX24 from 'lib/BX24';
-import TableList from 'components/TableList/BaseTableList.vue';
+import TableList from 'components/ui/TableList/BaseTableList.vue';
 
 export default {
     data() {

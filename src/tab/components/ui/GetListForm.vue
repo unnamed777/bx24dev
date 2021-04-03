@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import FilterForm from 'components/Filter/FilterForm.vue';
+import FilterForm from 'components/ui/Filter/FilterForm.vue';
 import SortForm from 'components/SortForm.vue';
 
 export default {

@@ -1,7 +1,17 @@
 <template>
 <div>
-    <TableList :columns="tableColumns" :items="tableItems"/>
-    <button class="btn btn-primary" @click="$root.goToRoute({ name: 'entityRightsAdd', params: { entityId } })">Добавить</button>
+    <div class="row mb-3">
+        <div class="col-12 d-flex">
+            <div>
+                <button class="btn btn-light" @click="$root.goToRoute({ name: 'entityRightsAdd', params: { entityId } })">Добавить право</button>
+            </div>
+        </div>
+    </div>
+    <TableList
+        :columns="tableColumns"
+        :items="tableItems"
+        :rowActions="rowActions"
+    />
 </div>
 </template>
 
@@ -10,7 +20,7 @@ import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import Entity from 'lib/entities/Entity/Entity';
 import BX24 from 'lib/BX24';
 import zipObject from 'lodash-es/zipObject';
-import TableList from 'components/TableList/BaseTableList.vue';
+import TableList from 'components/ui/TableList/BaseTableList.vue';
 
 export default {
     components: {
@@ -24,7 +34,18 @@ export default {
             tableColumns: [
                 {code: 'object', label: 'Объект'},
                 {code: 'right', label: 'Права'},
-            ]
+            ],
+            rowActions: [
+                {
+                    label: 'Изменить',
+                    onClick: this.onEditClick,
+                },
+                {
+                    label: 'Удалить',
+                    onClick: this.onDeleteClick,
+                },
+            ],
+            tableItemIndex2Key: [],
         };
     },
 
@@ -37,6 +58,8 @@ export default {
                     object: `[${object}] ${this.objectNames[object] || ''}`,
                     right: `[${rightId}] ${Entity.rightLabels[rightId]}`,
                 });
+
+                this.tableItemIndex2Key[result.length - 1] = object;
             }
 
             return result;
@@ -59,7 +82,7 @@ export default {
     async mounted() {
         await this.loadEntities();
         this.setBreadcrumb(['Хранилище', `${this.entity.NAME} (${this.entity.ENTITY})`, 'Права']);
-        this.loadRights();
+        await this.loadRights();
     },
 
     methods: {
@@ -74,6 +97,31 @@ export default {
             // What if there is more than 50 items?
             let objectNames = await BX24.fetch('access.name', {ACCESS: objectIds});
             this.objectNames = zipObject(Object.keys(objectNames), Object.values(objectNames).map(item => item.name));
+        },
+
+        async onEditClick({index, row}) {
+            const object = this.tableItemIndex2Key[index];
+
+            this.$root.goToRoute({
+                name: 'entityRightsEdit',
+                params: {
+                    entityId: this.entityId,
+                    object,
+                },
+            });
+        },
+
+        async onDeleteClick({index, row}) {
+            const object = this.tableItemIndex2Key[index];
+
+            if (!confirm(`Удалить право для ${row.object}?`)) {
+                return;
+            }
+
+            const newRights = { ...this.rights };
+            delete newRights[object];
+            await Entity.setRights(this.entityId, newRights);
+            await this.loadRights();
         },
 
         ...mapMutations({

@@ -4,13 +4,8 @@
         <Form
             v-model="formData"
             :fields="form.fields"
-            :ui="form.ui"
+            :buttons="form.buttons"
         />
-        <div class="form-group row">
-            <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" v-on:click="save">Изменить</button>
-            </div>
-        </div>
     </div>
 </div>
 </template>
@@ -30,10 +25,18 @@ export default {
             formData: {},
             form: {
                 fields: [],
-                ui: {
-                    labelCols: 3,
-                    valueCols: 9,
-                }
+                buttons: [
+                    {
+                        type: 'cancel',
+                        label: 'Отмена',
+                        action: this.goToList,
+                    },
+                    {
+                        type: 'submit',
+                        label: 'Изменить',
+                        action: this.save,
+                    },
+                ],
             },
         };
     },
@@ -103,27 +106,36 @@ export default {
                 return;
             }
 
-            this.$root.goToRoute({ name: 'entityProperties', params: { entityId: this.entityId } });
+            this.goToList();
         },
 
         setBreadcrumb() {
             this.applyBreadcrumb([
-            {
-                text: 'Хранилище',
-                route: 'entityList',
-            },
-            {
-                text: this.entity.NAME,
-                route: 'entityItemList',
-                params: { entityId: this.entityId },
-            },
-            {
-                text: 'Свойства',
-                route: 'entityPropertyEdit',
-                params: { entityId: this.entityId },
-            },
-            this.property.NAME
-        ]);
+                {
+                    text: 'Хранилище',
+                    route: 'entityList',
+                },
+                {
+                    text: this.entity.NAME,
+                    route: 'entityItemList',
+                    params: { entityId: this.entityId },
+                },
+                {
+                    text: 'Свойства',
+                    route: 'entityPropertyEdit',
+                    params: { entityId: this.entityId },
+                },
+                this.property.NAME
+            ]);
+        },
+
+        goToList() {
+            return this.$root.goToRoute({
+                name: 'entityProperties',
+                params: {
+                        entityId: this.entityId,
+                }
+            });
         },
 
         ...mapMutations({

@@ -4,22 +4,15 @@
         <Form
             v-model="formData"
             :fields="form.fields"
-            :ui="form.ui"
+            :buttons="form.buttons"
         />
-        <div class="form-group row">
-            <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" v-on:click="create">Создать</button>
-            </div>
-        </div>
     </div>
 </div>
 </template>
 
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
-import Entity from 'lib/entities/Entity/Entity';
 import EntityItem from 'lib/entities/Entity/Item';
-import BX24 from 'lib/BX24';
 import Form from 'components/ui/Form.vue';
 
 export default {
@@ -34,10 +27,18 @@ export default {
             },
             form: {
                 fields: [],
-                ui: {
-                    labelCols: 3,
-                    valueCols: 9,
-                }
+                buttons: [
+                    {
+                        type: 'cancel',
+                        label: 'Отмена',
+                        action: this.goToList,
+                    },
+                    {
+                        type: 'submit',
+                        label: 'Сохранить',
+                        action: this.create,
+                    },
+                ],
             },
         };
     },
@@ -98,6 +99,10 @@ export default {
                 alert(ex.toString());
             }
 
+            this.goToList();
+        },
+
+        goToList() {
             this.$root.goToRoute({
                 name: 'entityItemList',
                 params: { entityId: this.entityId },

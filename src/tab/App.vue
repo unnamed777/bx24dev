@@ -164,6 +164,10 @@ body {
     border-color: #eff1f2;
 }
 
+.btn-link:hover {
+    text-decoration: none;
+}
+
 // select2 default theme
 .select2, .select2-dropdown {
     font-size: 14px;

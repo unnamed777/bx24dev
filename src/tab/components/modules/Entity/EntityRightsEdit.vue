@@ -1,30 +1,25 @@
 <template>
-<div class="row">
-    <div class="col-6">
-        <Form
-            v-model="formData"
-            :fields="form.fields"
-            :ui="form.ui"
-        />
-        <div class="form-group row">
-            <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" v-on:click="create">Создать</button>
-            </div>
+    <div class="row">
+        <div class="col-6">
+            <Form
+                v-model="formData"
+                :fields="form.fields"
+                :buttons="form.buttons"
+            />
         </div>
     </div>
-</div>
 </template>
 
 <script>
-import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
 import Entity from 'lib/entities/Entity/Entity';
-import EntityProperty from 'lib/entities/Entity/Property';
-import BX24 from 'lib/BX24';
 import Form from 'components/ui/Form.vue';
+import BaseInput from 'components/ui/BaseInput';
 
 export default {
     components: {
         Form,
+        BaseInput,
     },
 
     data() {
@@ -36,6 +31,7 @@ export default {
                         code: 'object',
                         label: 'Объект',
                         type: 'string',
+                        readOnly: false,
                     },
                     {
                         code: 'access',
@@ -44,10 +40,18 @@ export default {
                         items: Object.entries(Entity.rightLabels).map(item => ({ ID: item[0], VALUE: item[1] })),
                     },
                 ],
-                ui: {
-                    labelCols: 3,
-                    valueCols: 9,
-                }
+                buttons: [
+                    {
+                        type: 'cancel',
+                        label: 'Отмена',
+                        action: this.goToList,
+                    },
+                    {
+                        type: 'submit',
+                        label: 'Создать',
+                        action: this.create,
+                    },
+                ],
             },
         };
     },
@@ -60,19 +64,38 @@ export default {
         entity() {
             return this.$store.state.entities.items[this.entityId];
         },
+
+        object() {
+            return this.$route.params.object;
+        },
+
+        isNew() {
+            return !this.object;
+        },
     },
 
     async mounted() {
         await this.loadEntities();
         this.rights = await Entity.loadRights(this.entityId);
-        this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Права', 'Добавить']);
+        this.setBreadcrumb(['Хранилище', this.entity.NAME, 'Права', this.isNew ? 'Добавить' : 'Изменить']);
+
+        if (!this.isNew) {
+            let value = this.form.fields.find(item => item.code === 'object').readOnly = true;
+
+            this.formData = {
+                object: this.object,
+                access: this.rights[this.object],
+            };
+        }
     },
 
     methods: {
         async create() {
-            if (this.rights[this.formData.object]) {
-                alert(`Для ${this.formData.object} уже существует доступ ${this.rights[this.formData.object]}`);
-                return;
+            if (this.isNew) {
+                if (this.rights[this.formData.object]) {
+                    alert(`Для ${this.formData.object} уже существует доступ ${this.rights[this.formData.object]}`);
+                    return;
+                }
             }
 
             if (!Entity.rightLabels[this.formData.access]) {
@@ -80,7 +103,7 @@ export default {
             }
 
             // Add object validation
-            const newRights = {...this.rights};
+            const newRights = { ...this.rights };
             newRights[this.formData.object] = this.formData.access;
 
             try {
@@ -94,7 +117,16 @@ export default {
                 alert(ex.toString());
             }
 
-            this.$root.goToRoute({ name: 'entityRights', params: { entityId: this.entityId } });
+            this.goToList();
+        },
+
+        goToList() {
+            this.$root.goToRoute({
+                name: 'entityRights',
+                params: {
+                    entityId: this.entityId ,
+                }
+            });
         },
 
         ...mapMutations({

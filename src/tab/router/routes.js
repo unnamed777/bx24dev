@@ -37,7 +37,7 @@ import EntityProperties from 'components/modules/Entity/EntityProperties.vue';
 import EntityPropertyAdd from 'components/modules/Entity/EntityPropertyAdd.vue';
 import EntityPropertyEdit from 'components/modules/Entity/EntityPropertyEdit.vue';
 import EntityRights from 'components/modules/Entity/EntityRights.vue';
-import EntityRightsAdd from 'components/modules/Entity/EntityRightsAdd.vue';
+import EntityRightsEdit from 'components/modules/Entity/EntityRightsEdit.vue';
 import EntityItemList from 'components/modules/Entity/EntityItemList.vue';
 import EntityItemAdd from 'components/modules/Entity/EntityItemAdd.vue';
 import DepartmentList from 'components/modules/User/DepartmentList.vue';
@@ -254,7 +254,12 @@ export default [
     {
         path: '/:authId/entity/:entityId/rights/add',
         name: 'entityRightsAdd',
-        component: EntityRightsAdd,
+        component: EntityRightsEdit,
+    },
+    {
+        path: '/:authId/entity/:entityId/rights/edit/:object',
+        name: 'entityRightsEdit',
+        component: EntityRightsEdit,
     },
     {
         path: '/:authId/user/department/list',
