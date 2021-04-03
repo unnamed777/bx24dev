@@ -4,3 +4,4 @@
 /dist
 /dist-zip
 /.secret.js
+/bin/.mozilla_credentials
