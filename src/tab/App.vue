@@ -49,6 +49,10 @@ export default {
 
     async mounted() {
         document.title = document.title + ': ' + this.title;
+
+        if (this.$route.name === 'index') {
+            this.$root.goToRoute({ name: 'console' });
+        }
     },
 }
 </script>

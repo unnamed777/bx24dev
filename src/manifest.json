@@ -15,10 +15,6 @@
       "background.js"
     ]
   },
-  "options_ui": {
-    "page": "options/options.html",
-    "chrome_style": true
-  },
   "permissions": [
     "<all_urls>",
     "webNavigation",
@@ -28,6 +24,5 @@
     "storage",
     "contextualIdentities"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://localhost:*; object-src 'self';",
-  "web_accessible_resources": ["tab/index.html", "popup/popup.html", "webhook/index.html"]
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://localhost:*; object-src 'self';"
 }

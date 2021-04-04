@@ -25,14 +25,11 @@ export default {
 
     data() {
         const items = [
-            /*{
-                label: 'test',
-                action: this.testCall,
-            },*/
-            /*{
-                label: 'Refresh auth',
-                action: this.actions.refreshAuth,
-            },*/
+            {
+                id: 'console',
+                label: 'Консоль',
+                route: this.getPath('console'),
+            },
             {
                 id: 'entities',
                 label: 'Хранилище',
@@ -218,11 +215,6 @@ export default {
                         route: this.getPath('placementTypes'),
                     },
                 ]
-            },
-            {
-                id: 'console',
-                label: 'Консоль',
-                route: this.getPath('console'),
             },
             {
                 id: 'info',
