@@ -2,6 +2,7 @@
 /node_modules
 /*.log
 /dist
+/dist_chrome
 /dist-zip
 /.secret.js
 /bin/.mozilla_credentials

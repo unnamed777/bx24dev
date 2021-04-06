@@ -4,6 +4,7 @@
         :loadFieldsAction="'dealFields/load'"
         :fieldsGetter="fieldsGetter"
         :visibleColumns="['ID', 'TITLE', 'OPPORTUNITY', 'STAGE_ID']"
+        :rowActions="rowActions"
         :breadcrumb="['CRM', 'Сделки', 'Список']"
     />
 </template>
@@ -11,10 +12,28 @@
 <script>
 import Deal from 'lib/entities/Crm/Deal';
 import AbstractEntryListPage from 'components/modules/AbstractEntryListPage';
+import { mapState } from "vuex";
 
 export default {
     components: {
         AbstractEntryListPage,
+    },
+
+    data() {
+        return {
+            rowActions: [
+                {
+                    label: 'Открыть в Б24',
+                    onClick: this.onB24EditClick,
+                },
+            ],
+        };
+    },
+
+    computed: {
+        ...mapState({
+            appData: state => state.appData,
+        }),
     },
 
     methods: {
@@ -34,6 +53,10 @@ export default {
 
         fieldsGetter($store) {
             return $store.state.dealFields.items;
+        },
+
+        onB24EditClick({row, index}) {
+            window.open(`https://${this.appData.portal}/crm/deal/details/${row.ID}/`, '_blank');
         },
     }
 };
