@@ -1,6 +1,6 @@
 # bx24dev
 
-[Chrome Web Store](https://chrome.google.com/webstore/detail/bx24dev/kfgdjkelnopegmkhnknblmhhomlmofan/related)
+[Chrome Web Store](https://chrome.google.com/webstore/detail/bx24dev/kfgdjkelnopegmkhnknblmhhomlmofan/related) | [Firefox addon](https://github.com/unnamed777/bx24dev/releases/tag/v0.3.20)
 
 Браузерное расширение для разработчика Bitrix24 REST API. Предоставляет интерфейс для просмотра основных сущностей Битрикс24 
 и даёт возможность выполнять произвольные запросы в рамках прав приложения.
