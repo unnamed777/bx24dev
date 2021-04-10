@@ -1,5 +1,5 @@
 <template>
-<div class="nav flex-column mb-4">
+<div class="nav flex-column">
     <SidebarMenuItem
         v-for="(item, index) in items"
         v-if="!item.hidden"
@@ -533,6 +533,14 @@ export default {
     .nav {
         margin-left: -15px;
         margin-right: -15px;
+
+        min-height: calc(
+            100vh
+            /* height of app info block */
+            - (1.2rem * 1.5 + 0.7rem * 1.5 + 1rem)
+            /* github height + its vertical margins */
+            - (26px + 15px + 15px)
+        );
     }
 
     --left-padding: 1rem;

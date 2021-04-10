@@ -245,9 +245,11 @@ body .json-formatter-row {
 }
 
 .github {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
+    display: block;
+    height: 26px;
+    width: 26px;
+    margin-bottom: 15px;
+    margin-top: 15px;
     opacity: 0.15;
 }
 </style>
