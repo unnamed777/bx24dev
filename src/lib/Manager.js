@@ -11,6 +11,10 @@ class Manager {
         messageListener.subscribe('createExtensionInstance', this.onMessageCreateExtensionInstance.bind(this));
         messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
         messageListener.subscribe('refreshAuth', this.onMessageRefreshAuth.bind(this));
+        messageListener.subscribe('getRecentList', this.onMessageGetRecentList.bind(this));
+
+         /** @type {Array<AuthController>} */
+        this.instances = [null];
     }
 
     onMessageCreateExtensionInstance({ payload }) {
@@ -95,7 +99,6 @@ class Manager {
         console.log('Manager.createTabInstance()');
 
         if (!this.instances) {
-            this.instances = [null];
         }
 
         this.instances.push(null);
@@ -140,6 +143,30 @@ class Manager {
         console.log('Manager.onMessageRefreshAuth(), result', result);
         return result;
         //sendResponse(result);
+    }
+
+    async onMessageGetRecentList(payload, sender, sendResponse) {
+        let result = [];
+
+        for (let authController of this.instances) {
+            if (!(authController instanceof AuthController)) {
+                continue;
+            }
+
+            if (authController.getProviderName() === 'webhook') {
+                let data = authController.getData();
+                console.log(data);
+
+                result.push({
+                    authId: authController.getId(),
+                    title: data.title,
+                    portal: data.portal,
+                    url: data.auth.url.replace(/\/(.)[^\\/]*$/si, '/$1***'),
+                });
+            }
+        }
+
+        return result;
     }
 }
 

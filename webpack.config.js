@@ -13,8 +13,10 @@ const config = {
     mode: 'development',//process.env.NODE_ENV,
     context: __dirname + '/src',
     entry: {
+        'vendor/vue': ['vue', 'vuex', 'vue-router'],
         'background': './background.js',
         'tab/index': './tab/index.js',
+        'login/index': './login/index.js',
     },
     output: {
         path: __dirname + '/dist',
@@ -41,11 +43,11 @@ const config = {
                 test: /\.vue$/,
                 loader: 'vue-loader',
             },
-            {
+            /*{
                 test: /\.js$/,
                 loader: 'babel-loader',
                 exclude: /node_modules/,
-            },
+            },*/
             {
                 test: /\.css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
@@ -65,6 +67,21 @@ const config = {
             },
         ],
     },
+
+    optimization: {
+        runtimeChunk: false,
+        splitChunks: {
+            cacheGroups: {
+                vue_libs: {
+                    test: /[\\/]node_modules[\\/](vue|vue-router|vuex)/,
+                    name: 'vendor/vue',
+                    enforce: true,
+                    chunks: 'all'
+                },
+            }
+        }
+    },
+
     plugins: [
         new WebpackNotifierPlugin(),
         new webpack.DefinePlugin({
@@ -78,7 +95,7 @@ const config = {
             { from: 'icons', to: 'icons', ignore: ['icon.xcf'] },
             { from: 'tab/index.html', to: 'tab/index.html', transform: transformHtml },
             { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
-            { from: 'login', to: 'login' },
+            //{ from: 'login', to: 'login' },
             { from: 'vendor', to: 'vendor'},
             {
                 from: 'manifest.json',

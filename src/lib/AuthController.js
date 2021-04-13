@@ -112,4 +112,12 @@ export default class AuthController {
 
         return this.getData();
     }
+
+    getId() {
+        return this.id;
+    }
+
+    getProviderName() {
+        return this.providerName;
+    }
 }

@@ -58,7 +58,10 @@ export default {
     methods: {
         jsonFormatter() {
             const $output = this.$refs['output_pretty'];
-            $output.children.forEach((item) => $output.removeChild(item));
+
+            for (let item of $output.children) {
+                $output.removeChild(item);
+            }
 
             const formatter = new JSONFormatter(this.response, this.prettyExpanded ? 4 : 1, {
                 animateOpen: false,
