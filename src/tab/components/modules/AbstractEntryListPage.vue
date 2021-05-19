@@ -30,7 +30,7 @@
                     :availableColumns="availableColumns"
                     :visibleColumns="visibleColumns"
                     :items="items"
-                    :rowActions="rowActions"
+                    :rowActions="currentRowActions"
                     :hasSettings="true"
                 />
             </div>
@@ -42,6 +42,30 @@
                 @change="onPageChange"
             />
         </div>
+
+        <ModalSlider
+            v-if="isItemCardOpened"
+            :width="800"
+            @close="onItemCardClose"
+        >
+            <div class="p-3">
+                <h3>Запись детально</h3>
+                <table class="table table-sm table-hover">
+                    <tbody>
+                        <tr v-for="field in fields">
+                            <td class="mr-2 align-top" style="width: 30%;">
+                                <div style="line-height: 1em;">{{ field.label }}</div>
+                                <div class="text-muted" style="font-size: 60%">{{ field.code }}</div>
+                            </td>
+                            <td class="align-middle" style="line-height: 1em;">
+                                <span v-if="cardItem[field.code]">{{ cardItem[field.code] }}</span>
+                                <span v-else class="text-muted">null</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ModalSlider>
     </div>
 </template>
 
@@ -51,12 +75,14 @@ import { getFieldLabel } from 'lib/functions';
 import GetListForm from 'components/ui/GetListForm.vue';
 import RichTableList from 'components/ui/TableList/RichTableList.vue';
 import PageNavigation from 'components/ui/PageNavigation.vue';
+import ModalSlider from 'components/ui/ModalSlider';
 
 export default {
     components: {
         GetListForm,
         RichTableList,
         PageNavigation,
+        ModalSlider,
     },
 
     props: {
@@ -99,6 +125,8 @@ export default {
             sort: {},
             currentPage: 1,
             totalPages: 0,
+            isItemCardOpened: false,
+            cardItem: null,
         };
     },
 
@@ -120,6 +148,17 @@ export default {
 
             return fields;
         },
+
+        currentRowActions() {
+            return [
+                {
+                    code: 'showCard',
+                    label: 'Посмотреть',
+                    onClick: this.onShowClick,
+                },
+                ...this.rowActions
+            ];
+        }
     },
 
     watch: {
@@ -186,6 +225,15 @@ export default {
             }
 
             this.items = [].concat(this.items.slice(0, itemIndex), this.items.slice(itemIndex + 1));
+        },
+
+        onShowClick({row, index}) {
+            this.cardItem = this.items[index];
+            this.isItemCardOpened = true;
+        },
+
+        onItemCardClose() {
+            this.isItemCardOpened = false;
         },
 
         ...mapMutations({

@@ -83,7 +83,7 @@ export default {
         webhookSubmit() {
             const webhook = document.getElementById('webhookUrl').value;
 
-            if (/^https:\/\/[^/]+\/rest\/[0-9]+\/[^/]+/.test(webhook) === false && /^\S+ [0-9]+ \S+$/.test(webhook) === false) {
+            if (/^https:\/\/[^/]+\/rest\/[0-9]+\/[^/]+/.test(webhook) === false && /^\S+\s+[0-9]+\s+\S+$/.test(webhook) === false) {
                 alert('Неверный формат данных для вебхука');
                 return;
             }

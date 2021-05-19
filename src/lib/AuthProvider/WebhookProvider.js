@@ -12,7 +12,7 @@ export default class WebhookProvider {
 
         // That's not an url, may be just host, user and key
         if (result === null) {
-            result = /^([^\s]+) ([^\s]+) ([^\s]+)/.exec(this.url);
+            result = /^([^\s]+)\s+([^\s]+)\s+([^\s]+)/.exec(this.url);
 
             if (result !== null) {
                 result[0] = `https://${result[1]}/rest/${result[2]}/${result[3]}`;
