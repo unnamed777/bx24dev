@@ -206,10 +206,19 @@ export default {
 
         async exportAll() {
             this.isLoading = true;
+            let listDomain = prompt('Узел с результатами', 'items');
+
+            if (listDomain === null) {
+                return;
+            } else if (!listDomain) {
+                listDomain = 'items';
+            }
 
             try {
                 let requestObject = this.codeToObject(this.body);
-                let result = await BX24.fetchAll(this.method, requestObject);
+                let result = await BX24.fetchAll(this.method, requestObject, {
+                    getter: (response) => response.result[listDomain],
+                });
 
                 const blob = new Blob([JSON.stringify(result, null, 2)], { type: "application/json" });
 

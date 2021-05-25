@@ -75,8 +75,9 @@ const store = new Vuex.Store({
             // Something weird with scopes
             if (state.scope && (state.scope.indexOf('sale') !== -1 || state.scope.indexOf('catalog') !== -1)) {
                 methods = methods.concat([
-                    'catalog.add', 'catalog.delete', 'catalog.get', 'catalog.getFields', 'catalog.isOffers', 'catalog.list', 'catalog.update', 'catalog.enum.getRoundTypes',
-                    'catalog.extra.get', 'catalog.extra.getFields', 'catalog.extra.list', 'catalog.measure.get', 'catalog.measure.getFields', 'catalog.measure.list', 'catalog.price.delete',
+                    'catalog.catalog.add', 'catalog.catalog.delete', 'catalog.catalog.get', 'catalog.catalog.getFields', 'catalog.catalog.isOffers',
+                    'catalog.catalog.list', 'catalog.catalog.update', 'catalog.enum.getRoundTypes', 'catalog.extra.get', 'catalog.extra.getFields',
+                    'catalog.extra.list', 'catalog.measure.get', 'catalog.measure.getFields', 'catalog.measure.list', 'catalog.price.delete',
                     'catalog.price.get', 'catalog.price.getFields', 'catalog.price.list', 'catalog.price.modify', 'catalog.priceType.get', 'catalog.priceType.getFields',
                     'catalog.priceType.list', 'catalog.product.add', 'catalog.product.delete', 'catalog.product.download', 'catalog.product.get', 'catalog.product.getFieldsByFilter',
                     'catalog.product.list', 'catalog.product.update', 'catalog.ratio.get', 'catalog.ratio.getFields', 'catalog.ratio.list', 'catalog.roundingRule.get',
@@ -85,6 +86,8 @@ const store = new Vuex.Store({
                     'catalog.vat.getFields', 'catalog.vat.list',
                 ]);
             }
+
+            methods.sort();
 
             state.availableMethods = methods;
         },
