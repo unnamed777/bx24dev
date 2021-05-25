@@ -214,13 +214,6 @@ export default {
             }
 
             this.isLoading = true;
-            let listDomain = prompt('Узел с результатами', 'items');
-
-            if (listDomain === null) {
-                return;
-            } else if (!listDomain) {
-                listDomain = 'items';
-            }
 
             try {
                 let requestObject = this.codeToObject(this.body);
