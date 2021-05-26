@@ -426,6 +426,10 @@ export default {
                             route: this.getPath('crmProductList', { catalogId: catalog.ID }),
                         },
                         {
+                            label: 'Поля товаров',
+                            route: this.getPath('crmProductFieldList', { catalogId: catalog.ID }),
+                        },
+                        {
                             label: 'Разделы',
                             route: this.getPath('crmProductSectionList', { catalogId: catalog.ID }),
                         },

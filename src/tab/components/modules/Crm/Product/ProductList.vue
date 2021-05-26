@@ -57,7 +57,7 @@ export default {
 
             let collection = (await Product.load({
                 order: sort,
-                select: ['*'],
+                select: ['*', 'PROPERTY_*'],
                 filter: filter,
             }, {
                 page: page,

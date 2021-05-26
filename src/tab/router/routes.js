@@ -28,6 +28,7 @@ import CrmCatalogList from 'components/modules/Crm/Catalog/CatalogList.vue';
 import CrmProductSectionList from 'components/modules/Crm/ProductSection/ProductSectionList.vue';
 import CrmProductSectionTree from 'components/modules/Crm/ProductSection/ProductSectionTree.vue';
 import CrmProductList from 'components/modules/Crm/Product/ProductList.vue';
+import CrmProductFieldList from 'components/modules/Crm/Product/ProductFields.vue';
 import CrmStatusTypes from 'components/modules/Crm/StatusTypes.vue';
 import CrmSources from 'components/modules/Crm/Sources.vue';
 import CrmIndustries from 'components/modules/Crm/Industries.vue';
@@ -200,6 +201,11 @@ export default [
         path: '/:authId/crm/catalog/:catalogId/tree',
         name: 'crmProductSectionTree',
         component: CrmProductSectionTree,
+    },
+    {
+        path: '/:authId/crm/catalog/:catalogId/fields',
+        name: 'crmProductFieldList',
+        component: CrmProductFieldList,
     },
     {
         path: '/:authId/crm/status/types',
