@@ -38,13 +38,35 @@
                     </form>
                 </div>
 
-                <!--<div v-if="this.recentList.length > 0" class="mb-5">
+                <div v-if="this.recentList.length > 0" class="mb-5">
                     <h4>Недавние подключения</h4>
-                    <div v-for="item of recentList" class="recent-item mb-2" @click="openRecent(item.id)">
-                        <div><b>{{ item.title }} {{ item.portal }}</b></div>
-                        <small>{{ item.url }}</small>
+                    <div v-for="(item, index) of recentList" class="auth-item recent-item mb-2">
+                        <div class="auth-item__body">
+                            <div class="auth-item__title" @click="openRecent(index)"><b>{{ item.portal }} / {{ item.title }}</b></div>
+                            <small class="text-secondary">{{ item.extra }}</small>
+                        </div>
+                        <div class="auth-item__actions">
+                            <StarIcon
+                                class="recent-item__save"
+                                :class="{ 'recent-item__save--saved': savedIds.includes(item.id) }"
+                                @click="savedIds.includes(item.id) ? forgetAuth(item.id) : rememberAuth(index)"
+                            />
+                        </div>
                     </div>
-                </div>-->
+                </div>
+
+                <div v-if="this.savedList.length > 0" class="mb-5">
+                    <h4>Сохранённые подключения</h4>
+                    <div v-for="(item, index) of savedList" class="auth-item saved-item mb-2">
+                        <div class="auth-item__body">
+                            <div class="auth-item__title" @click="openSaved(item.id)"><b>{{ item.title }} {{ item.portal }}</b></div>
+                            <small class="text-secondary">{{ item.extra }}</small>
+                        </div>
+                        <div class="auth-item__actions">
+                            <CloseIcon class="saved-item__delete" @click="forgetAuth(item.id)"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <a class="github" href="https://github.com/unnamed777/bx24dev" target="_blank">
@@ -57,16 +79,32 @@
 </template>
 
 <script>
+import browser from 'webextension-polyfill';
+import { StarIcon, CloseIcon } from 'vue-bytesize-icons';
+
 export default {
+    components: {
+        StarIcon,
+        CloseIcon,
+    },
+
     data() {
         return {
             recentList: [],
+            savedList: [],
         };
     },
 
     mounted() {
         this.$refs['webhookUrl'].focus();
-        this.getRecent();
+        this.getSavedList();
+        this.getRecentList();
+    },
+
+    computed: {
+        savedIds() {
+            return this.savedList.map(item => item.id);
+        }
     },
 
     methods: {
@@ -102,21 +140,92 @@ export default {
             });
         },
 
-        async getRecent() {
+        async getSavedList() {
+            // noinspection JSVoidFunctionReturnValueUsed
+            this.savedList = await (window.browser || chrome).runtime.sendMessage(null, {
+                type: 'getSavedList',
+                payload: {}
+            });
+
+            for (let item of this.savedList) {
+                if (item.type === 'webhook') {
+                    item.extra = item.url.replace(/\/(.)[^\\/]*$/si, '/$1***');
+                }
+            }
+        },
+
+        async getRecentList() {
+            // noinspection JSVoidFunctionReturnValueUsed
             this.recentList = await (window.browser || chrome).runtime.sendMessage(null, {
                 type: 'getRecentList',
                 payload: {}
             });
+            console.log(this.recentList);
+
+            for (let item of this.recentList) {
+                switch (item.type) {
+                    case 'webhook':
+                        item.extra = item.url.replace(/\/(.)[^\\/]*$/si, '/$1***');
+                        break;
+
+                    case 'oauth':
+                        item.extra = item.clientId;
+                        break;
+                }
+            }
         },
 
-        openRecent(authId) {
-            (window.browser || chrome).runtime.sendMessage(null, {
-                type: 'createExtensionInstance',
+        openRecent(index) {
+            const item = this.recentList[index];
+
+            switch (item.type) {
+                case 'webhook':
+                    this.create('webhook', {
+                        url: item.url,
+                    });
+
+                    setTimeout(() => window.close(), 50);
+                    break;
+
+                default:
+                    return;
+            }
+        },
+
+        async rememberAuth(index) {
+            const saveId = await (window.browser || chrome).runtime.sendMessage(null, {
+                type: 'rememberAuth',
                 payload: {
-                    authId: authId,
+                    authId: this.recentList[index].authId,
                 }
             });
-        }
+
+            await this.getSavedList();
+        },
+
+        async forgetAuth(id) {
+            if (!confirm('Удалить?')) {
+                return;
+            }
+
+            await browser.runtime.sendMessage(null, {
+                type: 'forgetAuth',
+                payload: {
+                    id: id
+                }
+            });
+
+            await this.getSavedList();
+        },
+
+        async openSaved(id) {
+            await browser.runtime.sendMessage(null, {
+                type: 'createExtensionInstanceBySavedId',
+                payload: {
+                    id: id
+                }
+            });
+        },
     },
 }
 </script>
@@ -148,13 +257,60 @@ input {
 }
 
 .github {
-    position: absolute;
+    position: fixed;
     bottom: 15px;
     left: 15px;
 }
 
-.recent-item {
+.auth-item {
+    display: flex;
     line-height: 1.2em;
-    cursor: pointer;
+
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+
+    &__body {
+        flex: 1 1 auto;
+        cursor: default;
+    }
+
+    &__title {
+        cursor: pointer;
+    }
+
+    &__actions {
+        display: flex;
+        width: 32px;
+        flex: 0 0 32px;
+
+        justify-content: space-around;
+    }
+}
+
+.recent-item {
+    &__save {
+        width: 20px;
+        height: 20px;
+        opacity: 0.5;
+        cursor: pointer;
+
+        &--saved {
+            opacity: 1;
+        }
+    }
+}
+
+.saved-item {
+    &__delete {
+        width: 16px;
+        height: 16px;
+        opacity: 0.5;
+        cursor: pointer;
+
+        &--saved {
+            opacity: 1;
+        }
+    }
 }
 </style>

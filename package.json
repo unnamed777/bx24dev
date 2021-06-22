@@ -19,6 +19,7 @@
   "dependencies": {
     "json-formatter-js": "^2.3.4",
     "lodash-es": "^4.17.15",
+    "md5": "^2.3.0",
     "qs": "^6.9.1",
     "vue": "^2.6.11",
     "vue-bytesize-icons": "^0.1.1",

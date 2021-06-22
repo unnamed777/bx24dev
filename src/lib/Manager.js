@@ -1,6 +1,7 @@
 import { newMessageListener as messageListener, default as oldMessageListener } from 'lib/MessageListener';
 import AuthController from 'lib/AuthController';
 import browser from 'webextension-polyfill';
+import md5 from 'md5';
 import { alert } from "lib/functions";
 
 //oldMessageListener.init();
@@ -12,6 +13,10 @@ class Manager {
         messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
         messageListener.subscribe('refreshAuth', this.onMessageRefreshAuth.bind(this));
         messageListener.subscribe('getRecentList', this.onMessageGetRecentList.bind(this));
+        messageListener.subscribe('getSavedList', this.onMessageGetSavedList.bind(this));
+        messageListener.subscribe('rememberAuth', this.onMessageRememberAuth.bind(this));
+        messageListener.subscribe('forgetAuth', this.onMessageForgetAuth.bind(this));
+        messageListener.subscribe('createExtensionInstanceBySavedId', this.onMessageCreateExtensionInstanceBySavedId.bind(this));
 
          /** @type {Array<AuthController>} */
         this.instances = [null];
@@ -31,6 +36,7 @@ class Manager {
 
         if (/bitrix24\.ru\/marketplace\/app\//i.test(callerTab.url) !== false) {
             // App's page
+            // noinspection JSVoidFunctionReturnValueUsed
             let frames = await browser.webNavigation.getAllFrames({ tabId: callerTab.id });
             let appFound = false;
             let frame;
@@ -52,6 +58,7 @@ class Manager {
             }
         } else if (/bitrix24\.ru\/devops\/edit\/application\/\d+\//.test(callerTab.url)) {
             // "Edit app" page
+            // noinspection JSVoidFunctionReturnValueUsed
             let frames = await browser.webNavigation.getAllFrames({ tabId: callerTab.id });
             let frameFound = false;
             let frame;
@@ -92,14 +99,12 @@ class Manager {
     /**
      *
      * @param tab
-     * @param mode Seems to be obsolete
+     * @param {string} providerName
+     * @param {Object} providerPayload
      * @returns {AuthController}
      */
     createTabInstance({ tab, providerName, providerPayload }) {
         console.log('Manager.createTabInstance()');
-
-        if (!this.instances) {
-        }
 
         this.instances.push(null);
         const newInstanceId = this.instances.length - 1;
@@ -147,26 +152,198 @@ class Manager {
 
     async onMessageGetRecentList(payload, sender, sendResponse) {
         let result = [];
+        let uniq = new Set();
+        console.log(this.instances);
 
         for (let authController of this.instances) {
             if (!(authController instanceof AuthController)) {
                 continue;
             }
 
-            if (authController.getProviderName() === 'webhook') {
-                let data = authController.getData();
-                console.log(data);
+            let data = authController.getData();
 
-                result.push({
-                    authId: authController.getId(),
-                    title: data.title,
-                    portal: data.portal,
-                    url: data.auth.url.replace(/\/(.)[^\\/]*$/si, '/$1***'),
-                });
+            switch (authController.getProviderName()) {
+                case 'webhook':
+
+                    if (uniq.has(data.auth.url)) {
+                        continue;
+                    }
+
+                    result.push({
+                        type: 'webhook',
+                        authId: authController.getId(),
+                        id: md5(data.auth.url),
+                        title: data.title,
+                        portal: data.portal,
+                        url: data.auth.url,
+                    });
+
+                    uniq.add(data.auth.url);
+                    break;
+
+                case 'oauth':
+                    // Looks dirty
+                    let uniqId = md5(authController.provider.credentials.clientId + authController.provider.credentials.clientSecret);
+
+                    if (uniq.has(uniqId)) {
+                        continue;
+                    }
+
+                    result.push({
+                        type: 'oauth',
+                        authId: authController.getId(),
+                        id: uniqId,
+                        title: data.title,
+                        portal: data.portal,
+                        clientId: authController.provider.credentials.clientId.substr(0, 8) + '***'
+                    });
+                    break;
             }
         }
 
         return result;
+    }
+
+    async onMessageGetSavedList(payload, sender, sendResponse) {
+        let storageResult = await browser.storage.local.get('savedAuth');
+
+        if (!storageResult.savedAuth) {
+            console.log(1);
+            return [];
+        }
+
+        let result = [];
+
+        for (let item of storageResult.savedAuth) {
+            console.log(item);
+            let exportItem;
+
+            switch (item.type) {
+                case 'webhook':
+                    let parts = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)\/?$/.exec(item.url);
+
+                    exportItem = {
+                        id: item.id,
+                        type: 'webhook',
+                        title: 'Webhook',
+                        portal: parts[1],
+                        url: item.url,
+                    };
+                    break;
+
+                case 'oauth':
+                    break;
+            }
+
+            result.push(exportItem);
+        }
+        console.log(result);
+
+        return result;
+    }
+
+    /**
+     * Saves auth data to local storage
+     *
+     * @param payload
+     * @param sender
+     * @param sendResponse
+     * @returns {Promise<*>}
+     */
+    async onMessageRememberAuth(payload, sender, sendResponse) {
+        const authController = this.instances[payload.payload.authId];
+        // noinspection JSVoidFunctionReturnValueUsed
+        let storageResult = await browser.storage.local.get('savedAuth');
+        let savedAuth;
+
+        if (storageResult.savedAuth) {
+            savedAuth = storageResult.savedAuth;
+        } else {
+            savedAuth = [];
+        }
+
+        let newItem;
+
+        switch (authController.getProviderName()) {
+            case 'webhook':
+                newItem = {
+                    type: 'webhook',
+                    url: authController.getData().auth.url,
+                };
+
+                newItem.id = md5(newItem.url);
+                break;
+        }
+
+        savedAuth.push(newItem);
+        await browser.storage.local.set({ savedAuth });
+
+        return newItem.id;
+    }
+
+    /**
+     * Removes auth data from local storage
+     *
+     * @param payload
+     * @param sender
+     * @param sendResponse
+     * @returns {Promise<void>}
+     */
+    async onMessageForgetAuth(payload, sender, sendResponse) {
+        const keyToRemove = payload.payload.id;
+
+        let { savedAuth = [] } = await browser.storage.local.get('savedAuth');
+
+        for (let index in savedAuth) {
+            let auth = savedAuth[index];
+            let key;
+
+            switch (auth.type) {
+                case 'webhook':
+                    key = md5(auth.url);
+                    break;
+            }
+
+            if (key === keyToRemove) {
+                savedAuth = savedAuth.slice(0, index).concat(savedAuth.slice(index + 1));
+                break;
+            }
+        }
+
+        await browser.storage.local.set({ savedAuth });
+    }
+
+    async onMessageCreateExtensionInstanceBySavedId(payload, sender, sendResponse) {
+        const savedId = payload.payload.id;
+        let { savedAuth = [] } = await browser.storage.local.get('savedAuth');
+        const savedItem = savedAuth.find(item => item.id === savedId);
+
+        if (!savedItem) {
+            return false;
+        }
+
+        let providerName;
+        let providerPayload;
+
+        switch (savedItem.type) {
+            case 'webhook':
+                providerName = 'webhook';
+
+                providerPayload = {
+                    url: savedItem.url
+                };
+                break;
+
+            default:
+                return false;
+        }
+
+        this.createTabInstance({
+            providerName: providerName,
+            providerPayload: providerPayload,
+        });
+
+        return true;
     }
 }
 

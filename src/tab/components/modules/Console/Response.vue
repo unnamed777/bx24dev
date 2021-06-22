@@ -17,7 +17,13 @@
                 </label>
             </div>
 
-            <button v-if="outputView === 'pretty'" class="btn btn-sm btn-light" @click="togglePretty()">
+            <button
+                v-if="outputView === 'pretty'"
+                class="btn btn-sm btn-light"
+                :title="'Правый клик – +1 уровень глубины\nCtrl+правый клик – -1 уровень глубины'"
+                @mouseup="togglePretty"
+                @contextmenu.prevent
+            >
                 <span style="opacity: 0.7; font-size: 0.7rem;">► / <span style="display: inline-block; transform: rotate(90deg);">►</span></span>
             </button>
         </div>
@@ -39,6 +45,7 @@ export default {
             outputView: 'pretty',
             prettyExpanded: true,
             runtimeMethods: [],
+            expandLevel: 4,
         };
     },
 
@@ -63,7 +70,7 @@ export default {
                 $output.removeChild(item);
             }
 
-            const formatter = new JSONFormatter(this.response, this.prettyExpanded ? 4 : 1, {
+            const formatter = new JSONFormatter(this.response, this.expandLevel, {
                 animateOpen: false,
                 animateClose: false,
             });
@@ -81,8 +88,19 @@ export default {
             this.$refs['output_pretty'].appendChild(renderResult);
         },
 
-        togglePretty() {
-            this.prettyExpanded = !this.prettyExpanded;
+        togglePretty(e) {
+            console.log(e);
+            //this.prettyExpanded = this.prettyExpanded;
+            if (e.button === 2) {
+                if (e.metaKey === true || e.ctrlKey === true) {
+                    this.expandLevel--;
+                } else {
+                    this.expandLevel++;
+                }
+            } else {
+                this.expandLevel = this.expandLevel === 1 ? 10 : 1;
+            }
+
             this.jsonFormatter();
         },
     },

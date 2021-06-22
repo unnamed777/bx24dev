@@ -17,6 +17,7 @@ export default {
                 {code: 'ID', label: 'ID'},
                 {code: 'STATUS_ID', label: 'STATUS_ID'},
                 {code: 'NAME', label: 'Название'},
+                {code: 'EXTRA', label: 'Дополнительно'},
                 {code: 'SORT', label: 'Сортировка'},
             ],
         };
