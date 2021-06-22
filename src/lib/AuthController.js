@@ -1,8 +1,9 @@
 import messageListener from 'lib/MessageListener';
 import { alert } from 'lib/functions';
 import AppProvider from 'lib/AuthProvider/AppProvider';
-import OAuthProvider from 'lib/AuthProvider/OAuthProvider';
+import GrabOAuthProvider from 'lib/AuthProvider/GrabOAuthProvider';
 import WebhookProvider from 'lib/AuthProvider/WebhookProvider';
+import ClassicOAuthProvider from 'lib/AuthProvider/ClassicOAuthProvider';
 import TokenProvider from 'lib/AuthProvider/TokenProvider';
 import browser from 'webextension-polyfill';
 
@@ -27,9 +28,10 @@ export default class AuthController {
     static get providers() {
         return {
             'app': AppProvider,
-            'oauth': OAuthProvider,
+            'grabOauth': GrabOAuthProvider,
             'webhook': WebhookProvider,
             'token': TokenProvider,
+            'classicOauth': ClassicOAuthProvider,
         };
     }
 

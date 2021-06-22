@@ -13,6 +13,7 @@ class Manager {
         messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
         messageListener.subscribe('refreshAuth', this.onMessageRefreshAuth.bind(this));
         messageListener.subscribe('getRecentList', this.onMessageGetRecentList.bind(this));
+        messageListener.subscribe('openRecentConnection', this.onMessageOpenRecentConnection.bind(this));
         messageListener.subscribe('getSavedList', this.onMessageGetSavedList.bind(this));
         messageListener.subscribe('rememberAuth', this.onMessageRememberAuth.bind(this));
         messageListener.subscribe('forgetAuth', this.onMessageForgetAuth.bind(this));
@@ -75,7 +76,7 @@ class Manager {
                 providerPayload.frameId = frame.frameId;
             }
 
-            providerName = 'oauth';
+            providerName = 'grabOauth';
         }
 
         if (providerName) {
@@ -161,10 +162,10 @@ class Manager {
             }
 
             let data = authController.getData();
+            let credentials = authController.provider.getCredentials ? authController.provider.getCredentials() : {};
 
             switch (authController.getProviderName()) {
                 case 'webhook':
-
                     if (uniq.has(data.auth.url)) {
                         continue;
                     }
@@ -172,18 +173,17 @@ class Manager {
                     result.push({
                         type: 'webhook',
                         authId: authController.getId(),
-                        id: md5(data.auth.url),
+                        id: md5(credentials.url),
                         title: data.title,
                         portal: data.portal,
-                        url: data.auth.url,
+                        url: credentials.url,
                     });
 
                     uniq.add(data.auth.url);
                     break;
 
-                case 'oauth':
-                    // Looks dirty
-                    let uniqId = md5(authController.provider.credentials.clientId + authController.provider.credentials.clientSecret);
+                case 'grabOauth':
+                    let uniqId = md5(credentials.clientId + credentials.clientSecret);
 
                     if (uniq.has(uniqId)) {
                         continue;
@@ -195,7 +195,7 @@ class Manager {
                         id: uniqId,
                         title: data.title,
                         portal: data.portal,
-                        clientId: authController.provider.credentials.clientId.substr(0, 8) + '***'
+                        clientId: credentials.clientId.substr(0, 8) + '***'
                     });
                     break;
             }
@@ -204,18 +204,39 @@ class Manager {
         return result;
     }
 
+    async onMessageOpenRecentConnection({ payload }, sender, sendResponse) {
+        const recentAuthController = this.instances[payload.authId];
+        let providerName;
+
+        if (recentAuthController.getProviderName() === 'grabOauth') {
+            providerName = 'classicOauth';
+        } else {
+            providerName = recentAuthController.getProviderName();
+        }
+
+        if (recentAuthController.provider.getCredentials === undefined) {
+            throw new Error('Provider doesn\'t have reusable credentials');
+        }
+
+        await this.createTabInstance({
+            tab: null,
+            providerName,
+            providerPayload: recentAuthController.provider.getCredentials(),
+        });
+
+        return true;
+    }
+
     async onMessageGetSavedList(payload, sender, sendResponse) {
         let storageResult = await browser.storage.local.get('savedAuth');
 
         if (!storageResult.savedAuth) {
-            console.log(1);
             return [];
         }
 
         let result = [];
 
         for (let item of storageResult.savedAuth) {
-            console.log(item);
             let exportItem;
 
             switch (item.type) {
@@ -237,7 +258,6 @@ class Manager {
 
             result.push(exportItem);
         }
-        console.log(result);
 
         return result;
     }

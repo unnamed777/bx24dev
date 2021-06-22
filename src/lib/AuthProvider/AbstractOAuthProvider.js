@@ -1,21 +1,12 @@
-import messageListener from 'lib/MessageListener';
 import { alert } from 'lib/functions';
 import { getExposedPromise } from 'lib/functions';
 import browser from 'webextension-polyfill';
 
-export default class OAuthProvider {
-    constructor({tabId, frameId}) {
-        this.tabId = tabId;
-        this.frameId = frameId;
-        this.redirectCallback = this.redirectCallback.bind(this);
-    }
-
+export default class AbstractOAuthProvider {
     /**
      * @returns {Promise<B24Auth>}
      */
-    async obtain() {
-        this.credentials = await this.getCredentials();
-
+    async authorize() {
         await this.obtainCode();
         await this.obtainFirstToken();
 
@@ -25,48 +16,6 @@ export default class OAuthProvider {
         this.type = 'oauth';
 
         return this.auth;
-    }
-
-    /**
-     * Obtains b24 application credential from its editing page
-     * @returns {Promise<B24OauthCredentials>}
-     * @typedef {Object} B24OauthCredentials
-     * @property {string} appName
-     * @property {string} appUrl
-     * @property {string} domain
-     * @property {string} clientId
-     * @property {string} clientSecret
-     */
-    async getCredentials() {
-        let result;
-
-        try {
-            result = (await browser.tabs.executeScript(this.tabId, {
-                frameId: this.frameId,
-                code: `(function () {
-                    let appName = document.querySelector('#pagetitle .ui-side-panel-wrap-title-name').innerHTML.trim();
-                    let appUrl = document.querySelector('input[name="APPLICATION_URL_HANDLER"]').value;
-                    let clientId = document.querySelector('input[name="APPLICATION_DATA_CLIENT_ID"]').value;
-                    let clientSecret = document.querySelector('input[name="APPLICATION_DATA_CLIENT_SECRET"]').value;
-                    // or host with port?
-                    let domain = (new URL(document.location.href)).hostname;
-                    
-                    return {
-                        appName,
-                        appUrl,
-                        domain,
-                        clientId,
-                        clientSecret,
-                    };
-                })();`,
-            }))[0];
-        } catch (ex) {
-            console.error(ex);
-            alert('Ошибка получения данных OAuth со страницы редактирования приложения');
-            throw ex;
-        }
-
-        return result;
     }
 
     async obtainCode() {
@@ -184,4 +133,12 @@ export default class OAuthProvider {
         return urlParams;
     }
 
+    /**
+     * Data for initial authorization (like clientId + secret)
+     *
+     * @returns Object
+     */
+    getCredentials() {
+        return { ...this.credentials };
+    }
 }

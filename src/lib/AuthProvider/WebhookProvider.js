@@ -1,25 +1,22 @@
-import messageListener from 'lib/MessageListener';
-import { alert, getExposedPromise } from 'lib/functions';
-import browser from 'webextension-polyfill';
-
 export default class WebhookProvider {
     constructor({ url }) {
-        this.url = url;
+        let result = /^([^\s]+)\s+([^\s]+)\s+([^\s]+)/.exec(url);
+
+        if (result !== null) {
+            url = `https://${result[1]}/rest/${result[2]}/${result[3]}`;
+        }
+
+        if (url.substr(-1) === '/') {
+            url = url.substr(0, url.length - 1);
+        }
+
+        this.credentials = {
+            url
+        };
     }
 
     obtain() {
-        let result = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)\/?$/.exec(this.url);
-
-        // That's not an url, may be just host, user and key
-        if (result === null) {
-            result = /^([^\s]+)\s+([^\s]+)\s+([^\s]+)/.exec(this.url);
-
-            if (result !== null) {
-                result[0] = `https://${result[1]}/rest/${result[2]}/${result[3]}`;
-            }
-        } else if (result[0].substr(-1) === '/') {
-            result[0] = result[0].substr(0, result[0].length - 1);
-        }
+        let result = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)\/?$/.exec(this.credentials.url);
 
         this.authData = {
             url: result[0],
@@ -42,5 +39,9 @@ export default class WebhookProvider {
     }
 
     onRefreshFailed() {
+    }
+
+    getCredentials() {
+        return { ...this.credentials };
     }
 }

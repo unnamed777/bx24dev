@@ -175,20 +175,16 @@ export default {
             }
         },
 
-        openRecent(index) {
-            const item = this.recentList[index];
+        async openRecent(index) {
+            const result = await (window.browser || chrome).runtime.sendMessage(null, {
+                type: 'openRecentConnection',
+                payload: {
+                    authId: this.recentList[index].authId,
+                }
+            });
 
-            switch (item.type) {
-                case 'webhook':
-                    this.create('webhook', {
-                        url: item.url,
-                    });
-
-                    setTimeout(() => window.close(), 50);
-                    break;
-
-                default:
-                    return;
+            if (result === true) {
+                window.close();
             }
         },
 
