@@ -17,7 +17,7 @@ class Manager {
         messageListener.subscribe('getSavedList', this.onMessageGetSavedList.bind(this));
         messageListener.subscribe('rememberAuth', this.onMessageRememberAuth.bind(this));
         messageListener.subscribe('forgetAuth', this.onMessageForgetAuth.bind(this));
-        messageListener.subscribe('createExtensionInstanceBySavedId', this.onMessageCreateExtensionInstanceBySavedId.bind(this));
+        messageListener.subscribe('openSavedConnection', this.onMessageOpenSavedConnection.bind(this));
 
          /** @type {Array<AuthController>} */
         this.instances = [null];
@@ -154,7 +154,6 @@ class Manager {
     async onMessageGetRecentList(payload, sender, sendResponse) {
         let result = [];
         let uniq = new Set();
-        console.log(this.instances);
 
         for (let authController of this.instances) {
             if (!(authController instanceof AuthController)) {
@@ -163,27 +162,31 @@ class Manager {
 
             let data = authController.getData();
             let credentials = authController.provider.getCredentials ? authController.provider.getCredentials() : {};
+            let uniqId;
 
             switch (authController.getProviderName()) {
                 case 'webhook':
-                    if (uniq.has(data.auth.url)) {
+                    uniqId = this.getUniqIdByCredentials('webhook', credentials);
+
+                    if (uniq.has(uniqId)) {
                         continue;
                     }
 
                     result.push({
                         type: 'webhook',
                         authId: authController.getId(),
-                        id: md5(credentials.url),
+                        id: uniqId,
                         title: data.title,
                         portal: data.portal,
                         url: credentials.url,
                     });
 
-                    uniq.add(data.auth.url);
+                    uniq.add(uniqId);
                     break;
 
                 case 'grabOauth':
-                    let uniqId = md5(credentials.clientId + credentials.clientSecret);
+                case 'classicOauth':
+                    uniqId = this.getUniqIdByCredentials('oauth', credentials);
 
                     if (uniq.has(uniqId)) {
                         continue;
@@ -195,8 +198,11 @@ class Manager {
                         id: uniqId,
                         title: data.title,
                         portal: data.portal,
+                        appUrl: credentials.appUrl,
                         clientId: credentials.clientId.substr(0, 8) + '***'
                     });
+
+                    uniq.add(uniqId);
                     break;
             }
         }
@@ -253,6 +259,13 @@ class Manager {
                     break;
 
                 case 'oauth':
+                    exportItem = {
+                        id: item.id,
+                        type: 'oauth',
+                        title: item.credentials.appName,
+                        portal: item.credentials.domain,
+                        appUrl: item.credentials.appUrl,
+                    };
                     break;
             }
 
@@ -272,6 +285,12 @@ class Manager {
      */
     async onMessageRememberAuth(payload, sender, sendResponse) {
         const authController = this.instances[payload.payload.authId];
+
+        if (authController.provider.getCredentials === undefined) {
+            throw new Error('Provider doesn\'t have reusable credentials');
+        }
+
+        const credentials = authController.provider.getCredentials();
         // noinspection JSVoidFunctionReturnValueUsed
         let storageResult = await browser.storage.local.get('savedAuth');
         let savedAuth;
@@ -288,11 +307,22 @@ class Manager {
             case 'webhook':
                 newItem = {
                     type: 'webhook',
-                    url: authController.getData().auth.url,
+                    id: this.getUniqIdByCredentials('webhook', credentials),
+                    credentials,
                 };
-
-                newItem.id = md5(newItem.url);
                 break;
+
+            case 'grabOauth':
+            case 'classicOauth':
+                newItem = {
+                    type: 'oauth',
+                    id: this.getUniqIdByCredentials('oauth', credentials),
+                    credentials,
+                };
+                break;
+
+            default:
+                throw new Error('Unsupported provider');
         }
 
         savedAuth.push(newItem);
@@ -316,15 +346,15 @@ class Manager {
 
         for (let index in savedAuth) {
             let auth = savedAuth[index];
-            let key;
+            /*let key;
 
             switch (auth.type) {
                 case 'webhook':
                     key = md5(auth.url);
                     break;
-            }
+            }*/
 
-            if (key === keyToRemove) {
+            if (auth.id === keyToRemove) {
                 savedAuth = savedAuth.slice(0, index).concat(savedAuth.slice(index + 1));
                 break;
             }
@@ -333,7 +363,7 @@ class Manager {
         await browser.storage.local.set({ savedAuth });
     }
 
-    async onMessageCreateExtensionInstanceBySavedId(payload, sender, sendResponse) {
+    async onMessageOpenSavedConnection(payload, sender, sendResponse) {
         const savedId = payload.payload.id;
         let { savedAuth = [] } = await browser.storage.local.get('savedAuth');
         const savedItem = savedAuth.find(item => item.id === savedId);
@@ -350,7 +380,15 @@ class Manager {
                 providerName = 'webhook';
 
                 providerPayload = {
-                    url: savedItem.url
+                    ...savedItem.credentials
+                };
+                break;
+
+            case 'oauth':
+                providerName = 'classicOauth';
+
+                providerPayload = {
+                    ...savedItem.credentials
                 };
                 break;
 
@@ -364,6 +402,25 @@ class Manager {
         });
 
         return true;
+    }
+
+    /**
+     *
+     * @param {string} type
+     * @param {Object} credentials
+     * @returns {string}
+     */
+    getUniqIdByCredentials(type, credentials) {
+        switch (type) {
+            case 'webhook':
+                return md5(credentials.url);
+
+            case 'oauth':
+                return md5(credentials.clientId + credentials.clientSecret);
+
+            default:
+                throw new Error('Unknown type of credentials');
+        }
     }
 }
 

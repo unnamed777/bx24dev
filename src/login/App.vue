@@ -40,32 +40,36 @@
 
                 <div v-if="this.recentList.length > 0" class="mb-5">
                     <h4>Недавние подключения</h4>
-                    <div v-for="(item, index) of recentList" class="auth-item recent-item mb-2">
-                        <div class="auth-item__body">
-                            <div class="auth-item__title" @click="openRecent(index)"><b>{{ item.portal }} / {{ item.title }}</b></div>
-                            <small class="text-secondary">{{ item.extra }}</small>
-                        </div>
-                        <div class="auth-item__actions">
+                    <AuthItem
+                        v-for="(item, index) of recentList"
+                        :key="item.id"
+                        :item="item"
+                        :index="index"
+                        @itemClick="openRecent(index)"
+                    >
+                        <template v-slot:actions>
                             <StarIcon
                                 class="recent-item__save"
                                 :class="{ 'recent-item__save--saved': savedIds.includes(item.id) }"
                                 @click="savedIds.includes(item.id) ? forgetAuth(item.id) : rememberAuth(index)"
                             />
-                        </div>
-                    </div>
+                        </template>
+                    </AuthItem>
                 </div>
 
                 <div v-if="this.savedList.length > 0" class="mb-5">
                     <h4>Сохранённые подключения</h4>
-                    <div v-for="(item, index) of savedList" class="auth-item saved-item mb-2">
-                        <div class="auth-item__body">
-                            <div class="auth-item__title" @click="openSaved(item.id)"><b>{{ item.title }} {{ item.portal }}</b></div>
-                            <small class="text-secondary">{{ item.extra }}</small>
-                        </div>
-                        <div class="auth-item__actions">
+                    <AuthItem
+                        v-for="(item, index) of savedList"
+                        :key="item.id"
+                        :item="item"
+                        :index="index"
+                        @itemClick="openSaved(item.id)"
+                    >
+                        <template v-slot:actions>
                             <CloseIcon class="saved-item__delete" @click="forgetAuth(item.id)"/>
-                        </div>
-                    </div>
+                        </template>
+                    </AuthItem>
                 </div>
             </div>
         </div>
@@ -81,11 +85,13 @@
 <script>
 import browser from 'webextension-polyfill';
 import { StarIcon, CloseIcon } from 'vue-bytesize-icons';
+import AuthItem from './components/AuthItem';
 
 export default {
     components: {
         StarIcon,
         CloseIcon,
+        AuthItem,
     },
 
     data() {
@@ -148,8 +154,15 @@ export default {
             });
 
             for (let item of this.savedList) {
-                if (item.type === 'webhook') {
-                    item.extra = item.url.replace(/\/(.)[^\\/]*$/si, '/$1***');
+                switch (item.type) {
+                    case 'webhook':
+                        item.extra = item.url.replace(/\/(.)[^\\/]*$/si, '/$1***');
+                        break;
+
+                    case 'oauth':
+                        item.extra = item.appUrl;
+                        console.log(item.extra);
+                        break;
                 }
             }
         },
@@ -160,7 +173,6 @@ export default {
                 type: 'getRecentList',
                 payload: {}
             });
-            console.log(this.recentList);
 
             for (let item of this.recentList) {
                 switch (item.type) {
@@ -169,7 +181,7 @@ export default {
                         break;
 
                     case 'oauth':
-                        item.extra = item.clientId;
+                        item.extra = item.appUrl;
                         break;
                 }
             }
@@ -215,12 +227,16 @@ export default {
         },
 
         async openSaved(id) {
-            await browser.runtime.sendMessage(null, {
-                type: 'createExtensionInstanceBySavedId',
+            let result = await browser.runtime.sendMessage(null, {
+                type: 'openSavedConnection',
                 payload: {
                     id: id
                 }
             });
+
+            if (result === true) {
+                window.close();
+            }
         },
     },
 }
