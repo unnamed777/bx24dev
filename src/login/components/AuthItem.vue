@@ -17,3 +17,31 @@ export default {
     }
 }
 </script>
+
+<style lang="scss">
+.auth-item {
+    display: flex;
+    line-height: 1.2em;
+
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+
+    &__body {
+        flex: 1 1 auto;
+        cursor: default;
+    }
+
+    &__title {
+        cursor: pointer;
+    }
+
+    &__actions {
+        display: flex;
+        width: 32px;
+        flex: 0 0 32px;
+
+        justify-content: space-around;
+    }
+}
+</style>

@@ -49,8 +49,8 @@
                     >
                         <template v-slot:actions>
                             <StarIcon
-                                class="recent-item__save"
-                                :class="{ 'recent-item__save--saved': savedIds.includes(item.id) }"
+                                class="auth-item__save"
+                                :class="{ 'auth-item__save--saved': savedIds.includes(item.id) }"
                                 @click="savedIds.includes(item.id) ? forgetAuth(item.id) : rememberAuth(index)"
                             />
                         </template>
@@ -67,7 +67,7 @@
                         @itemClick="openSaved(item.id)"
                     >
                         <template v-slot:actions>
-                            <CloseIcon class="saved-item__delete" @click="forgetAuth(item.id)"/>
+                            <CloseIcon class="auth-item__delete" @click="forgetAuth(item.id)"/>
                         </template>
                     </AuthItem>
                 </div>
@@ -115,7 +115,7 @@ export default {
 
     methods: {
         create(name, payload) {
-            (window.browser || chrome).runtime.sendMessage(null, {
+            browser.runtime.sendMessage(null, {
                 type: 'createExtensionInstance',
                 payload: {
                     providerName: name,
@@ -148,7 +148,7 @@ export default {
 
         async getSavedList() {
             // noinspection JSVoidFunctionReturnValueUsed
-            this.savedList = await (window.browser || chrome).runtime.sendMessage(null, {
+            this.savedList = await browser.runtime.sendMessage(null, {
                 type: 'getSavedList',
                 payload: {}
             });
@@ -161,7 +161,6 @@ export default {
 
                     case 'oauth':
                         item.extra = item.appUrl;
-                        console.log(item.extra);
                         break;
                 }
             }
@@ -169,7 +168,7 @@ export default {
 
         async getRecentList() {
             // noinspection JSVoidFunctionReturnValueUsed
-            this.recentList = await (window.browser || chrome).runtime.sendMessage(null, {
+            this.recentList = await browser.runtime.sendMessage(null, {
                 type: 'getRecentList',
                 payload: {}
             });
@@ -188,7 +187,7 @@ export default {
         },
 
         async openRecent(index) {
-            const result = await (window.browser || chrome).runtime.sendMessage(null, {
+            const result = await browser.runtime.sendMessage(null, {
                 type: 'openRecentConnection',
                 payload: {
                     authId: this.recentList[index].authId,
@@ -201,7 +200,7 @@ export default {
         },
 
         async rememberAuth(index) {
-            const saveId = await (window.browser || chrome).runtime.sendMessage(null, {
+            const saveId = await browser.runtime.sendMessage(null, {
                 type: 'rememberAuth',
                 payload: {
                     authId: this.recentList[index].authId,
@@ -275,32 +274,6 @@ input {
 }
 
 .auth-item {
-    display: flex;
-    line-height: 1.2em;
-
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    align-items: stretch;
-
-    &__body {
-        flex: 1 1 auto;
-        cursor: default;
-    }
-
-    &__title {
-        cursor: pointer;
-    }
-
-    &__actions {
-        display: flex;
-        width: 32px;
-        flex: 0 0 32px;
-
-        justify-content: space-around;
-    }
-}
-
-.recent-item {
     &__save {
         width: 20px;
         height: 20px;
@@ -311,13 +284,11 @@ input {
             opacity: 1;
         }
     }
-}
 
-.saved-item {
     &__delete {
         width: 16px;
         height: 16px;
-        opacity: 0.5;
+        opacity: 0.3;
         cursor: pointer;
 
         &--saved {

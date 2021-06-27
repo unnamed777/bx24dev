@@ -17,15 +17,25 @@
                 </label>
             </div>
 
-            <button
-                v-if="outputView === 'pretty'"
-                class="btn btn-sm btn-light"
-                :title="'Правый клик – +1 уровень глубины\nCtrl+правый клик – -1 уровень глубины'"
-                @mouseup="togglePretty"
-                @contextmenu.prevent
-            >
-                <span style="opacity: 0.7; font-size: 0.7rem;">► / <span style="display: inline-block; transform: rotate(90deg);">►</span></span>
-            </button>
+            <template v-if="outputView === 'pretty'">
+                <button
+                    class="btn btn-sm btn-light"
+                    :title="'Правый клик – -1 уровень глубины'"
+                    @mouseup="collapse"
+                    @contextmenu.prevent
+                >
+                    <span style="opacity: 0.7; font-size: 0.7rem;">►</span>
+                </button>
+
+                <button
+                    class="btn btn-sm btn-light"
+                    :title="'Правый клик – +1 уровень глубины'"
+                    @mouseup="expand"
+                    @contextmenu.prevent
+                >
+                    <span style="opacity: 0.7; font-size: 0.7rem; display: inline-block; transform: rotate(90deg);">►</span>
+                </button>
+            </template>
         </div>
         <div v-show="outputView === 'pretty'" ref="output_pretty"></div>
         <pre v-if="outputView === 'json'">{{ outputJson }}</pre>
@@ -46,6 +56,7 @@ export default {
             prettyExpanded: true,
             runtimeMethods: [],
             expandLevel: 4,
+            maxDepth: 10,
         };
     },
 
@@ -57,6 +68,9 @@ export default {
 
     watch: {
         response() {
+            const objectDepth = (o) => Object (o) === o ? 1 + Math .max (-1, ... Object .values(o) .map (objectDepth)) : 0;
+            this.maxDepth = objectDepth(this.response);
+            this.expandLevel = this.maxDepth;
             this.prettyExpanded = true;
             this.jsonFormatter();
         }
@@ -89,7 +103,6 @@ export default {
         },
 
         togglePretty(e) {
-            console.log(e);
             //this.prettyExpanded = this.prettyExpanded;
             if (e.button === 2) {
                 if (e.metaKey === true || e.ctrlKey === true) {
@@ -103,6 +116,16 @@ export default {
 
             this.jsonFormatter();
         },
+
+        expand(e) {
+            this.expandLevel = e.button === 2 ? Math.min(this.maxDepth, this.expandLevel + 1) : this.maxDepth;
+            this.jsonFormatter();
+        },
+
+        collapse(e) {
+            this.expandLevel = e.button === 2 ? Math.max(1, this.expandLevel - 1) : 1;
+            this.jsonFormatter();
+        }
     },
 };
 </script>
