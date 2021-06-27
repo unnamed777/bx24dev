@@ -247,14 +247,14 @@ class Manager {
 
             switch (item.type) {
                 case 'webhook':
-                    let parts = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)\/?$/.exec(item.url);
+                    let parts = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)\/?$/.exec(item.credentials.url);
 
                     exportItem = {
                         id: item.id,
                         type: 'webhook',
                         title: 'Webhook',
                         portal: parts[1],
-                        url: item.url,
+                        url: item.credentials.url,
                     };
                     break;
 
@@ -323,6 +323,11 @@ class Manager {
 
             default:
                 throw new Error('Unsupported provider');
+        }
+
+        // Don't save item if it already exists
+        if (savedAuth.map(item => item.id).includes(newItem.id)) {
+            return;
         }
 
         savedAuth.push(newItem);

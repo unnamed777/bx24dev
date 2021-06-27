@@ -9,7 +9,7 @@
                     <form class="webhook-form" @submit.prevent="webhookSubmit">
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control" id="webhookUrl" type="text" name="url" ref="webhookUrl" placeholder="&quot;webhook url&quot; или &quot;domain user_id key&quot;" />
+                                <input class="form-control" id="webhookUrl" type="text" name="url" ref="webhookUrl" placeholder="url или &quot;domain user_id key&quot;" />
                             </div>
                             <div class="col-1">
                                 <button class="btn btn-primary" type="submit" tabindex="-1">➤</button>
