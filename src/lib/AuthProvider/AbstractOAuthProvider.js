@@ -19,7 +19,6 @@ export default class AbstractOAuthProvider {
     }
 
     async obtainCode() {
-        const waitForUrl = this.credentials.appUrl;
         const authUrl = `https://${this.credentials.domain}/oauth/authorize/?client_id=${this.credentials.clientId}&state=bx24dev-ext-auth`;
 
         const { promise, resolve } = getExposedPromise();
@@ -31,6 +30,10 @@ export default class AbstractOAuthProvider {
             // Required to inherit cookieStoreId (firefox containers)
             openerTabId: this.tabId,
         });
+
+        // Get rid of port. Url with port doesn't match pattern with port
+        // However, url with port matches pattern without port
+        const waitForUrl = this.credentials.appUrl.replace(/^(.*:\/\/)(?:([^/:]*)(:[0-9]{2,5})?)(.*)$/gi, '$1$2$4');
 
         browser.webRequest.onBeforeRequest.addListener(this.redirectCallback, {
             urls: [waitForUrl + '?*'],
