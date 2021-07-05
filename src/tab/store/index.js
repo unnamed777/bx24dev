@@ -73,7 +73,7 @@ const store = new Vuex.Store({
 
             // The same with catalog.*
             // Something weird with scopes
-            if (state.scope && (state.scope.indexOf('sale') !== -1 || state.scope.indexOf('catalog') !== -1)) {
+            if (state.scope && (state.scope.indexOf('sale') !== -1 || state.scope.indexOf('catalog') !== -1 || state.scope.indexOf('crm') !== -1)) {
                 methods = methods.concat([
                     'catalog.catalog.add', 'catalog.catalog.delete', 'catalog.catalog.get', 'catalog.catalog.getFields', 'catalog.catalog.isOffers',
                     'catalog.catalog.list', 'catalog.catalog.update', 'catalog.enum.getRoundTypes', 'catalog.extra.get', 'catalog.extra.getFields',
