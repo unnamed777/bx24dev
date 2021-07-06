@@ -87,6 +87,15 @@ const store = new Vuex.Store({
                 ]);
             }
 
+            if (state.scope && state.scope.includes('task')) {
+                methods = methods.concat([
+                    'tasks.task.add', 'tasks.task.approve', 'tasks.task.complete', 'tasks.task.counters.get', 'tasks.task.defer', 'tasks.task.delegate', 'tasks.task.delete',
+                    'tasks.task.disapprove', 'tasks.task.favorite.add', 'tasks.task.favorite.delete', 'tasks.task.get', 'tasks.task.getFields', 'tasks.task.getaccess',
+                    'tasks.task.history.list', 'tasks.task.list', 'tasks.task.pause', 'tasks.task.renew', 'tasks.task.start', 'tasks.task.startwatch', 'tasks.task.stopwatch',
+                    'tasks.task.update',
+                ]);
+            }
+
             methods.sort();
 
             state.availableMethods = methods;

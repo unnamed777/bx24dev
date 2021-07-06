@@ -10,7 +10,7 @@ const WebpackNotifierPlugin = require('webpack-notifier');
 const stripANSI = require('strip-ansi');
 
 const config = {
-    mode: 'development',//process.env.NODE_ENV,
+    mode: process.env.NODE_ENV,
     context: __dirname + '/src',
     entry: {
         'vendor/vue': ['vue', 'vuex', 'vue-router'],
