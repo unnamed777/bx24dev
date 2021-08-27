@@ -14,6 +14,22 @@
             />
 
             <div class="mt-2">
+                <div class="btn-group btn-group-sm btn-group-toggle mb-2">
+                    <label
+                        v-for="key of ['js/json', 'yaml']"
+                        class="btn btn-light"
+                        :class="{active: inputMode === key}"
+                    >
+                        <input
+                            type="radio"
+                            v-model="inputMode"
+                            autocomplete="off"
+                            :value="key"
+                        />
+                        {{ key }}
+                    </label>
+                </div>
+
                 <textarea
                     class="form-control textarea-data"
                     rows="10"
@@ -64,6 +80,7 @@ import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import BX24 from 'lib/BX24';
 import BaseSelect from 'components/ui/BaseSelect';
 import Response from './Response';
+import yaml from 'js-yaml';
 
 export default {
     components: {
@@ -77,6 +94,8 @@ export default {
     },
 
     data() {
+        let inputMode = window.localStorage.getItem('console/inputMode') || 'js/json';
+
         return {
             info: {},
             method: this.queryMethod || '',
@@ -86,6 +105,7 @@ export default {
             runtimeMethods: [],
             showManual: false,
             isLoading: false,
+            inputMode,
         };
     },
 
@@ -141,6 +161,10 @@ export default {
                 this.method = newValue;
             }
         },
+
+        inputMode(newValue) {
+            window.localStorage.setItem('console/inputMode', newValue);
+        }
     },
 
     mounted() {
@@ -153,7 +177,20 @@ export default {
 
             try {
                 this.callResult = {};
-                let requestObject = this.codeToObject(this.body);
+                let requestObject;
+
+                if (this.inputMode === 'yaml') {
+                    requestObject = this.yamlToObject(this.body);
+                } else {
+                    requestObject = this.codeToObject(this.body);
+                }
+                console.log(requestObject);
+
+                if (requestObject === false) {
+                    this.isLoading = false;
+                    return;
+                }
+
                 this.addToHistory({ method: this.method, data: this.body });
                 this.callResult = await BX24.request(this.method, requestObject);
             } finally {
@@ -169,9 +206,26 @@ export default {
             try {
                 return Function('"use strict";return (' + request + ');')();
             } catch (ex) {
+                alert('Ошибка парсинга кода');
                 console.error('Error while convert object', ex);
+                return false;
+            }
+        },
+
+        yamlToObject(request) {
+            if (!request) {
                 return {};
-            };
+            }
+
+            request = request.replace(/^\t*/gm, (match) => match.replaceAll('\t', '  '));
+
+            try {
+                return yaml.load(request);
+            } catch (ex) {
+                alert('Ошибка парсинга кода\n' + ex);
+                console.error('Error while convert object', ex);
+                return false;
+            }
         },
 
         /**

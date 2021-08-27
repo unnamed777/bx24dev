@@ -17,6 +17,7 @@
     "firefox": "bin/build_firefox.sh"
   },
   "dependencies": {
+    "js-yaml": "^4.1.0",
     "json-formatter-js": "^2.3.4",
     "lodash-es": "^4.17.15",
     "md5": "^2.3.0",

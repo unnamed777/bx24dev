@@ -37,7 +37,7 @@ const initBX24 = (authId, authData) => {
     BX24.setAuth(authData.authType, authData.auth);
 
     BX24.registerExpiredTokenHandler(async () => {
-        console.log('expiredTokenHandler()', authData);
+        console.log('expiredTokenHandler()');
 
         let authData = await browser.runtime.sendMessage({
             type: 'refreshAuth',
@@ -53,6 +53,7 @@ const initBX24 = (authId, authData) => {
         }
 
         BX24.setAuth(authData.authType, authData.auth);
+        return true;
     });
 
     window.BX24 = BX24;
