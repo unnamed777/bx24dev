@@ -184,7 +184,6 @@ export default {
                 } else {
                     requestObject = this.codeToObject(this.body);
                 }
-                console.log(requestObject);
 
                 if (requestObject === false) {
                     this.isLoading = false;
@@ -218,14 +217,24 @@ export default {
             }
 
             request = request.replace(/^\t*/gm, (match) => match.replaceAll('\t', '  '));
+            let result;
 
             try {
-                return yaml.load(request);
+                result = yaml.load(request);
             } catch (ex) {
                 alert('Ошибка парсинга кода\n' + ex);
                 console.error('Error while convert object', ex);
                 return false;
             }
+
+            console.log('YAML to JSON:', result);
+
+            if (typeof result !== 'object') {
+                alert('Тело запроса должно быть либо пустым, либо объектом, получен ' + typeof(result));
+                return false;
+            }
+
+            return result;
         },
 
         /**
