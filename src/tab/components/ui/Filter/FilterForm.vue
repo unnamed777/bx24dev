@@ -11,7 +11,7 @@
 
 <script>
 import FilterItem from './Item.vue';
-import isNil from 'lodash-es/isnil';
+import isNil from 'lodash-es/isNil';
 import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
 
 export default {
