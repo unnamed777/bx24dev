@@ -11,12 +11,19 @@ export default {
         this.expiredTokenHandler = func;
     },
 
-    async request(method, data) {
+    async request(method, data, options = {}) {
         data.auth = this.auth.access_token;
         //console.log(data);
 
+
+        if (options.method) {
+            options.method = options.method.toUpperCase();
+        } else {
+            options.method = 'POST';
+        }
+
         // URLSearchParams doesn't support nested objects, use qs
-        const body = qs.stringify(data);
+        let body = qs.stringify(data);
         let url;
 
         // @todo refactor
@@ -26,8 +33,13 @@ export default {
             url = `https://${this.auth.domain}/rest/${method}.json`;
         }
 
+        if (options.method === 'GET') {
+            url = url + '?' + body;
+            body = null;
+        }
+
         let bxResult = await fetch(url, {
-            method: 'post',
+            method: options.method,
             body,
         }).then(response => response.json());
 
@@ -58,10 +70,11 @@ export default {
      *
      * @param method
      * @param data
+     * @param options
      * @returns {Promise<*>}
      */
-    async call(method, data = {}) {
-        let result = await this.request(method, data);
+    async call(method, data = {}, options = {}) {
+        let result = await this.request(method, data, options);
 
         if (result.error || result.error_description) {
             throw new Error(`Error on call: [${result.error}] ${result.error_description}`);
@@ -78,7 +91,7 @@ export default {
      * @returns {Promise<*[]|{entries: *[], total: number}>}
      */
     async fetch(method, data = {}, options = {}) {
-        const response = await this.request(method, data);
+        const response = await this.request(method, data, options);
         let returnResult;
 
         if (options.total) {
@@ -116,7 +129,7 @@ export default {
 
         while (true) {
             let timeStart = (new Date).getTime();
-            response = await this.request(method, data);
+            response = await this.request(method, data, options);
 
             if (response.error) {
                 alert(`${method}: ${response.error_description} (${response.error})`);

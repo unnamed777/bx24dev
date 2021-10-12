@@ -116,6 +116,10 @@ export default {
             .on('change', (e) => this.$emit('change', $(e.currentTarget).val()));
     },
 
+    beforeDestroy() {
+        $(this.$refs['select']).select2('destroy').off('change');
+    },
+
     methods: {
     },
 }

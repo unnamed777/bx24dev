@@ -4,6 +4,9 @@
         class="form-control form-control-sm"
         :readonly="readOnly"
         v-model="currentValue"
+        @keydown="$emit('keydown', $event)"
+        @keyup="$emit('keyup', $event)"
+        @keypress="$emit('keypress', $event)"
     />
 </template>
 

@@ -1,16 +1,42 @@
 <template>
     <div class="row position-relative">
         <div class="col-5">
+            <div v-if="expertMode" class="d-flex">
+                <div class="btn-group btn-group-sm btn-group-toggle mb-2 mr-2">
+                    <label
+                        v-for="key of ['POST', 'GET']"
+                        class="btn btn-light"
+                        :class="{active: httpMethod === key}"
+                    >
+                        <input
+                            type="radio"
+                            v-model="httpMethod"
+                            autocomplete="off"
+                            :value="key"
+                        />
+                        {{ key }}
+                    </label>
+                </div>
+                <div class="w-100">
+                    <BaseInput
+                        v-if="expertMode"
+                        v-model="chosenMethod"
+                        @keydown.enter="onMethodInputEnter"
+                    />
+                </div>
+            </div>
             <BaseSelect
+                v-if="!expertMode"
                 :options="combinedMethods"
                 :groups="methodGroups"
                 :search="true"
                 :select2Options="{
-                    //tags: true,
-                    //insertTag: addCustomMethod,
+                    //tags: false,
+                    //insertTag: expertMode ? addCustomMethod : undefined,
                 }"
                 :optionTemplate="select2Template"
                 v-model="chosenMethod"
+                ref="methodSelect"
             />
 
             <div class="mt-2">
@@ -52,7 +78,22 @@
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#" @click.prevent="exportAll" title="Все элементы будут получены с помощью постраничной навигации, а результат будет отдан в виде JSON-файла с массивом">Выгрузить всё в JSON...</a>
+                            <a
+                                class="dropdown-item"
+                                href="#"
+                                title="Все элементы будут получены с помощью постраничной навигации, а результат будет отдан в виде JSON-файла с массивом"
+                                @click.prevent="exportAll"
+                            >
+                                Выгрузить всё в JSON...
+                            </a>
+                            <a
+                                class="dropdown-item d-flex"
+                                href="#"
+                                title="Возможность выполнения любых запросов"
+                                @click.prevent="expertMode = !expertMode"
+                            >
+                                Экспертный режим<span class="ml-auto" v-show="expertMode">✓</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -79,12 +120,14 @@
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import BX24 from 'lib/BX24';
 import BaseSelect from 'components/ui/BaseSelect';
+import BaseInput from 'components/ui/BaseInput';
 import Response from './Response';
 import yaml from 'js-yaml';
 
 export default {
     components: {
         BaseSelect,
+        BaseInput,
         Response,
     },
 
@@ -106,6 +149,8 @@ export default {
             showManual: false,
             isLoading: false,
             inputMode,
+            expertMode: !!this.$route.query.expert,
+            httpMethod: 'POST',
         };
     },
 
@@ -126,6 +171,12 @@ export default {
                 value: item,
                 group: 'methods',
             })));
+
+            /*result = result.concat(this.runtimeMethods.map((item) => ({
+                label: item,
+                value: item,
+                group: 'methods',
+            })));*/
 
             return result;
         },
@@ -164,7 +215,7 @@ export default {
 
         inputMode(newValue) {
             window.localStorage.setItem('console/inputMode', newValue);
-        }
+        },
     },
 
     mounted() {
@@ -191,7 +242,7 @@ export default {
                 }
 
                 this.addToHistory({ method: this.method, data: this.body });
-                this.callResult = await BX24.request(this.method, requestObject);
+                this.callResult = await BX24.request(this.method, requestObject, { method: this.httpMethod });
             } finally {
                 this.isLoading = false;
             }
@@ -243,7 +294,7 @@ export default {
          */
         addCustomMethod(data, tag) {
             data.push(tag);
-            this.runtimeMethods = [tag];
+            this.runtimeMethods = [tag.id];
         },
 
         onKeyPress(e) {
@@ -265,6 +316,10 @@ export default {
                     this.execute();
                     break;
             }
+        },
+
+        onMethodInputEnter(e) {
+            this.execute();
         },
 
         async exportAll() {
