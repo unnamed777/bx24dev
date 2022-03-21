@@ -145,6 +145,14 @@ export default {
                             {label: 'Загрузка...'}
                         ],
                     },
+                    /*{
+                        id: 'crmSmartProcesses',
+                        label: 'Смарт-процессы',
+                        action: this.onCrmSmartProcessesClick,
+                        children: [
+                            {label: 'Загрузка...'}
+                        ],
+                    },*/
                     {
                         label: 'Справочники',
                         children: [
@@ -270,6 +278,7 @@ export default {
         ...mapState({
             entities: store => store.entities.items,
             crmCatalogs: store => store.crmCatalogs.items,
+            crmSmartProcesses: store => store.crmSmartProcesses.items,
             scope: store => store.scope,
         }),
     },
@@ -284,6 +293,10 @@ export default {
 
         crmCatalogs() {
             this.rebuildCrmCatalogsMenu();
+        },
+
+        crmSmartProcesses() {
+            this.rebuildCrmSmartProcessesMenu();
         },
 
         scope() {
@@ -369,6 +382,18 @@ export default {
             };
         },
 
+        onCrmSmartProcessesClick() {
+            this.loadSmartProcesses();
+
+            /*if (this.$router.currentRoute.name !== 'crmCatalogList') {
+                this.$root.goToRoute({name: 'crmCatalogList'});
+            }*/
+
+            return {
+                expand: null,
+            };
+        },
+
         getPath(route, params = {}) {
             return this.$root.resolveRoute(route, params);
         },
@@ -446,6 +471,41 @@ export default {
             this.itemsMap.id.crmCatalogs.children = items;
         },
 
+        rebuildCrmSmartProcessesMenu() {
+            const items = [];
+
+            // Routes are translated into links.
+            // It's needed to match sidebar items with current route and expand them.
+            for (let smartProcess of Object.values(this.crmSmartProcesses)) {
+                items.push({
+                    id: `crmSmartProcess_${smartProcess.id}`,
+                    label: `${smartProcess.title} (${smartProcess.entityTypeId})`,
+                    children: [
+                        /*{
+                            label: 'Товары',
+                            route: this.getPath('crmProductList', { catalogId: catalog.ID }),
+                        },
+                        {
+                            label: 'Поля товаров',
+                            route: this.getPath('crmProductFieldList', { catalogId: catalog.ID }),
+                        },
+                        {
+                            label: 'Разделы',
+                            route: this.getPath('crmProductSectionList', { catalogId: catalog.ID }),
+                        },
+                        {
+                            label: 'Дерево',
+                            route: this.getPath('crmProductSectionTree', { catalogId: catalog.ID }),
+                        },*/
+                    ],
+                });
+            }
+
+            this.assignInternalIds(items);
+
+            this.itemsMap.id.crmSmartProcesses.children = items;
+        },
+
         assignInternalIds(items) {
             let queue = [...items];
 
@@ -467,6 +527,7 @@ export default {
         ...mapActions({
             loadEntities: 'entities/load',
             loadCrmCatalogs: 'crmCatalogs/load',
+            loadSmartProcesses: 'crmSmartProcesses/load',
         })
     }
 }

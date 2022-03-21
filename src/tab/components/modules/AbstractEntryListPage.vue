@@ -112,6 +112,9 @@ export default {
 
         rowActions: {
             type: Array,
+            default() {
+                return [];
+            },
         },
 
         sortDefaultField: String,

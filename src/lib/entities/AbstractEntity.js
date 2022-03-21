@@ -127,8 +127,21 @@ export default class AbstractEntry {
 
 
     static prepareListPayload(payload) {
-        payload.order = payload.order || this.defaultOrder;
-        payload.select = payload.select || this.defaultSelect;
+        if (!payload.order) {
+            payload.order = this.defaultOrder;
+
+            if (payload.order === null) {
+                delete payload.order;
+            }
+        }
+
+        if (!payload.select) {
+            payload.select = this.defaultSelect;
+
+            if (payload.select === null) {
+                delete payload.select;
+            }
+        }
 
         return payload;
     }

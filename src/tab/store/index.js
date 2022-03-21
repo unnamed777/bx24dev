@@ -14,6 +14,7 @@ import activityFields from "./modules/activityFields";
 import activityOwnerTypes from "./modules/activityOwnerTypes";
 import catalogFields from "./modules/catalogFields";
 import crmCatalogs from "./modules/crmCatalogs";
+import crmSmartProcesses from './modules/crm/smartProcesses';
 import productSectionFields from "./modules/productSectionFields";
 import productFields from "./modules/productFields";
 import crmStatuses from "./modules/crmStatuses";
@@ -71,6 +72,13 @@ const store = new Vuex.Store({
                 ]);
             }
 
+            if (state.scope && state.scope.indexOf('crm') !== -1) {
+                methods = methods.concat([
+                    'crm.type.add', 'crm.type.delete', 'crm.type.fields', 'crm.type.get', 'crm.type.list', 'crm.type.update',
+                    'crm.item.add', 'crm.item.delete', 'crm.item.fields', 'crm.item.get', 'crm.item.list', 'crm.item.update',
+                ]);
+            }
+
             // The same with catalog.*
             // Something weird with scopes
             if (state.scope && (state.scope.indexOf('sale') !== -1 || state.scope.indexOf('catalog') !== -1 || state.scope.indexOf('crm') !== -1)) {
@@ -96,6 +104,7 @@ const store = new Vuex.Store({
                 ]);
             }
 
+            methods = methods.filter((value, index, self) => self.indexOf(value) === index);
             methods.sort();
 
             state.availableMethods = methods;
@@ -137,6 +146,7 @@ const store = new Vuex.Store({
         productSectionFields,
         productFields,
         crmStatuses,
+        crmSmartProcesses,
         entities,
         entityProperties,
         users,

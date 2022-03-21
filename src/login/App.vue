@@ -23,13 +23,13 @@
                     <form class="token-form" @submit.prevent="tokenSubmit">
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control" type="text" name="domain" placeholder="domain" /><br/>
+                                <input class="form-control" type="text" id="tokenDomain" name="domain" placeholder="domain" /><br/>
                             </div>
                             <div class="col-1"></div>
                         </div>
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control"type="text" name="token" placeholder="access_token" />
+                                <input class="form-control"type="text" id="tokenToken" name="token" placeholder="access_token" />
                             </div>
                             <div class="col-1">
                                 <button class="btn btn-primary" type="submit" tabindex="-1">➤</button>

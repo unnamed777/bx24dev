@@ -139,13 +139,13 @@ export default {
             let currentStepItems;
 
             if (options.getter) {
-                // Sale module is "special" one
+                // For modern modules like "sale"
                 currentStepItems = options.getter(response);
             } else {
                 currentStepItems = response.result;
             }
 
-            items = items.concat(response.result);
+            items = items.concat(currentStepItems);
 
             if (limit && items.length >= limit) {
                 items = items.slice(0, limit);

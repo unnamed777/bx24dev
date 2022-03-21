@@ -28,6 +28,7 @@ const config = {
             'node_modules',
         ],
         alias: {
+            '@': path.resolve(__dirname, 'src'),
             lib: path.resolve(__dirname, 'src/lib'),
             components: path.resolve(__dirname, 'src/tab/components'),
             mixins: path.resolve(__dirname, 'src/tab/mixins'),
