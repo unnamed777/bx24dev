@@ -14,7 +14,8 @@
     "build-zip": "node scripts/build-zip.js",
     "watch": "npm run build -- --watch",
     "watch:dev": "cross-env HMR=true npm run build:dev -- --watch",
-    "firefox": "bin/build_firefox.sh"
+    "firefox": "bin/build_firefox.sh",
+    "chrome": "bin/build_chrome.sh"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
