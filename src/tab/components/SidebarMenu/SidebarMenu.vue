@@ -195,6 +195,10 @@ export default {
                 label: 'Пользователи',
                 children: [
                     {
+                        label: 'Поля',
+                        route: this.getPath('userFieldList'),
+                    },
+                    {
                         label: 'Подразделения',
                         route: this.getPath('departmentList'),
                     },

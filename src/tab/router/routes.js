@@ -42,6 +42,7 @@ import EntityRightsEdit from 'components/modules/Entity/EntityRightsEdit.vue';
 import EntityItemList from 'components/modules/Entity/EntityItemList.vue';
 import EntityItemAdd from 'components/modules/Entity/EntityItemAdd.vue';
 import DepartmentList from 'components/modules/User/DepartmentList.vue';
+import UserFieldList from 'components/modules/User/UserFieldList.vue';
 import EventList from 'components/modules/Event/EventList.vue';
 import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
@@ -266,6 +267,11 @@ export default [
         path: '/:authId/entity/:entityId/rights/edit/:object',
         name: 'entityRightsEdit',
         component: EntityRightsEdit,
+    },
+    {
+        path: '/:authId/user/fields/list',
+        name: 'userFieldList',
+        component: UserFieldList,
     },
     {
         path: '/:authId/user/department/list',
