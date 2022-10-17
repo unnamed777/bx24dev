@@ -191,6 +191,14 @@ export default {
                 ]
             },
             {
+                id: 'catalog',
+                label: 'Торговый каталог',
+                action: this.onCatalogClick,
+                children: [
+                    {label: 'Загрузка...'}
+                ],
+            },
+            {
                 id: 'users',
                 label: 'Пользователи',
                 children: [
@@ -282,6 +290,7 @@ export default {
         ...mapState({
             entities: store => store.entities.items,
             crmCatalogs: store => store.crmCatalogs.items,
+            catalogCatalogs: store => store.catalogCatalogs.items,
             crmSmartProcesses: store => store.crmSmartProcesses.items,
             scope: store => store.scope,
         }),
@@ -301,6 +310,10 @@ export default {
 
         crmSmartProcesses() {
             this.rebuildCrmSmartProcessesMenu();
+        },
+
+        catalogCatalogs() {
+            this.rebuildCatalogCatalogsMenu();
         },
 
         scope() {
@@ -355,6 +368,7 @@ export default {
                 'events': 'event',
                 'placements': 'placement',
                 'sale': 'sale',
+                'catalog': 'catalog',
             };
 
             for (let [itemId, scopeCode] of Object.entries(itemToScope)) {
@@ -379,6 +393,18 @@ export default {
 
             if (this.$router.currentRoute.name !== 'crmCatalogList') {
                 this.$root.goToRoute({name: 'crmCatalogList'});
+            }
+
+            return {
+                expand: null,
+            };
+        },
+
+        onCatalogClick() {
+            this.loadCrmCatalogs();
+
+            if (this.$router.currentRoute.name !== 'catalogCatalogList') {
+                this.$root.goToRoute({name: 'catalogCatalogList'});
             }
 
             return {
@@ -508,6 +534,33 @@ export default {
             this.assignInternalIds(items);
 
             this.itemsMap.id.crmSmartProcesses.children = items;
+        },
+
+        rebuildCatalogCatalogsMenu() {
+            const items = [];
+
+            // Routes are translated into links.
+            // It's needed to match sidebar items with current route and expand them.
+            for (let catalog of Object.values(this.catalogCatalogs)) {
+                items.push({
+                    id: `catalogCatalogs_${catalog.id}`,
+                    label: `${catalog.name} (${catalog.id})`,
+                    children: [
+                        {
+                            label: 'Товары',
+                            route: this.getPath('catalogProductList', { iblockId: catalog.id }),
+                        },
+                        {
+                            label: 'Свойства',
+                            route: this.getPath('catalogProductPropertyList', { iblockId: catalog.id }),
+                        },
+                    ],
+                });
+            }
+
+            this.assignInternalIds(items);
+
+            this.itemsMap.id.catalog.children = items;
         },
 
         assignInternalIds(items) {

@@ -51,6 +51,9 @@ import Console from 'components/modules/Console/Console.vue';
 import SaleOrderList from 'components/modules/Sale/OrderList.vue';
 import SalePaymentList from 'components/modules/Sale/PaymentList.vue';
 import SaleShipmentList from 'components/modules/Sale/ShipmentList.vue';
+import CatalogList from 'components/modules/Catalog/CatalogList.vue';
+import CatalogProductPropertyList from 'components/modules/Catalog/ProductPropertyList.vue';
+import CatalogProductList from 'components/modules/Catalog/ProductList.vue';
 
 export default [
     {
@@ -326,5 +329,20 @@ export default [
         path: '/:authId/sale/shipment/list',
         name: 'saleShipmentList',
         component: SaleShipmentList,
+    },
+    {
+        path: '/:authId/catalog/list',
+        name: 'catalogCatalogList',
+        component: CatalogList,
+    },
+    {
+        path: '/:authId/catalog/:iblockId/products',
+        name: 'catalogProductList',
+        component: CatalogProductList,
+    },
+    {
+        path: '/:authId/catalog/:iblockId/properties',
+        name: 'catalogProductPropertyList',
+        component: CatalogProductPropertyList,
     },
 ]

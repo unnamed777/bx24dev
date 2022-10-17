@@ -24,6 +24,10 @@ import users from "./modules/users";
 import saleOrderFields from "./modules/sale/orderFields";
 import salePaymentFields from "./modules/sale/paymentFields";
 import saleShipmentFields from "./modules/sale/shipmentFields";
+import catalogCatalogs from "./modules/catalog/catalogs";
+import catalogProductProperties from "./modules/catalog/productProperties";
+import catalogProductPropertyFields from "./modules/catalog/productPropertyFields";
+import catalogProductFields from "./modules/catalog/productFields";
 import console from './modules/console';
 
 Vue.use(Vuex);
@@ -154,6 +158,10 @@ const store = new Vuex.Store({
         saleOrderFields,
         salePaymentFields,
         saleShipmentFields,
+        catalogCatalogs,
+        catalogProductPropertyFields,
+        catalogProductProperties,
+        catalogProductFields,
         console,
     }
 });
