@@ -66,3 +66,7 @@ export function sleep(delay) {
 
     return promise;
 }
+
+export function vueToObject(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}

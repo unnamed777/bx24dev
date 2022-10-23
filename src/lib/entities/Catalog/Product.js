@@ -38,8 +38,11 @@ export default class Product extends AbstractEntity {
         return 1;
     }
 
+    static get defaultSelect() {
+        return ['id', 'iblockId'];
+    }
+
     static async loadFields(filter) {
-        console.log(filter);
         if (!filter) {
             throw new Error('filter params is required');
         }

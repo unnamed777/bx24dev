@@ -25,7 +25,6 @@ export default class AbstractEntry {
         return ['*', 'UF_*'];
     }
 
-
     static get endpoint() {
         return '';
     }

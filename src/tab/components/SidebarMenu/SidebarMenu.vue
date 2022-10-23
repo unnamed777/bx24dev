@@ -6,6 +6,7 @@
         :item="item"
         :key="item._id"
         :ref="`item_${item._id}`"
+        v-on="item.onToggle ? { toggle: item.onToggle } : {}"
     />
 </div>
 </template>
@@ -193,7 +194,7 @@ export default {
             {
                 id: 'catalog',
                 label: 'Торговый каталог',
-                action: this.onCatalogClick,
+                onToggle: this.onCatalogToggle,
                 children: [
                     {label: 'Загрузка...'}
                 ],
@@ -400,12 +401,12 @@ export default {
             };
         },
 
-        onCatalogClick() {
-            this.loadCrmCatalogs();
-
-            if (this.$router.currentRoute.name !== 'catalogCatalogList') {
-                this.$root.goToRoute({name: 'catalogCatalogList'});
+        onCatalogToggle(state) {
+            if (this.catalogCatalogs.length > 0) {
+                return;
             }
+
+            this.loadCatalogCatalogs();
 
             return {
                 expand: null,
@@ -537,7 +538,13 @@ export default {
         },
 
         rebuildCatalogCatalogsMenu() {
-            const items = [];
+            const items = [
+                {
+                    id: 'catalogCatalogsAll',
+                    label: 'Список',
+                    route: this.getPath('catalogCatalogList'),
+                }
+            ];
 
             // Routes are translated into links.
             // It's needed to match sidebar items with current route and expand them.
@@ -585,6 +592,7 @@ export default {
             loadEntities: 'entities/load',
             loadCrmCatalogs: 'crmCatalogs/load',
             loadSmartProcesses: 'crmSmartProcesses/load',
+            loadCatalogCatalogs: 'catalogCatalogs/load',
         })
     }
 }

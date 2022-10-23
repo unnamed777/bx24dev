@@ -2,8 +2,8 @@
     <table class="enumeration-values table table-sm table-borderless mt-1 mb-0">
         <tbody>
             <tr v-for="(item) of enums">
-                <td>{{ item.ID }}</td>
-                <td>{{ item.VALUE }}</td>
+                <td>{{ item[idKey] }}</td>
+                <td>{{ item[valueKey] }}</td>
             </tr>
         </tbody>
     </table>
@@ -15,6 +15,14 @@ export default {
         enums: {
             type: Array,
             required: true,
+        },
+        idKey: {
+            type: String,
+            default: 'ID',
+        },
+        valueKey: {
+            type: String,
+            default: 'VALUE',
         },
     }
 };

@@ -42,6 +42,9 @@
                 @change="onPageChange"
             />
         </div>
+        <div v-if="items.length === 0 && loadExecuted === true" class="text-secondary">
+            Ничего не найдено
+        </div>
 
         <ModalSlider
             v-if="isItemCardOpened"
@@ -71,7 +74,7 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex';
-import { getFieldLabel } from 'lib/functions';
+import { getFieldLabel, vueToObject } from 'lib/functions';
 import GetListForm from 'components/ui/GetListForm.vue';
 import RichTableList from 'components/ui/TableList/RichTableList.vue';
 import PageNavigation from 'components/ui/PageNavigation.vue';
@@ -130,6 +133,7 @@ export default {
             totalPages: 0,
             isItemCardOpened: false,
             cardItem: null,
+            loadExecuted: false,
         };
     },
 
@@ -193,15 +197,18 @@ export default {
         },
 
         async loadEntriesWrapper() {
-            let result = await this.loadEntries({
+            const loadArgs = vueToObject({
                 sort: this.sort,
                 filter: this.filter,
                 page: this.currentPage,
             });
 
+            let result = await this.loadEntries(loadArgs);
+
             this.items = result.entries;
             // @todo Get rid of 50
             this.totalPages = Math.ceil(result.total / 50);
+            this.loadExecuted = true;
         },
 
         onFormChange({filter, sort}) {

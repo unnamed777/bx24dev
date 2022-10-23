@@ -2,9 +2,20 @@
 <div>
     <TableList
         :columns="tableColumns"
-        :rowActions="tableRowActions"
         :items="tableItems"
-    />
+        :rowActions="tableRowActions"
+    >
+        <template v-slot:name="{ item, column }">
+            {{ item.name }}
+
+            <FieldEnumTableList
+                v-if="item.propertyType === 'L'"
+                :enums="getEnumsByPropertyId(item.id)"
+                :idKey="'id'"
+                :valueKey="'value'"
+            />
+        </template>
+    </TableList>
 
     <ModalSlider
         v-if="isItemCardOpened"
@@ -27,6 +38,30 @@
                     </tr>
                 </tbody>
             </table>
+
+            <div v-if="cardItem.propertyType === 'L'">
+                <h4>Значения</h4>
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <td>id</td>
+                            <td>value</td>
+                            <td>xmlId</td>
+                            <td>sort</td>
+                            <td>def</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="enumItem of getEnumsByPropertyId(cardItem.id)">
+                            <td>{{ enumItem.id }}</td>
+                            <td>{{ enumItem.value }}</td>
+                            <td>{{ enumItem.xmlId }}</td>
+                            <td>{{ enumItem.sort }}</td>
+                            <td>{{ enumItem.def }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </ModalSlider>
 </div>
@@ -35,12 +70,14 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import TableList from 'components/ui/TableList/BaseTableList.vue';
+import FieldEnumTableList from 'components/FieldEnumTableList.vue';
 import ModalSlider from 'components/ui/ModalSlider';
 
 export default {
     components: {
         TableList,
         ModalSlider,
+        FieldEnumTableList,
     },
 
     data() {
@@ -103,6 +140,7 @@ export default {
 
         ...mapGetters({
             getByIblockId: 'catalogProductProperties/getByIblockId',
+            getEnumsByPropertyId: 'catalogProductPropertyEnums/getByPropertyId',
         }),
     },
 
@@ -119,6 +157,7 @@ export default {
         async prepareData() {
             await this.loadCatalogs();
             await this.loadPropertyFields();
+            await this.loadProductPropertyEnums();
             await this.fillProperties();
 
             this.setBreadcrumb(['Торговый каталог', `${this.catalog.name}`, 'Свойства']);
@@ -157,6 +196,7 @@ export default {
             loadPropertyFields: 'catalogProductPropertyFields/load',
             // Always update properties
             loadProductProperties: 'catalogProductProperties/reload',
+            loadProductPropertyEnums: 'catalogProductPropertyEnums/load',
         })
     }
 };

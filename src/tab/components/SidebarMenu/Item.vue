@@ -20,18 +20,23 @@
 </div>
 </template>
 <script>
-import SidebarMenuItem from './Item.vue';
-
 export default {
     name: 'SidebarMenuItem',
+
     props: {
         item: Object
     },
+
+    emits: [
+        'toggle'
+    ],
+
     data() {
         return {
             expanded: false,
         };
     },
+
     computed: {
         hasChildren() {
             return this.item.children && this.item.children.length > 0;
@@ -40,21 +45,8 @@ export default {
         hasAction() {
             return !!this.item.action;
         },
-
-        /*route() {
-            if (!this.item.route) {
-                return null;
-            }
-
-            if (typeof this.item.route === 'object') {
-                return this.item.route;
-            } else {
-                return {
-                    name: this.item.route
-                };
-            }
-        }*/
     },
+
     methods: {
         async doAction() {
             if (!this.item.action) {
@@ -77,6 +69,7 @@ export default {
 
         toggle(value = null) {
             this.expanded = value === null ? !this.expanded : value;
+            this.$emit('toggle', this.expanded);
         }
     }
 }

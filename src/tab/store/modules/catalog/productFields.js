@@ -26,7 +26,6 @@ export default {
 
     actions: {
         async load({ state, dispatch }, { iblockId, productType }) {
-            console.log(iblockId, productType);
             if (!state.items[iblockId]) {
                 await dispatch('forceLoad', { iblockId, productType });
             }
