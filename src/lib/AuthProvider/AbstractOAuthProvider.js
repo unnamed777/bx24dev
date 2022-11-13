@@ -4,7 +4,7 @@ import browser from 'webextension-polyfill';
 
 export default class AbstractOAuthProvider {
     constructor() {
-        this.debug = true;
+        this.debug = false;
     }
 
     /**
