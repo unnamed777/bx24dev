@@ -38,6 +38,26 @@ export default class Product extends AbstractEntity {
         return 1;
     }
 
+    static get TYPE_SET() {
+        return 2;
+    }
+
+    static get TYPE_SKU() {
+        return 3;
+    }
+
+    static get TYPE_OFFER() {
+        return 4;
+    }
+
+    static get TYPE_FREE_OFFER() {
+        return 5;
+    }
+
+    static get TYPE_EMPTY_SKU() {
+        return 6;
+    }
+
     static get defaultSelect() {
         return ['id', 'iblockId'];
     }

@@ -54,6 +54,8 @@ import SaleShipmentList from 'components/modules/Sale/ShipmentList.vue';
 import CatalogList from 'components/modules/Catalog/CatalogList.vue';
 import CatalogProductPropertyList from 'components/modules/Catalog/ProductPropertyList.vue';
 import CatalogProductList from 'components/modules/Catalog/ProductList.vue';
+import CatalogSectionList from 'components/modules/Catalog/SectionList.vue';
+import CatalogSectionTree from 'components/modules/Catalog/SectionTree.vue';
 
 export default [
     {
@@ -344,5 +346,15 @@ export default [
         path: '/:authId/catalog/:iblockId/properties',
         name: 'catalogProductPropertyList',
         component: CatalogProductPropertyList,
+    },
+    {
+        path: '/:authId/catalog/:iblockId/sections',
+        name: 'catalogSectionList',
+        component: CatalogSectionList,
+    },
+    {
+        path: '/:authId/catalog/:iblockId/tree',
+        name: 'catalogSectionTree',
+        component: CatalogSectionTree,
     },
 ]

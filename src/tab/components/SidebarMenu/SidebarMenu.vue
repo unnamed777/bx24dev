@@ -549,7 +549,7 @@ export default {
             // Routes are translated into links.
             // It's needed to match sidebar items with current route and expand them.
             for (let catalog of Object.values(this.catalogCatalogs)) {
-                items.push({
+                let item = {
                     id: `catalogCatalogs_${catalog.id}`,
                     label: `${catalog.name} (${catalog.id})`,
                     children: [
@@ -562,7 +562,21 @@ export default {
                             route: this.getPath('catalogProductPropertyList', { iblockId: catalog.id }),
                         },
                     ],
-                });
+                };
+
+                if (!catalog.productIblockId) {
+                    item.children.push({
+                        label: 'Разделы',
+                        route: this.getPath('catalogSectionList', { iblockId: catalog.id }),
+                    });
+
+                    item.children.push({
+                        label: 'Дерево',
+                        route: this.getPath('catalogSectionTree', { iblockId: catalog.id }),
+                    });
+                }
+
+                items.push(item);
             }
 
             this.assignInternalIds(items);

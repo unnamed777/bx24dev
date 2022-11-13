@@ -29,6 +29,7 @@ import catalogProductProperties from "./modules/catalog/productProperties";
 import catalogProductPropertyFields from "./modules/catalog/productPropertyFields";
 import catalogProductPropertyEnums from "./modules/catalog/productPropertyEnums";
 import catalogProductFields from "./modules/catalog/productFields";
+import catalogSectionFields from "./modules/catalog/sectionFields";
 import console from './modules/console';
 
 Vue.use(Vuex);
@@ -164,6 +165,7 @@ const store = new Vuex.Store({
         catalogProductProperties,
         catalogProductPropertyEnums,
         catalogProductFields,
+        catalogSectionFields,
         console,
     }
 });

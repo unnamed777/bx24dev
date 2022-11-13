@@ -1,6 +1,7 @@
 <template>
     <AbstractEntryListPage
         v-if="isLoaded"
+        :key="'productList_' + catalog.id"
         :loadEntries="loadEntries"
         :fieldsGetter="fieldsGetter"
         :visibleColumns="['id', 'name', 'timestampX']"
@@ -66,7 +67,13 @@ export default {
     },
 
     async mounted() {
-        await this.loadProductFields({iblockId: this.iblockId, productType: Product.TYPE_PRODUCT});
+        await this.loadCatalogs();
+
+        await this.loadProductFields({
+            iblockId: this.iblockId,
+            productType: this.catalog.productIblockId ? Product.TYPE_OFFER : Product.TYPE_PRODUCT,
+        });
+
         this.isLoaded = true;
     },
 
@@ -124,6 +131,7 @@ export default {
         },
 
         ...mapActions({
+            loadCatalogs: 'catalogCatalogs/load',
             loadProductFields: 'catalogProductFields/load',
         })
     }
