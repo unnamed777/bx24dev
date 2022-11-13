@@ -36,7 +36,7 @@ export default class AuthController {
     }
 
     constructor({id, tab, providerName, providerPayload}) {
-        console.log('AuthController constructor()');
+        console.log('AuthController constructor()', providerName);
         this.id = id;
         this.callerTab = tab;
 

@@ -1,8 +1,12 @@
-import { alert } from 'lib/functions';
+import { alert, sleep } from 'lib/functions';
 import { getExposedPromise } from 'lib/functions';
 import browser from 'webextension-polyfill';
 
 export default class AbstractOAuthProvider {
+    constructor() {
+        this.debug = true;
+    }
+
     /**
      * @returns {Promise<B24Auth>}
      */
@@ -20,6 +24,7 @@ export default class AbstractOAuthProvider {
 
     async obtainCode() {
         const authUrl = `https://${this.credentials.domain}/oauth/authorize/?client_id=${this.credentials.clientId}&state=bx24dev-ext-auth`;
+        this.debug && console.log('authUrl = %s', authUrl);
 
         const { promise, resolve } = getExposedPromise();
         this.onRedirectToApp = resolve;
@@ -31,30 +36,49 @@ export default class AbstractOAuthProvider {
             openerTabId: this.tabId,
         });
 
+        this.debug && console.log('Tab created, id = ', authTab.id);
+
         // Get rid of port. Url with port doesn't match pattern with port
         // However, url with port matches pattern without port
         const waitForUrl = this.credentials.appUrl.replace(/^(.*:\/\/)(?:([^/:]*)(:[0-9]{2,5})?)(.*)$/gi, '$1$2$4');
+        this.debug && console.log('waitForUrl = %s', waitForUrl);
 
         browser.webRequest.onBeforeRequest.addListener(this.redirectCallback, {
             urls: [waitForUrl + '?*'],
             tabId: authTab.id,
         }, ['blocking']);
 
+        this.debug && console.log('onBeforeRequest listener added');
+
+        try {
+            // Firefox 106 has a bug - if tab has been just created and immediately updated after that,
+            // url isn't changed. I need to wait a bit before updating the tab
+            if ((await browser.runtime.getBrowserInfo()).vendor === 'Mozilla') {
+                await sleep(100);
+            }
+        } catch (ex) {}
+
         browser.tabs.update(authTab.id, { url: authUrl });
+        this.debug && console.log('Tab url update requested');
 
         // Wait here till authorization is provided
+        this.debug && console.log('Start waiting for url with code');
         /** @var {String} */
         const redirectUrl = await promise;
+        this.debug && console.log('Url with code captured, %s', redirectUrl);
 
         await browser.tabs.update(this.tabId, { active: true });
+        this.debug && console.log('B24 tab selected');
         await browser.tabs.remove(authTab.id);
+        this.debug && console.log('Auth tab removed');
 
         this.code = (new URL(redirectUrl)).searchParams.get('code');
+        this.debug && console.log('OAuth code: %s', this.code);
         return this.code;
     }
 
     async redirectCallback(details) {
-        console.log('Captured url details', details);
+        this.debug && console.log('Captured url details', details);
 
         browser.webRequest.onBeforeRequest.removeListener(this.redirectCallback);
         this.onRedirectToApp(details.url);
