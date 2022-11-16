@@ -3,7 +3,6 @@ const path = require('path');
 const ejs = require('ejs');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const ExtensionReloader = require('webpack-extension-reloader');
 const { VueLoaderPlugin } = require('vue-loader');
 const { version } = require('./package.json');
 const WebpackNotifierPlugin = require('webpack-notifier');
@@ -13,7 +12,6 @@ const config = {
     mode: process.env.NODE_ENV,
     context: __dirname + '/src',
     entry: {
-        'vendor/vue': ['vue', 'vuex', 'vue-router'],
         'background': './background.js',
         'tab/index': './tab/index.js',
         'login/index': './login/index.js',
@@ -44,11 +42,6 @@ const config = {
                 test: /\.vue$/,
                 loader: 'vue-loader',
             },
-            /*{
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/,
-            },*/
             {
                 test: /\.css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
@@ -92,27 +85,29 @@ const config = {
         new MiniCssExtractPlugin({
             filename: '[name].css',
         }),
-        new CopyPlugin([
-            { from: 'icons', to: 'icons', ignore: ['icon.xcf'] },
-            { from: 'tab/index.html', to: 'tab/index.html', transform: transformHtml },
-            { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
-            //{ from: 'login', to: 'login' },
-            { from: 'vendor', to: 'vendor'},
-            {
-                from: 'manifest.json',
-                to: 'manifest.json',
-                transform: (content) => {
-                    const jsonContent = JSON.parse(content);
-                    jsonContent.version = version;
+        new CopyPlugin({
+            patterns: [
+                { from: 'icons', to: 'icons' },
+                { from: 'tab/index.html', to: 'tab/index.html', transform: transformHtml },
+                { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
+                //{ from: 'login', to: 'login' },
+                { from: 'vendor', to: 'vendor'},
+                {
+                    from: 'manifest.json',
+                    to: 'manifest.json',
+                    transform: (content) => {
+                        const jsonContent = JSON.parse(content);
+                        jsonContent.version = version;
 
-                    if (config.mode === 'development') {
-                        //jsonContent['content_security_policy'] = "script-src 'self' 'unsafe-eval'; object-src 'self'";
-                    }
+                        if (config.mode === 'development') {
+                            //jsonContent['content_security_policy'] = "script-src 'self' 'unsafe-eval'; object-src 'self'";
+                        }
 
-                    return JSON.stringify(jsonContent, null, 2);
+                        return JSON.stringify(jsonContent, null, 2);
+                    },
                 },
-            },
-        ]),
+            ]
+        }),
     ],
 };
 
