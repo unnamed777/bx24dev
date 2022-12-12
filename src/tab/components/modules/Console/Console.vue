@@ -123,6 +123,7 @@ import BaseSelect from 'components/ui/BaseSelect';
 import BaseInput from 'components/ui/BaseInput';
 import Response from './Response';
 import yaml from 'js-yaml';
+import methodsByScope from '@/tab/etc/methods';
 
 export default {
     components: {
@@ -138,6 +139,7 @@ export default {
 
     data() {
         let inputMode = window.localStorage.getItem('console/inputMode') || 'js/json';
+        let showManual = window.localStorage.getItem('console/showManual') === 'true';
 
         return {
             info: {},
@@ -146,7 +148,7 @@ export default {
             body: this.queryCode ? (typeof this.queryCode === 'object' ? JSON.stringify(this.queryCode, null, 2) : this.queryCode) : '',
             callResult: {},
             runtimeMethods: [],
-            showManual: false,
+            showManual: showManual,
             isLoading: false,
             inputMode,
             expertMode: !!this.$route.query.expert,
@@ -166,7 +168,7 @@ export default {
                 })));
             }
 
-            result = result.concat(this.methods.map((item) => ({
+            result = result.concat(this.availableMethods.map((item) => ({
                 label: item,
                 value: item,
                 group: 'methods',
@@ -196,8 +198,24 @@ export default {
             return JSON.stringify(this.callResult, null, 2);
         },
 
+        availableMethods() {
+            let methods = [...methodsByScope.general];
+
+            for (let item of this.scope) {
+                if (!methodsByScope[item]) {
+                    continue;
+                }
+
+                methods = methods.concat(methodsByScope[item]);
+            }
+
+            methods.sort();
+
+            return methods;
+        },
+
         ...mapState({
-            methods: state => state.availableMethods,
+            scope: state => state.scope,
             history: state => state.console.items,
         }),
     },
@@ -215,6 +233,10 @@ export default {
 
         inputMode(newValue) {
             window.localStorage.setItem('console/inputMode', newValue);
+        },
+
+        showManual(newValue) {
+            window.localStorage.setItem('console/showManual', newValue);
         },
     },
 

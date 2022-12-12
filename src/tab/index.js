@@ -61,12 +61,8 @@ const initBX24 = (authId, authData) => {
 
 
 const getInitialData = async () => {
-    // @todo make batch
     const scope = await BX24.fetch('scope');
     await store.commit('setScope', scope);
-
-    const methods = await BX24.fetch('methods');
-    await store.commit('setAvailableMethods', methods);
 }
 
 (async () => {

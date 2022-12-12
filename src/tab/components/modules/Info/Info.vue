@@ -18,15 +18,6 @@
                 </tr>
             </tbody>
         </table>
-
-        <b>methods</b>
-        <table class="table table-sm table-hover">
-            <tbody>
-                <tr v-for="value of this.methods">
-                    <td>{{ value }}</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </template>
 
@@ -48,7 +39,6 @@ export default {
 
     computed: mapState({
         scope: state => state.scope,
-        methods: state => state.availableMethods,
     }),
 
     mounted() {
