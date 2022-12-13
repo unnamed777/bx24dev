@@ -5,10 +5,10 @@
 Браузерное расширение для разработчика Bitrix24 REST API. Предоставляет интерфейс для просмотра основных сущностей Битрикс24 
 и даёт возможность выполнять произвольные запросы в рамках прав приложения.
 
-| ![Deals list screenshot](docs/deals.png) |
+| ![Console screenshot](docs/console.png) |
 | ------ |
 
-| ![Console screenshot](docs/console.png) |
+| ![Deals list screenshot](docs/deals.png) |
 | ------ |
 
 ## Сущности и возможности
