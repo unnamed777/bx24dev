@@ -156,20 +156,7 @@ export default {
                     },*/
                     {
                         label: 'Справочники',
-                        children: [
-                            {
-                                label: 'Типы',
-                                route: this.getPath('crmStatusTypes'),
-                            },
-                            {
-                                label: 'Источники',
-                                route: this.getPath('crmSources'),
-                            },
-                            {
-                                label: 'Сферы деятельности',
-                                route: this.getPath('crmIndustries'),
-                            },
-                        ]
+                        route: this.getPath('crmStatusTypes'),
                     },
                 ]
             },

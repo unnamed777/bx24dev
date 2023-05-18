@@ -193,7 +193,8 @@ table {
         cursor: default;
     }
 }
-
+</style>
+<style lang="scss">
 .header-column-code {
     margin-bottom: 2px;
     font-size: 60%;

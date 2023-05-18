@@ -3,7 +3,7 @@
         <FormattedTableList
             :columns="columns"
             :items="items"
-            :rowActions="rowActions"
+            :rowActions="rowActionsLocal"
         >
             <template v-slot:header-column="slotProps">
                 <div class="header-column__container">
@@ -17,12 +17,37 @@
                 </div>
             </template>
         </FormattedTableList>
+
         <ModalSlider v-if="isSettingsOpened" :width="350" @close="onSettingsClose">
             <ColumnsSlider
                 :items="availableColumns"
                 :selected="currentVisibleColumns"
                 @change="setVisibleColumns"
             />
+        </ModalSlider>
+
+        <ModalSlider
+            v-if="isItemCardOpened"
+            :width="800"
+            @close="onItemCardClose"
+        >
+            <div class="p-3">
+                <h3>Запись детально</h3>
+                <table class="table table-sm table-hover">
+                    <tbody>
+                        <tr v-for="field of Object.keys(cardItem)">
+                            <td class="mr-2 align-top" style="width: 30%;">
+                                <div style="line-height: 1em;">{{ fieldsByCode[field]?.label || field }}</div>
+                                <div class="text-muted" style="font-size: 60%">{{ fieldsByCode[field]?.code || null }}</div>
+                            </td>
+                            <td class="align-middle" style="line-height: 1em;">
+                                <span v-if="cardItem[field]">{{ cardItem[field] }}</span>
+                                <span v-else class="text-muted">null</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </ModalSlider>
     </div>
 </template>
@@ -73,6 +98,8 @@ export default {
             activeRowMenuIndex: null,
             isSettingsOpened: false,
             currentVisibleColumns: [],
+            isItemCardOpened: false,
+            cardItem: null,
         };
     },
 
@@ -111,6 +138,43 @@ export default {
         lastColumnCode() {
             return this.columns[this.columns.length - 1].code;
         },
+
+        rowActionsLocal() {
+            const result = [];
+
+            for (let action of this.rowActions) {
+                if (action.code === 'showCard' && action.onClick === undefined) {
+                    result.push({
+                        code: 'showCard',
+                        label: action.label || 'Посмотреть',
+                        onClick: this.onShowItemClick,
+                    });
+                } else {
+                    result.push(action);
+                }
+            }
+
+            return result;
+        },
+
+        fieldsByCode() {
+            const result = {};
+
+            for (let column of this.availableColumns) {
+                result[column.code] = {
+                    code: column.code,
+                    label: column.label || column.code,
+                };
+            }
+
+            return result;
+        }
+    },
+
+    watch: {
+        visibleColumns() {
+            this.currentVisibleColumns = [...this.visibleColumns];
+        }
     },
 
     mounted() {
@@ -152,6 +216,15 @@ export default {
 
         setVisibleColumns(columns) {
             this.currentVisibleColumns = columns;
+        },
+
+        onShowItemClick({row, index}) {
+            this.cardItem = this.items[index];
+            this.isItemCardOpened = true;
+        },
+
+        onItemCardClose() {
+            this.isItemCardOpened = false;
         },
     },
 }

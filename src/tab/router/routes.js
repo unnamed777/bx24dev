@@ -214,7 +214,7 @@ export default [
         component: CrmProductFieldList,
     },
     {
-        path: '/:authId/crm/status/types',
+        path: '/:authId/crm/status',
         name: 'crmStatusTypes',
         component: CrmStatusTypes,
     },
