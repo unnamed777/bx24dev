@@ -3,7 +3,7 @@
         <div class="mb-2">
             <div class="btn-group btn-group-sm btn-group-toggle">
                 <label
-                    v-for="key of ['pretty', 'json']"
+                    v-for="key of ['pretty', 'json', 'table']"
                     class="btn btn-light"
                     :class="{active: outputView === key}"
                 >
@@ -39,6 +39,20 @@
         </div>
         <div v-show="outputView === 'pretty'" ref="output_pretty"></div>
         <pre v-if="outputView === 'json'">{{ outputJson }}</pre>
+        <div v-if="outputView === 'table'">
+            <table v-if="outputTable" class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th v-for="column of outputTable.columns">{{ column }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item of outputTable.items">
+                        <td v-for="column of outputTable.columns">{{ print(item[column]) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -63,6 +77,61 @@ export default {
     computed: {
         outputJson() {
             return JSON.stringify(this.response, null, 2);
+        },
+
+        outputTable() {
+            let json = this.response;
+
+            if (!json) {
+                return null;
+            }
+
+            if (json.result === undefined) {
+                return null;
+            }
+
+            let keys = Object.keys(json.result);
+
+            if (keys.length === 0) {
+                return null;
+            }
+
+            let items;
+            let obj;
+
+            // Try to find items
+            if (keys.length === 1) {
+                if (Array.isArray(json.result[keys[0]])) {
+                    items = json.result[keys[0]];
+                } else {
+                    obj = json.result[keys[0]];
+                }
+            } else {
+                obj = json.result;
+            }
+
+            // Convert object to array
+            if (obj !== undefined) {
+                items = [];
+
+                for (let [field, data] of Object.entries(obj)) {
+                    items.push({
+                        null: field,
+                    ...data
+                    });
+                }
+            }
+
+            if (items.length === 0) {
+                return null;
+            }
+
+            let columns = Object.keys(items[0]);
+
+            return {
+                columns,
+                items,
+            };
         },
     },
 
@@ -125,6 +194,26 @@ export default {
         collapse(e) {
             this.expandLevel = e.button === 2 ? Math.max(1, this.expandLevel - 1) : 1;
             this.jsonFormatter();
+        },
+
+        print(value) {
+            if (value === true) {
+                return 'true';
+            }
+
+            if (value === false) {
+                return 'false';
+            }
+
+            if (value === undefined) {
+                return 'undefined';
+            }
+
+            if (value === null) {
+                return 'null';
+            }
+
+            return value;
         }
     },
 };
