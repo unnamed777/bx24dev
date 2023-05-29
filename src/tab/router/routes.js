@@ -48,9 +48,12 @@ import PlacementList from 'components/modules/Placement/PlacementList.vue';
 import PlacementTypes from 'components/modules/Placement/PlacementTypes.vue';
 import Info from 'components/modules/Info/Info.vue';
 import Console from 'components/modules/Console/Console.vue';
-import SaleOrderList from 'components/modules/Sale/OrderList.vue';
-import SalePaymentList from 'components/modules/Sale/PaymentList.vue';
-import SaleShipmentList from 'components/modules/Sale/ShipmentList.vue';
+import SaleOrderList from 'components/modules/Sale/Order/OrderList.vue';
+import SaleOrderFieldList from 'components/modules/Sale/Order/OrderFieldList';
+import SalePaymentList from 'components/modules/Sale/Payment/PaymentList.vue';
+import SalePaymentFieldList from 'components/modules/Sale/Payment/PaymentFieldList';
+import SaleShipmentList from 'components/modules/Sale/Shipment/ShipmentList.vue';
+import SaleShipmentFieldList from 'components/modules/Sale/Shipment/ShipmentFieldList';
 import CatalogList from 'components/modules/Catalog/CatalogList.vue';
 import CatalogProductPropertyList from 'components/modules/Catalog/ProductPropertyList.vue';
 import CatalogProductList from 'components/modules/Catalog/ProductList.vue';
@@ -323,14 +326,29 @@ export default [
         component: SaleOrderList,
     },
     {
+        path: '/:authId/sale/order/fields',
+        name: 'saleOrderFieldList',
+        component: SaleOrderFieldList,
+    },
+    {
         path: '/:authId/sale/payment/list',
         name: 'salePaymentList',
         component: SalePaymentList,
     },
     {
+        path: '/:authId/sale/payment/fields',
+        name: 'salePaymentFieldList',
+        component: SalePaymentFieldList,
+    },
+    {
         path: '/:authId/sale/shipment/list',
         name: 'saleShipmentList',
         component: SaleShipmentList,
+    },
+    {
+        path: '/:authId/sale/shipment/fields',
+        name: 'saleShipmentFieldList',
+        component: SaleShipmentFieldList,
     },
     {
         path: '/:authId/catalog/list',

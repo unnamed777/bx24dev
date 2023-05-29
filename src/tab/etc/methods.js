@@ -1171,6 +1171,9 @@ const methods = {
         'entity.section.update',
         'entity.update',
     ],
+    'salescenter': [
+        'salescenter.payment.getPublicUrl',
+    ],
 };
 
 export default methods;

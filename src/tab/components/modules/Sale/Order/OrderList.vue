@@ -1,15 +1,16 @@
 <template>
     <AbstractEntryListPage
         :loadEntries="loadEntries"
-        :loadFieldsAction="'salePaymentFields/load'"
+        :loadFieldsAction="'saleOrderFields/load'"
         :fieldsGetter="fieldsGetter"
-        :visibleColumns="['id', 'orderId', 'dateBill', 'paid', 'sum']"
-        :breadcrumb="['Интернет-магазин', 'Оплаты']"
+        :visibleColumns="['id', 'lid', 'dateInsert', 'statusId', 'price']"
+        :sortDefaultField="'id'"
+        :breadcrumb="['Интернет-магазин', 'Заказы', 'Список']"
     />
 </template>
 
 <script>
-import Payment from 'lib/entities/Sale/Payment';
+import Order from 'lib/entities/Sale/Order';
 import AbstractEntryListPage from 'components/modules/AbstractEntryListPage';
 
 export default {
@@ -19,7 +20,7 @@ export default {
 
     methods: {
         async loadEntries({sort, filter, page = 1}) {
-            let collection = (await Payment.load({
+            let collection = (await Order.load({
                 order: sort,
                 select: ['*'],
                 filter: filter,
@@ -34,7 +35,7 @@ export default {
         },
 
         fieldsGetter($store) {
-            return $store.state.salePaymentFields.items;
+            return $store.state.saleOrderFields.items;
         },
     }
 };

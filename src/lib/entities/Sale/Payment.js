@@ -21,6 +21,10 @@ export default class Payment extends AbstractEntity {
         return 'payments';
     }
 
+    static get defaultOrder() {
+        return {'id': 'asc'};
+    }
+
     static get pageNavigation() {
         return {
             name: 'navigation',

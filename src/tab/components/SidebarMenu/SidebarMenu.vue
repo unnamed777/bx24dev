@@ -166,15 +166,42 @@ export default {
                 children: [
                     {
                         label: 'Заказы',
-                        route: this.getPath('saleOrderList'),
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('saleOrderList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('saleOrderFieldList'),
+                            },
+                        ],
                     },
                     {
                         label: 'Оплаты',
-                        route: this.getPath('salePaymentList'),
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('salePaymentList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('salePaymentFieldList'),
+                            },
+                        ],
                     },
                     {
                         label: 'Отгрузки',
-                        route: this.getPath('saleShipmentList'),
+                        children: [
+                            {
+                                label: 'Список',
+                                route: this.getPath('saleShipmentList'),
+                            },
+                            {
+                                label: 'Поля',
+                                route: this.getPath('saleShipmentFieldList'),
+                            },
+                        ],
                     },
                 ]
             },
