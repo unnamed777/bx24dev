@@ -1,4 +1,3 @@
-import messageListener from 'lib/MessageListener';
 import { alert } from 'lib/functions';
 import AppProvider from 'lib/AuthProvider/AppProvider';
 import GrabOAuthProvider from 'lib/AuthProvider/GrabOAuthProvider';
@@ -35,10 +34,11 @@ export default class AuthController {
         };
     }
 
-    constructor({id, tab, providerName, providerPayload}) {
+    constructor({id, tab, providerName, messageListener, providerPayload}) {
         console.log('AuthController constructor()', providerName);
         this.id = id;
         this.callerTab = tab;
+        this.messageListener = messageListener;
 
         this.providerName = providerName;
         this.providerPayload = providerPayload;
@@ -51,6 +51,7 @@ export default class AuthController {
         this.provider = new (this.constructor.providers[this.providerName])({
             authController: this,
             instanceId: this.id,
+            messageListener: this.messageListener,
             ...this.providerPayload,
         });
 

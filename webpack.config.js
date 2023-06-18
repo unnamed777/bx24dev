@@ -15,6 +15,8 @@ const config = {
         'background': './background.js',
         'tab/index': './tab/index.js',
         'login/index': './login/index.js',
+        'web/index': './web/index.js',
+        'web_sw': './webServiceWorker/index.js',
     },
     output: {
         path: __dirname + '/dist',
@@ -28,6 +30,7 @@ const config = {
         alias: {
             '@': path.resolve(__dirname, 'src'),
             lib: path.resolve(__dirname, 'src/lib'),
+            '@lib': path.resolve(__dirname, 'src/lib'),
             components: path.resolve(__dirname, 'src/tab/components'),
             mixins: path.resolve(__dirname, 'src/tab/mixins'),
             // Required for Vue Portal, because it imports another Vue and creates an error in runtime
@@ -90,6 +93,7 @@ const config = {
                 { from: 'icons', to: 'icons' },
                 { from: 'tab/index.html', to: 'tab/index.html', transform: transformHtml },
                 { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
+                { from: 'web/index.html', to: 'web/index.html', transform: transformHtml },
                 //{ from: 'login', to: 'login' },
                 { from: 'vendor', to: 'vendor'},
                 {

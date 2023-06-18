@@ -1,13 +1,13 @@
-import { newMessageListener as messageListener } from 'lib/MessageListener';
 import { alert, getExposedPromise } from 'lib/functions';
 import browser from 'webextension-polyfill';
 
 export default class AppProvider {
-    constructor({ tabId, frameId, instanceId, authController }) {
+    constructor({ tabId, frameId, instanceId, authController, messageListener }) {
         this.tabId = tabId;
         this.frameId = frameId;
         this.instanceId = instanceId;
         this.authError = null;
+        this.messageListener = messageListener;
     }
 
     /**
@@ -15,7 +15,7 @@ export default class AppProvider {
      */
     async obtain() {
         console.log('AppProvider.obtain()');
-        messageListener.subscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.onAuthRefreshed.bind(this));
+        this.messageListener.subscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.onAuthRefreshed.bind(this));
         let result;
 
         const callerTab = (await browser.tabs.get(this.tabId));
@@ -29,7 +29,7 @@ export default class AppProvider {
             // Chrome version is too tangled, but seems to work with firefox too
             if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1 || true) {
                 // Chrome
-                this.returnAuthCallbackId = messageListener.subscribe(`AppProvider_${this.instanceId}:returnAuth`, this.onReturnAuth.bind(this));
+                this.returnAuthCallbackId = this.messageListener.subscribe(`AppProvider_${this.instanceId}:returnAuth`, this.onReturnAuth.bind(this));
 
                 const {promise, resolve } = getExposedPromise();
                 this.getAuthResultResolve = resolve;
@@ -123,7 +123,7 @@ export default class AppProvider {
         }*/
 
         // We don't need this event anymore
-        messageListener.unsubscribe(`AppProvider_${this.instanceId}:returnAuth`);
+        this.messageListener.unsubscribe(`AppProvider_${this.instanceId}:returnAuth`);
         this.auth = payload.auth;
         console.log('Auth from iframe', payload.auth);
         this.getAuthResultResolve(payload.auth);
@@ -152,7 +152,7 @@ export default class AppProvider {
         const callerTab = (await browser.tabs.get(this.tabId));
 
         try {
-            this.authRefreshedCallbackId = messageListener.subscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.onAuthRefreshed.bind(this));
+            this.authRefreshedCallbackId = this.messageListener.subscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.onAuthRefreshed.bind(this));
 
             const { promise, resolve } = getExposedPromise();
             this.authRefreshedResultResolve = resolve;
@@ -188,7 +188,7 @@ export default class AppProvider {
 
         console.log('onAuthRefreshed()', payload);
 
-        messageListener.unsubscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.authRefreshedCallbackId);
+        this.messageListener.unsubscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.authRefreshedCallbackId);
         clearTimeout(this.authRefreshedResultTimeout);
         this.authRefreshedResultResolve(payload.auth);
         delete this.authRefreshedResultResolve;

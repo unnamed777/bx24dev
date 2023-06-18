@@ -1,4 +1,5 @@
-import browser from 'webextension-polyfill';
+// @todo This will be an issue in Chrome. Fix later by moving it to root script
+//import browser from 'webextension-polyfill';
 
 export function getExposedPromise() {
     let exportResolve, exportReject;
