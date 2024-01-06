@@ -110,14 +110,17 @@ export default {
 
                     newField.items = [];
 
-                    for (let enumItem of Object.values(newField.values)) {
-                        newField.items.push({
-                            ID: enumItem.id,
-                            VALUE: enumItem.value,
-                        });
-                    }
+                    // 2024-01-06: it's empty now. Probably needs to be fixed via fetching values separately
+                    if (newField.values) {
+                        for (let enumItem of Object.values(newField.values)) {
+                            newField.items.push({
+                                ID: enumItem.id,
+                                VALUE: enumItem.value,
+                            });
+                        }
 
-                    delete newField.values;
+                        delete newField.values;
+                    }
                 }
 
                 fields[fieldCode] = newField;
