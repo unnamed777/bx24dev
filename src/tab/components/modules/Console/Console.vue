@@ -101,7 +101,7 @@
 
             <div v-if="!!method && showManual" class="mt-4 mb-4 resizer">
                 <iframe
-                    :src="'https://util.bitrixsoft.com/example_b24/redirect.php?lang=ru&method=' + method"
+                    :src="`https://unnamed777.github.io/bx24dev-rest-doc/${method.toLowerCase()}.html`"
                     width="100%"
                     frameborder="0"
                     style="border: 1px solid #ccc"
