@@ -4,7 +4,7 @@
             <div v-if="expertMode" class="d-flex">
                 <div class="btn-group btn-group-sm btn-group-toggle mb-2 mr-2">
                     <label
-                        v-for="key of ['POST', 'GET']"
+                        v-for="key of ['JSON', 'GET', 'POST']"
                         class="btn btn-light"
                         :class="{active: httpMethod === key}"
                     >
@@ -79,12 +79,13 @@
                         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a
-                                class="dropdown-item"
+                                class="dropdown-item d-flex"
+                                :class="{ disabled: expertMode === true }"
                                 href="#"
-                                title="Все элементы будут получены с помощью постраничной навигации, а результат будет отдан в виде JSON-файла с массивом"
-                                @click.prevent="exportAll"
+                                title="Отправлять тело запроса в виде JSON вместо url-encoded данных"
+                                @click.prevent="useJsonBody = !useJsonBody"
                             >
-                                Выгрузить всё в JSON...
+                                Отправлять JSON<span class="ml-auto" v-show="useJsonBody">✓</span>
                             </a>
                             <a
                                 class="dropdown-item d-flex"
@@ -94,6 +95,14 @@
                             >
                                 Экспертный режим<span class="ml-auto" v-show="expertMode">✓</span>
                             </a>
+                            <a
+                                class="dropdown-item"
+                                href="#"
+                                title="Все элементы будут получены с помощью постраничной навигации, а результат будет отдан в виде JSON-файла с массивом"
+                                @click.prevent="exportAll"
+                            >
+                                Выгрузить всё в JSON-файл...
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -101,7 +110,7 @@
 
             <div v-if="!!method && showManual" class="mt-4 mb-4 resizer">
                 <iframe
-                    :src="`https://unnamed777.github.io/bx24dev-rest-doc/${method.toLowerCase()}.html`"
+                    :src="`https://unnamed777.github.io/bx24dev-rest-doc/${method}.html`"
                     width="100%"
                     frameborder="0"
                     style="border: 1px solid #ccc"
@@ -140,6 +149,7 @@ export default {
     data() {
         let inputMode = window.localStorage.getItem('console/inputMode') || 'js/json';
         let showManual = window.localStorage.getItem('console/showManual') === 'true';
+        let useJsonBody = window.localStorage.getItem('console/useJsonBody') === 'true';
 
         return {
             info: {},
@@ -153,6 +163,7 @@ export default {
             inputMode,
             expertMode: !!this.$route.query.expert,
             httpMethod: 'POST',
+            useJsonBody: useJsonBody,
         };
     },
 
@@ -238,6 +249,10 @@ export default {
         showManual(newValue) {
             window.localStorage.setItem('console/showManual', newValue);
         },
+
+        useJsonBody(newValue) {
+            window.localStorage.setItem('console/useJsonBody', newValue);
+        }
     },
 
     mounted() {
@@ -264,7 +279,10 @@ export default {
                 }
 
                 this.addToHistory({ method: this.method, data: this.body });
-                this.callResult = await BX24.request(this.method, requestObject, { method: this.httpMethod });
+
+                this.callResult = await BX24.request(this.method, requestObject, {
+                    method: this.expertMode ? this.httpMethod : (this.useJsonBody ? 'JSON' : 'POST'),
+                });
             } finally {
                 this.isLoading = false;
             }

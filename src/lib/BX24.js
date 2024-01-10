@@ -13,17 +13,21 @@ export default {
 
     async request(method, data, options = {}) {
         data.auth = this.auth.access_token;
-        //console.log(data);
-
+        let httpMethod;
+        let useJson = false;
+        console.log(options);
 
         if (options.method) {
-            options.method = options.method.toUpperCase();
+            if (options.method === 'JSON') {
+                httpMethod = 'POST';
+                useJson = true;
+            } else {
+                httpMethod = options.method.toUpperCase();
+            }
         } else {
-            options.method = 'POST';
+            httpMethod = 'POST';
         }
 
-        // URLSearchParams doesn't support nested objects, use qs
-        let body = qs.stringify(data);
         let url;
 
         // @todo refactor
@@ -33,15 +37,27 @@ export default {
             url = `https://${this.auth.domain}/rest/${method}.json`;
         }
 
-        if (options.method === 'GET') {
-            url = url + '?' + body;
-            body = null;
+        const requestParams = {
+            method: httpMethod,
+            headers: {},
+        };
+
+        if (useJson === true) {
+            requestParams.headers['Content-Type'] = 'application/json';
+            requestParams.body = JSON.stringify(data);
+        } else {
+            // URLSearchParams doesn't support nested objects, use qs
+            let body = qs.stringify(data);
+
+            if (httpMethod === 'GET') {
+                url = url + '?' + body;
+                body = null;
+            }
+
+            requestParams.body = body;
         }
 
-        let bxResult = await fetch(url, {
-            method: options.method,
-            body,
-        }).then(response => response.json());
+        let bxResult = await fetch(url, requestParams).then(response => response.json());
 
         if (this.test === true) {
             this.test = false;
