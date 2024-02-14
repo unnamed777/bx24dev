@@ -1,5 +1,5 @@
 import { alert, getExposedPromise } from 'lib/functions';
-import browser from 'webextension-polyfill';
+//import browser from 'webextension-polyfill';
 
 export default class AppProvider {
     constructor({ tabId, frameId, instanceId, authController, messageListener }) {

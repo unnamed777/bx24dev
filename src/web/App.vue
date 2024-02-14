@@ -103,8 +103,6 @@ export default {
 
     mounted() {
         this.$refs['webhookUrl'].focus();
-        this.getSavedList();
-        this.getRecentList();
     },
 
     computed: {
@@ -114,9 +112,15 @@ export default {
     },
 
     methods: {
+        ready() {
+            console.log('App.ready()');
+            this.getSavedList();
+            this.getRecentList();
+        },
+
         create(name, payload) {
             sendMessage({
-                type: 'createExtensionInstance',
+                type: 'createWebInstance',
                 payload: {
                     providerName: name,
                     providerPayload: payload,
@@ -136,7 +140,7 @@ export default {
                 url: document.getElementById('webhookUrl').value,
             });
 
-            setTimeout(() => window.close(), 50);
+            //setTimeout(() => window.close(), 50);
         },
 
         tokenSubmit() {
@@ -147,23 +151,10 @@ export default {
         },
 
         async getSavedList() {
-            // noinspection JSVoidFunctionReturnValueUsed
             this.savedList = await sendMessage({
                 type: 'getSavedList',
                 payload: {}
             });
-
-            for (let item of this.savedList) {
-                switch (item.type) {
-                    case 'webhook':
-                        item.extra = item.url.replace(/\/(.)[^\\/]*$/si, '/$1***');
-                        break;
-
-                    case 'oauth':
-                        item.extra = item.appUrl;
-                        break;
-                }
-            }
         },
 
         async getRecentList() {

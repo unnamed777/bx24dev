@@ -1,10 +1,4 @@
 import { alert } from 'lib/functions';
-import AppProvider from 'lib/AuthProvider/AppProvider';
-import GrabOAuthProvider from 'lib/AuthProvider/GrabOAuthProvider';
-import WebhookProvider from 'lib/AuthProvider/WebhookProvider';
-import ClassicOAuthProvider from 'lib/AuthProvider/ClassicOAuthProvider';
-import TokenProvider from 'lib/AuthProvider/TokenProvider';
-import browser from 'webextension-polyfill';
 
 /**
  * @typedef {Object} B24Auth
@@ -23,17 +17,7 @@ import browser from 'webextension-polyfill';
  * @property {String} authType
  * @property {B24Auth} auth
  */
-export default class AuthController {
-    static get providers() {
-        return {
-            'app': AppProvider,
-            'grabOauth': GrabOAuthProvider,
-            'webhook': WebhookProvider,
-            'token': TokenProvider,
-            'classicOauth': ClassicOAuthProvider,
-        };
-    }
-
+export default class AbstractAuthController {
     constructor({id, tab, providerName, messageListener, providerPayload}) {
         console.log('AuthController constructor()', providerName);
         this.id = id;
@@ -71,16 +55,7 @@ export default class AuthController {
         }
 
         //messageListener.subscribe('refreshAuth', this.onExtensionRefreshAuth.bind(this));
-        await this.openExtensionPage();
-    }
-
-    async openExtensionPage() {
-        console.log('openExtensionPage()');
-        // Could be race condition for webhook + instance.id
-        this.extensionTab = await browser.tabs.create({
-            url: '/tab/index.html#/' + this.id,
-            openerTabId: this.callerTab ? this.callerTab.id : null,
-        });
+        await this.openAppPage();
     }
 
     /**
@@ -94,26 +69,6 @@ export default class AuthController {
             auth: this.auth,
             authType: this.provider.type,
         };
-    }
-
-    async refreshAuth() {
-        console.log('AuthController.refreshAuth()');
-
-        try {
-            this.auth = await this.provider.refresh();
-        } catch (ex) {
-            alert(ex.toString());
-            return;
-        }
-
-        if (!this.auth) {
-            alert('Авторизация не была получена');
-            return;
-        }
-
-        console.log('refreshed auth', this.auth);
-
-        return this.getData();
     }
 
     getId() {

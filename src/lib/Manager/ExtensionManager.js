@@ -1,12 +1,13 @@
 import messageListener from '../MessageListener/extensionMessageListener';
 import AbstractManager from './AbstractManager';
-import AuthController from 'lib/AuthController';
-import browser from 'webextension-polyfill';
+import ExtensionAuthController from 'lib/AuthController/ExtensionAuthController';
+//import browser from 'webextension-polyfill';
 import md5 from 'md5';
 
 class ExtensionManager extends AbstractManager {
     constructor(messageListener) {
         super(messageListener);
+        this.authControllerClass = ExtensionAuthController;
         this.messageListener.subscribe('createExtensionInstance', this.onMessageCreateExtensionInstance.bind(this));
         this.messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
         this.messageListener.subscribe('refreshAuth', this.onMessageRefreshAuth.bind(this));
@@ -128,7 +129,7 @@ class ExtensionManager extends AbstractManager {
         this.instances.push(null);
         const newInstanceId = this.instances.length - 1;
 
-        let instance = new AuthController({
+        let instance = new ExtensionAuthController({
             id: newInstanceId,
             tab,
             messageListener: this.messageListener,
@@ -139,6 +140,27 @@ class ExtensionManager extends AbstractManager {
         this.instances[newInstanceId] = instance;
 
         return instance;
+    }
+
+    /**
+     * @returns {Promise<[]>}
+     */
+    async innerGetSavedAuthList() {
+        let storageResult = await browser.storage.local.get('savedAuth');
+
+        if (!storageResult.savedAuth) {
+            return [];
+        }
+
+        return storageResult.savedAuth;
+    }
+
+    /**
+     * @param {Array} savedAuth
+     * @returns {Promise<void>}
+     */
+    async innerSetSavedAuthList(savedAuth) {
+        await browser.storage.local.set({ savedAuth });
     }
 }
 

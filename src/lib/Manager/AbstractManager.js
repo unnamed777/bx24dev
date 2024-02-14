@@ -1,12 +1,17 @@
-import AuthController from 'lib/AuthController';
-//import md5 from 'md5';
+//import AuthController from 'lib/AuthController';
+import md5 from "md5";
 
 export default class AbstractManager {
+    /** @var AuthController */
+    authControllerClass;
+
     constructor(messageListener) {
+        console.log('AbstractManager.constructor()');
         this.messageListener = messageListener;
 
-        console.log('Manager.constructor()');
+        console.log('AbstractManager.constructor()');
         this.messageListener.subscribe('getRecentList', this.onMessageGetRecentList.bind(this));
+        console.log('AbstractManager.1');
         this.messageListener.subscribe('openRecentConnection', this.onMessageOpenRecentConnection.bind(this));
         this.messageListener.subscribe('getSavedList', this.onMessageGetSavedList.bind(this));
         this.messageListener.subscribe('rememberAuth', this.onMessageRememberAuth.bind(this));
@@ -15,6 +20,7 @@ export default class AbstractManager {
 
          /** @type {Array<AuthController>} */
         this.instances = [null];
+        console.log('AbstractManager.constructor() end');
     }
 
     /**
@@ -25,12 +31,12 @@ export default class AbstractManager {
      * @returns {AuthController}
      */
     createTabInstance({ tab, providerName, providerPayload }) {
-        console.log('Manager.createTabInstance()');
+        console.log('AbstractManager.createTabInstance()');
 
         this.instances.push(null);
         const newInstanceId = this.instances.length - 1;
 
-        let instance = new AuthController({
+        let instance = new (this.authControllerClass)({
             id: newInstanceId,
             tab,
             providerName,
@@ -43,11 +49,12 @@ export default class AbstractManager {
     }
 
     async onMessageGetRecentList(payload, sender, sendResponse) {
+        console.log('AbstractManager.onMessageGetRecentList()');
         let result = [];
         let uniq = new Set();
 
         for (let authController of this.instances) {
-            if (!(authController instanceof AuthController)) {
+            if (!authController) {
                 continue;
             }
 
@@ -98,6 +105,19 @@ export default class AbstractManager {
             }
         }
 
+        console.log('AbstractManager.onMessageGetRecentList() end');
+        console.log('return fake result');
+        return [
+            {
+                "type": "webhook",
+                "authId": 1,
+                "id": "23ea3e0f5d187e8d7f7d1e8a1b82db38",
+                "title": "Webhook",
+                "portal": "test.bitrix24.ru",
+                "url": "https://test.bitrix24.ru/rest/1/asdf"
+            }
+        ];
+
         return result;
     }
 
@@ -125,15 +145,16 @@ export default class AbstractManager {
     }
 
     async onMessageGetSavedList(payload, sender, sendResponse) {
-        let storageResult = await browser.storage.local.get('savedAuth');
+        console.log('AbstractManager.onMessageGetSavedList()');
+        const items = await this.innerGetSavedAuthList();
 
-        if (!storageResult.savedAuth) {
+        if (items.length === 0) {
             return [];
         }
 
         let result = [];
 
-        for (let item of storageResult.savedAuth) {
+        for (let item of storageData) {
             let exportItem;
 
             switch (item.type) {
@@ -167,6 +188,19 @@ export default class AbstractManager {
     }
 
     /**
+     * @returns {Promise<[]>}
+     */
+    async innerGetSavedAuthList() {
+        let storageResult = await browser.storage.local.get('savedAuth');
+
+        if (!storageResult.savedAuth) {
+            return [];
+        }
+
+        return storageResult.savedAuth;
+    }
+
+    /**
      * Saves auth data to local storage
      *
      * @param payload
@@ -175,22 +209,19 @@ export default class AbstractManager {
      * @returns {Promise<*>}
      */
     async onMessageRememberAuth(payload, sender, sendResponse) {
+        console.log('AbstractManager.onMessageRememberAuth()');
         const authController = this.instances[payload.payload.authId];
+        console.log(authController);
 
         if (authController.provider.getCredentials === undefined) {
             throw new Error('Provider doesn\'t have reusable credentials');
         }
 
         const credentials = authController.provider.getCredentials();
-        // noinspection JSVoidFunctionReturnValueUsed
-        let storageResult = await browser.storage.local.get('savedAuth');
-        let savedAuth;
 
-        if (storageResult.savedAuth) {
-            savedAuth = storageResult.savedAuth;
-        } else {
-            savedAuth = [];
-        }
+        console.log('AbstractManager.onMessageRememberAuth() Try to obtain list');
+        let savedAuth = await this.innerGetSavedAuthList();
+        console.log('AbstractManager.onMessageRememberAuth() List is obtained');
 
         let newItem;
 
@@ -218,13 +249,23 @@ export default class AbstractManager {
 
         // Don't save item if it already exists
         if (savedAuth.map(item => item.id).includes(newItem.id)) {
+            console.log('AbstractManager.onMessageRememberAuth() The auth already saved');
             return;
         }
 
         savedAuth.push(newItem);
-        await browser.storage.local.set({ savedAuth });
+        await this.innerSetSavedAuthList(savedAuth);
+
+        console.log('AbstractManager.onMessageRememberAuth() done, id %s', newItem.id);
 
         return newItem.id;
+    }
+
+    /**
+     * @param {Array} savedAuth
+     * @returns {Promise<void>}
+     */
+    async innerSetSavedAuthList(savedAuth) {
     }
 
     /**
