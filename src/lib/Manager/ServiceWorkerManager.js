@@ -1,45 +1,49 @@
 import AbstractManager from 'lib/Manager/AbstractManager';
 import messageListener from 'lib/MessageListener/serviceWorkerMessageListener';
-import ServiceWorkerAuthController from 'lib/AuthController/ServiceWorkerAuthController';
+import ServiceWorkerInstance from 'lib/Instance/ServiceWorkerInstance';
 import localforage from "localforage";
 
 class ServiceWorkerManager extends AbstractManager {
     constructor(messageListener) {
         console.log('ServiceWorkerManager.constructor()');
         super(messageListener);
-        this.authControllerClass = ServiceWorkerAuthController;
+        this.instanceClass = ServiceWorkerInstance;
         this.messageListener.subscribe('createWebInstance', this.onMessageCreateWebInstance.bind(this));
     }
 
-    onMessageCreateWebInstance({ payload }) {
+    async onMessageCreateWebInstance({ payload }) {
         console.log('Manager.onMessageCreateWebInstance()');
 
-        this.createWebInstance({
+        const instance = this.createWebInstance({
             providerName: payload.providerName,
             providerPayload: payload.providerPayload,
         });
+
+        // Because inner procedures are async, we need to wait until the instance is fully ready to be used
+        await instance.readyPromise;
+
+        // The login page will use id to open the app
+        return { instanceId: instance.id };
     }
 
     /**
      *
      * @param {string} providerName
      * @param {Object} providerPayload
-     * @returns {ServiceWorkerAuthController}
+     * @returns {ServiceWorkerInstance}
      */
     createWebInstance({ providerName, providerPayload }) {
         console.log('ServiceWorkerManager.createWebInstance()');
 
         this.instances.push(null);
         const newInstanceId = this.instances.length - 1;
-        console.log(1);
 
-        let instance = new ServiceWorkerAuthController({
+        let instance = new ServiceWorkerInstance({
             id: newInstanceId,
             messageListener: this.messageListener,
             providerName,
             providerPayload
         });
-        console.log(2);
 
         this.instances[newInstanceId] = instance;
 

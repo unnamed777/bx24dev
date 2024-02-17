@@ -2,7 +2,7 @@ import { alert, getExposedPromise } from 'lib/functions';
 //import browser from 'webextension-polyfill';
 
 export default class AppProvider {
-    constructor({ tabId, frameId, instanceId, authController, messageListener }) {
+    constructor({ tabId, frameId, instanceId, instance, messageListener }) {
         this.tabId = tabId;
         this.frameId = frameId;
         this.instanceId = instanceId;
@@ -132,8 +132,8 @@ export default class AppProvider {
     }
 
     onGetAuthResultFailed() {
-        // Usually AuthController instance is responsible for showing error, but just in case
-        // a provider can show own error message if AuthController instance haven't done the job
+        // Usually Instance is responsible for showing error, but just in case
+        // a provider can show own error message if Instance haven't done the job
         if (this.suppressOwnAlert !== true) {
             this.suppressOwnAlert = false;
             alert('Не удалось получить авторизацию. Попробуйте перезагрузить страницу с приложением Б24');

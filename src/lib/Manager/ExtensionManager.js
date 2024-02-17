@@ -1,13 +1,13 @@
 import messageListener from '../MessageListener/extensionMessageListener';
 import AbstractManager from './AbstractManager';
-import ExtensionAuthController from 'lib/AuthController/ExtensionAuthController';
+import ExtensionInstance from 'lib/Instance/ExtensionInstance';
 //import browser from 'webextension-polyfill';
 import md5 from 'md5';
 
 class ExtensionManager extends AbstractManager {
     constructor(messageListener) {
         super(messageListener);
-        this.authControllerClass = ExtensionAuthController;
+        this.instanceClass = ExtensionInstance;
         this.messageListener.subscribe('createExtensionInstance', this.onMessageCreateExtensionInstance.bind(this));
         this.messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
         this.messageListener.subscribe('refreshAuth', this.onMessageRefreshAuth.bind(this));
@@ -121,7 +121,7 @@ class ExtensionManager extends AbstractManager {
      * @param tab
      * @param {string} providerName
      * @param {Object} providerPayload
-     * @returns {AuthController}
+     * @returns {AbstractInstance}
      */
     createTabInstance({ tab, providerName, providerPayload }) {
         console.log('Manager.createTabInstance()');
@@ -129,7 +129,7 @@ class ExtensionManager extends AbstractManager {
         this.instances.push(null);
         const newInstanceId = this.instances.length - 1;
 
-        let instance = new ExtensionAuthController({
+        let instance = new ExtensionInstance({
             id: newInstanceId,
             tab,
             messageListener: this.messageListener,

@@ -17,9 +17,9 @@ import { alert } from 'lib/functions';
  * @property {String} authType
  * @property {B24Auth} auth
  */
-export default class AbstractAuthController {
+export default class AbstractInstance {
     constructor({id, tab, providerName, messageListener, providerPayload}) {
-        console.log('AuthController constructor()', providerName);
+        console.log('AbstractInstance.constructor()', providerName);
         this.id = id;
         this.callerTab = tab;
         this.messageListener = messageListener;
@@ -33,7 +33,7 @@ export default class AbstractAuthController {
 
     async run() {
         this.provider = new (this.constructor.providers[this.providerName])({
-            authController: this,
+            instance: this,
             instanceId: this.id,
             messageListener: this.messageListener,
             ...this.providerPayload,
@@ -54,9 +54,10 @@ export default class AbstractAuthController {
             return;
         }
 
-        //messageListener.subscribe('refreshAuth', this.onExtensionRefreshAuth.bind(this));
-        await this.openAppPage();
+        await this.onInstanceReady();
     }
+
+    async onInstanceReady() {}
 
     /**
      * @returns {AuthorizationData}

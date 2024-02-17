@@ -1,4 +1,4 @@
-import AbstractAuthController from 'lib/AuthController/AbstractAuthController';
+import AbstractInstance from 'lib/Instance/AbstractInstance';
 import browser from 'webextension-polyfill';
 import AppProvider from 'lib/AuthProvider/AppProvider';
 import GrabOAuthProvider from 'lib/AuthProvider/GrabOAuthProvider';
@@ -6,7 +6,7 @@ import WebhookProvider from 'lib/AuthProvider/WebhookProvider';
 import ClassicOAuthProvider from 'lib/AuthProvider/ClassicOAuthProvider';
 import TokenProvider from 'lib/AuthProvider/TokenProvider';
 
-export default class ExtensionAuthController extends AbstractAuthController
+export default class ExtensionInstance extends AbstractInstance
 {
     static get providers() {
         return {
@@ -18,8 +18,9 @@ export default class ExtensionAuthController extends AbstractAuthController
         };
     }
 
-    async openAppPage() {
-        console.log('openExtensionPage()');
+    async onInstanceReady() {
+        console.log('ExtensionInstance.onInstanceReady()');
+
         // Could be race condition for webhook + instance.id
         this.extensionTab = await browser.tabs.create({
             url: '/tab/index.html#/' + this.id,
@@ -28,7 +29,7 @@ export default class ExtensionAuthController extends AbstractAuthController
     }
 
     async refreshAuth() {
-        console.log('AuthController.refreshAuth()');
+        console.log('ExtensionInstance.refreshAuth()');
 
         try {
             this.auth = await this.provider.refresh();

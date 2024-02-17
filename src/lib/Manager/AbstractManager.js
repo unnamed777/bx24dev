@@ -1,9 +1,9 @@
-//import AuthController from 'lib/AuthController';
 import md5 from "md5";
 
 export default class AbstractManager {
-    /** @var AuthController */
-    authControllerClass;
+    /** @var AbstractInstance */
+    instanceClass;
+    instances;
 
     constructor(messageListener) {
         console.log('AbstractManager.constructor()');
@@ -18,7 +18,7 @@ export default class AbstractManager {
         this.messageListener.subscribe('forgetAuth', this.onMessageForgetAuth.bind(this));
         this.messageListener.subscribe('openSavedConnection', this.onMessageOpenSavedConnection.bind(this));
 
-         /** @type {Array<AuthController>} */
+         /** @type {Array<AbstractInstance>} */
         this.instances = [null];
         console.log('AbstractManager.constructor() end');
     }
@@ -28,7 +28,7 @@ export default class AbstractManager {
      * @param tab
      * @param {string} providerName
      * @param {Object} providerPayload
-     * @returns {AuthController}
+     * @returns {AbstractInstance}
      */
     createTabInstance({ tab, providerName, providerPayload }) {
         console.log('AbstractManager.createTabInstance()');
@@ -36,7 +36,7 @@ export default class AbstractManager {
         this.instances.push(null);
         const newInstanceId = this.instances.length - 1;
 
-        let instance = new (this.authControllerClass)({
+        let instance = new (this.instanceClass)({
             id: newInstanceId,
             tab,
             providerName,
@@ -53,16 +53,16 @@ export default class AbstractManager {
         let result = [];
         let uniq = new Set();
 
-        for (let authController of this.instances) {
-            if (!authController) {
+        for (let instance of this.instances) {
+            if (!instance) {
                 continue;
             }
 
-            let data = authController.getData();
-            let credentials = authController.provider.getCredentials ? authController.provider.getCredentials() : {};
+            let data = instance.getData();
+            let credentials = instance.provider.getCredentials ? instance.provider.getCredentials() : {};
             let uniqId;
 
-            switch (authController.getProviderName()) {
+            switch (instance.getProviderName()) {
                 case 'webhook':
                     uniqId = this.getUniqIdByCredentials('webhook', credentials);
 
@@ -72,7 +72,7 @@ export default class AbstractManager {
 
                     result.push({
                         type: 'webhook',
-                        authId: authController.getId(),
+                        authId: instance.getId(),
                         id: uniqId,
                         title: data.title,
                         portal: data.portal,
@@ -92,7 +92,7 @@ export default class AbstractManager {
 
                     result.push({
                         type: 'oauth',
-                        authId: authController.getId(),
+                        authId: instance.getId(),
                         id: uniqId,
                         title: data.title,
                         portal: data.portal,
@@ -122,23 +122,23 @@ export default class AbstractManager {
     }
 
     async onMessageOpenRecentConnection({ payload }, sender, sendResponse) {
-        const recentAuthController = this.instances[payload.authId];
+        const recentInstance = this.instances[payload.authId];
         let providerName;
 
-        if (recentAuthController.getProviderName() === 'grabOauth') {
+        if (recentInstance.getProviderName() === 'grabOauth') {
             providerName = 'classicOauth';
         } else {
-            providerName = recentAuthController.getProviderName();
+            providerName = recentInstance.getProviderName();
         }
 
-        if (recentAuthController.provider.getCredentials === undefined) {
+        if (recentInstance.provider.getCredentials === undefined) {
             throw new Error('Provider doesn\'t have reusable credentials');
         }
 
         await this.createTabInstance({
             tab: null,
             providerName,
-            providerPayload: recentAuthController.provider.getCredentials(),
+            providerPayload: recentInstance.provider.getCredentials(),
         });
 
         return true;
@@ -210,14 +210,14 @@ export default class AbstractManager {
      */
     async onMessageRememberAuth(payload, sender, sendResponse) {
         console.log('AbstractManager.onMessageRememberAuth()');
-        const authController = this.instances[payload.payload.authId];
-        console.log(authController);
+        const instance = this.instances[payload.payload.authId];
+        console.log(instance);
 
-        if (authController.provider.getCredentials === undefined) {
+        if (instance.provider.getCredentials === undefined) {
             throw new Error('Provider doesn\'t have reusable credentials');
         }
 
-        const credentials = authController.provider.getCredentials();
+        const credentials = instance.provider.getCredentials();
 
         console.log('AbstractManager.onMessageRememberAuth() Try to obtain list');
         let savedAuth = await this.innerGetSavedAuthList();
@@ -225,7 +225,7 @@ export default class AbstractManager {
 
         let newItem;
 
-        switch (authController.getProviderName()) {
+        switch (instance.getProviderName()) {
             case 'webhook':
                 newItem = {
                     type: 'webhook',
