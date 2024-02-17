@@ -13,7 +13,7 @@ const config = {
     context: __dirname + '/src',
     entry: {
         'background': './background.js',
-        'tab/index': './tab/index.js',
+        'tab/index': './extension/index.js',
         'login/index': './login/index.js',
         'web/index': './web/index.js',
         'web_sw': './webServiceWorker/index.js',
@@ -31,8 +31,9 @@ const config = {
             '@': path.resolve(__dirname, 'src'),
             lib: path.resolve(__dirname, 'src/lib'),
             '@lib': path.resolve(__dirname, 'src/lib'),
-            components: path.resolve(__dirname, 'src/tab/components'),
-            mixins: path.resolve(__dirname, 'src/tab/mixins'),
+            '@app': path.resolve(__dirname, 'src/app'),
+            components: path.resolve(__dirname, 'src/app/components'),
+            mixins: path.resolve(__dirname, 'src/app/mixins'),
             // Required for Vue Portal, because it imports another Vue and creates an error in runtime
             'vue$': require.resolve('vue/dist/vue.esm.js'),
         },
@@ -91,7 +92,7 @@ const config = {
         new CopyPlugin({
             patterns: [
                 { from: 'icons', to: 'icons' },
-                { from: 'tab/index.html', to: 'tab/index.html', transform: transformHtml },
+                { from: 'extension/index.html', to: 'tab/index.html', transform: transformHtml },
                 { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
                 { from: 'web/index.html', to: 'web/index.html', transform: transformHtml },
                 //{ from: 'login', to: 'login' },

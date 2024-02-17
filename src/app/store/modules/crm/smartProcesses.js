@@ -1,5 +1,5 @@
 import SmartProcess from 'lib/entities/Crm/SmartProcess';
-import mixin from '@/tab/store/modules/cachedItemsLoaderMixin';
+import mixin from '@app/store/modules/cachedItemsLoaderMixin';
 
 export default {
     namespaced: true,

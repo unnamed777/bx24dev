@@ -1,7 +1,7 @@
 import Vue from 'vue';
-import App from './App';
-import router from './router';
-import store from './store';
+import App from '@app/App';
+import router from '@app/router';
+import store from '@app/store';
 import browser from 'webextension-polyfill';
 import BX24 from 'lib/BX24';
 

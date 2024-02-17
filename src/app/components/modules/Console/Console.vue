@@ -132,7 +132,7 @@ import BaseSelect from 'components/ui/BaseSelect';
 import BaseInput from 'components/ui/BaseInput';
 import Response from './Response';
 import yaml from 'js-yaml';
-import methodsByScope from '@/tab/etc/methods';
+import methodsByScope from '@app/etc/methods';
 
 export default {
     components: {
