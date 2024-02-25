@@ -9,10 +9,10 @@
                     <form class="webhook-form" @submit.prevent="webhookSubmit">
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control" id="webhookUrl" type="text" name="url" ref="webhookUrl" placeholder="url или &quot;domain user_id key&quot;" />
+                                <input class="form-control form-control-lg" id="webhookUrl" type="text" name="url" ref="webhookUrl" placeholder="url или &quot;domain user_id key&quot;" />
                             </div>
                             <div class="col-1">
-                                <button class="btn btn-primary" type="submit" tabindex="-1">➤</button>
+                                <button class="btn btn-lg btn-primary" type="submit" tabindex="-1">➤</button>
                             </div>
                         </div>
                     </form>
@@ -23,16 +23,16 @@
                     <form class="token-form" @submit.prevent="tokenSubmit">
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control" type="text" id="tokenDomain" name="domain" placeholder="domain" /><br/>
+                                <input class="form-control form-control-lg" type="text" id="tokenDomain" name="domain" placeholder="domain" /><br/>
                             </div>
                             <div class="col-1"></div>
                         </div>
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control"type="text" id="tokenToken" name="token" placeholder="access_token" />
+                                <input class="form-control form-control-lg" type="text" id="tokenToken" name="token" placeholder="access_token" />
                             </div>
                             <div class="col-1">
-                                <button class="btn btn-primary" type="submit" tabindex="-1">➤</button>
+                                <button class="btn btn-lg btn-primary" type="submit" tabindex="-1">➤</button>
                             </div>
                         </div>
                     </form>
@@ -84,8 +84,9 @@
 
 <script>
 import { StarIcon, CloseIcon } from 'vue-bytesize-icons';
-import AuthItem from './components/AuthItem';
-import sendMessage from './sendMessage';
+import AuthItem from '@web/components/AuthItem';
+import sendMessage from '@web/sendMessage';
+import BX24 from "lib/BX24";
 
 export default {
     components: {
@@ -103,6 +104,8 @@ export default {
 
     mounted() {
         this.$refs['webhookUrl'].focus();
+        //this.getSavedList();
+        //this.getRecentList();
     },
 
     computed: {
@@ -112,35 +115,55 @@ export default {
     },
 
     methods: {
-        ready() {
-            console.log('App.ready()');
-            this.getSavedList();
-            this.getRecentList();
-        },
-
-        create(name, payload) {
-            sendMessage({
+        async create(name, payload) {
+            const result = await sendMessage({
                 type: 'createWebInstance',
                 payload: {
                     providerName: name,
                     providerPayload: payload,
                 }
             });
+
+            this.$router.push({ path: 'app' }, { authId: result.instanceId });
+            console.log(result);
         },
 
-        webhookSubmit() {
-            const webhook = document.getElementById('webhookUrl').value;
+        async webhookSubmit() {
+            let webhook = document.getElementById('webhookUrl').value;
+            let result = /^https:\/\/([^/]+)\/rest\/[0-9]+\/[^/]+/.exec(webhook);
 
-            if (/^https:\/\/[^/]+\/rest\/[0-9]+\/[^/]+/.test(webhook) === false && /^\S+\s+[0-9]+\s+\S+$/.test(webhook) === false) {
+            if (result === null) {
+                // Check whether user entered separate parts of webhook (domain, user id, token)
+                result = /^(\S+)\s+([0-9]+)\s+(\S+)$/.exec(webhook);
+
+                if (result !== null) {
+                    // Build webhook url
+                    webhook = `https://${result[1]}/rest/${result[2]}/${result[3]}`;
+                }
+            }
+
+            if (result === null) {
                 alert('Неверный формат данных для вебхука');
                 return;
             }
 
-            this.create('webhook', {
-                url: document.getElementById('webhookUrl').value,
-            });
+            /** @var {AuthorizationData} */
+            let appData = {
+                title: 'Webhook',
+                portal: result[1],
+                authType: 'webhook',
+                auth: {
+                    domain: result[1],
+                    url: webhook,
+                },
+            };
 
-            //setTimeout(() => window.close(), 50);
+            console.log('before setAppData');
+            await this.$store.commit('setAppData', appData);
+            BX24.setAuth(BX24.TYPE_WEBHOOK, appData.auth);
+            console.log('after setAppData');
+
+            this.$router.push({ name: 'app', params: { authId: 0 } });
         },
 
         tokenSubmit() {
@@ -232,11 +255,11 @@ export default {
 }
 </script>
 
-<style lang="scss">
-* {
+<style lang="scss" scoped>
+/** {
     font-size: 20px;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"
-}
+}*/
 
 form {
     margin: 0px;

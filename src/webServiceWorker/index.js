@@ -1,4 +1,4 @@
-import { init } from 'lib/Manager/ServiceWorkerManager';
+//import { init } from 'lib/Manager/ServiceWorkerManager';
 console.log('SW: Executing');
 
 self.addEventListener('install', (event) => {

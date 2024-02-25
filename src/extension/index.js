@@ -4,6 +4,7 @@ import router from '@app/router';
 import store from '@app/store';
 import browser from 'webextension-polyfill';
 import BX24 from 'lib/BX24';
+import loadInitialData from "@app/etc/loadInitialData";
 
 const getAuthId = () => {
     // The app needs to know id of AuthController before any routing
@@ -19,7 +20,6 @@ const getAuthId = () => {
 
 const obtainAuthData = async (authId) => {
     /** @var {AuthorizationData} */
-    console.log('obtainAuthData()');
     let authData = await browser.runtime.sendMessage({
         type: 'getAuth',
         payload: {
@@ -59,17 +59,11 @@ const initBX24 = (authId, authData) => {
     window.BX24 = BX24;
 };
 
-
-const getInitialData = async () => {
-    const scope = await BX24.fetch('scope');
-    await store.commit('setScope', scope);
-}
-
 (async () => {
     const authId = getAuthId();
     const authData = await obtainAuthData(authId);
     initBX24(authId, authData);
-    await getInitialData();
+    await loadInitialData();
 
     //setTimeout(() => { BX24.expiredTokenHandler(); }, 1000);
 

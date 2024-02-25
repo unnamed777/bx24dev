@@ -1,58 +1,40 @@
 import Vue from 'vue';
-import App from './App';
-import { getExposedPromise } from "lib/functions";
+import App from '@web/App';
+import store from '@app/store';
+import router from '@web/router';
 
-const initApp = () => {
-    window.app = new Vue({
-        el: '#app',
+window.app = new Vue({
+    el: '#app',
+    router,
+    store,
+    render: h => h(App, {}),
 
-        render: h => h(App, {}),
+    data: {
+        authId: null,
+    },
 
-        methods: {
-            ready() {
-                this.$children[0].ready();
+    methods: {
+        resolveRoute(route, params) {
+            params.authId = 0;
+
+            return this.$router.resolve({
+                name: route,
+                params: {
+                    ...params,
+                },
+            }).route.path;
+        },
+
+        /**
+         * @param {Object} to
+         */
+        goToRoute(to) {
+            if (!to.params) {
+                to.params = {};
             }
+
+            to.params.authId = 0;
+            this.$router.push(to);
         }
-    });
-};
-
-const registerServiceWorker = async () => {
-    console.log('registerServiceWorker()');
-    const { promise, resolve, reject } = getExposedPromise();
-
-    if (!("serviceWorker" in navigator)) {
-        alert('Браузер не поддерживает Service Worker');
-        return Promise.reject();
     }
-
-    try {
-        const registration = await navigator.serviceWorker.register("../web_sw.js", {
-            updateViaCache: 'none',
-        });
-
-        /*if (registration.installing) {
-            console.log("Service worker installing");
-        } else if (registration.waiting) {
-            console.log("Service worker installed");
-        } else if (registration.active) {
-            console.log("Service worker active");
-            resolve();
-        }*/
-        // @todo tmp
-        //registration.update();
-    } catch (error) {
-        console.error(`Registration failed`, error);
-        reject(error);
-    }
-
-    return navigator.serviceWorker.ready;
-};
-
-(async () => {
-    initApp();
-    let tmp = await registerServiceWorker();
-    console.log('ready resolved', tmp.active);
-    console.log(navigator.serviceWorker.controller);
-    setTimeout(() => console.log(navigator.serviceWorker.controller), 10);
-    window.app.ready();
-})();
+});

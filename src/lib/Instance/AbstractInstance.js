@@ -3,10 +3,11 @@ import { alert } from 'lib/functions';
 /**
  * @typedef {Object} B24Auth
  * @property {string} domain
- * @property {string} access_token
- * @property {number} expires_in
- * @property {number} member_id
- * @property {string} refresh_token
+ * @property {string} access_token OAuth
+ * @property {number} expires_in OAuth
+ * @property {number} member_id OAuth
+ * @property {string} refresh_token OAuth
+ * @property {string} url Webhook
  */
 
 /**

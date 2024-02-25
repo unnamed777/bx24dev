@@ -2,6 +2,9 @@ import qs from 'qs';
 import { sleep } from 'lib/functions';
 
 export default {
+    TYPE_WEBHOOK: 'webhook',
+    TYPE_OAUTH: 'oauth',
+
     setAuth(type, auth) {
         this.type = type;
         this.auth = auth;
@@ -15,7 +18,6 @@ export default {
         data.auth = this.auth.access_token;
         let httpMethod;
         let useJson = false;
-        console.log(options);
 
         if (options.method) {
             if (options.method === 'JSON') {
@@ -31,7 +33,7 @@ export default {
         let url;
 
         // @todo refactor
-        if (this.type === 'webhook') {
+        if (this.type === this.TYPE_WEBHOOK) {
             url = `${this.auth.url}/${method}`;
         } else {
             url = `https://${this.auth.domain}/rest/${method}.json`;

@@ -32,6 +32,7 @@ const config = {
             lib: path.resolve(__dirname, 'src/lib'),
             '@lib': path.resolve(__dirname, 'src/lib'),
             '@app': path.resolve(__dirname, 'src/app'),
+            '@web': path.resolve(__dirname, 'src/web'),
             components: path.resolve(__dirname, 'src/app/components'),
             mixins: path.resolve(__dirname, 'src/app/mixins'),
             // Required for Vue Portal, because it imports another Vue and creates an error in runtime
