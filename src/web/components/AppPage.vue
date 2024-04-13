@@ -12,6 +12,8 @@
 <script>
 import App from "@app/App";
 import loadInitialData from "@app/etc/loadInitialData";
+import BX24 from "lib/BX24";
+import channel, { TYPE_REQUEST_AUTH_DATA_BY_UUID } from "@web/etc/channel";
 
 export default {
     components: {
@@ -26,7 +28,12 @@ export default {
 
     async mounted() {
         if (!this.$store.state.appData.portal) {
-            // Seems that a user just reloaded the page, so we don't have auth
+            if (this.$router.currentRoute.params.authId) {
+                await this.obtainAuthData();
+            }
+        }
+
+        if (!this.$store.state.appData.portal) {
             this.$router.push({ name: 'login' });
             return;
         }
@@ -34,6 +41,22 @@ export default {
         // Postpone App rendering until scope is loaded
         await loadInitialData();
         this.isLoaded = true;
-    }
+    },
+
+    methods: {
+        async obtainAuthData() {
+            let result;
+
+            try {
+                result = await channel.sendMessageWithSingleResponse(TYPE_REQUEST_AUTH_DATA_BY_UUID, { authId: this.$router.currentRoute.params.authId });
+            } catch (ex) {
+                console.warn('Auth with requested id not found');
+                return;
+            }
+
+            this.$store.commit('setAppData', result.payload);
+            BX24.setAuth(BX24.TYPE_WEBHOOK, result.payload.auth);
+        }
+    },
 };
 </script>

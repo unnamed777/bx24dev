@@ -38,14 +38,14 @@
                     </form>
                 </div>
 
-                <div v-if="this.recentList.length > 0" class="mb-5">
-                    <h4>Недавние подключения</h4>
+                <div v-if="this.activeList.length > 0" class="mb-5">
+                    <h4>Активные подключения</h4>
                     <AuthItem
-                        v-for="(item, index) of recentList"
+                        v-for="(item, index) of activeList"
                         :key="item.id"
                         :item="item"
                         :index="index"
-                        @itemClick="openRecent(index)"
+                        @itemClick="openRecent(item)"
                     >
                         <template v-slot:actions>
                             <StarIcon
@@ -85,8 +85,8 @@
 <script>
 import { StarIcon, CloseIcon } from 'vue-bytesize-icons';
 import AuthItem from '@web/components/AuthItem';
-import sendMessage from '@web/sendMessage';
 import BX24 from "lib/BX24";
+import channel, { TYPE_REQUEST_ACTIVE_CONNECTIONS } from "@web/etc/channel";
 
 export default {
     components: {
@@ -97,7 +97,7 @@ export default {
 
     data() {
         return {
-            recentList: [],
+            activeList: [],
             savedList: [],
         };
     },
@@ -105,7 +105,7 @@ export default {
     mounted() {
         this.$refs['webhookUrl'].focus();
         //this.getSavedList();
-        //this.getRecentList();
+        this.getRecentList();
     },
 
     computed: {
@@ -158,12 +158,13 @@ export default {
                 },
             };
 
-            console.log('before setAppData');
-            await this.$store.commit('setAppData', appData);
-            BX24.setAuth(BX24.TYPE_WEBHOOK, appData.auth);
-            console.log('after setAppData');
+            this.openWebhook(appData);
+        },
 
-            this.$router.push({ name: 'app', params: { authId: 0 } });
+        openWebhook(appData) {
+            this.$store.commit('setAppData', appData);
+            BX24.setAuth(BX24.TYPE_WEBHOOK, appData.auth);
+            this.$router.push({ name: 'app', params: { authId: window.crypto.randomUUID() } });
         },
 
         tokenSubmit() {
@@ -181,35 +182,30 @@ export default {
         },
 
         async getRecentList() {
-            // noinspection JSVoidFunctionReturnValueUsed
-            this.recentList = await sendMessage({
-                type: 'getRecentList',
-                payload: {}
-            });
-
-            for (let item of this.recentList) {
-                switch (item.type) {
+            channel.sendMessageWithMultipleResponses(TYPE_REQUEST_ACTIVE_CONNECTIONS, null, ({ payload }) => {
+                // @todo Check for duplicates
+                switch (payload.authType) {
                     case 'webhook':
-                        item.extra = item.url.replace(/\/(.)[^\\/]*$/si, '/$1***');
+                        payload.extra = payload.auth.url.replace(/\/(.)[^\\/]*\/?$/si, '/$1***');
                         break;
 
                     case 'oauth':
+                        // @todo needs to be checked for Token
                         item.extra = item.appUrl;
                         break;
+
+                    default:
+                        return;
+                        break;
                 }
-            }
+
+                this.activeList.push(payload);
+            });
         },
 
-        async openRecent(index) {
-            const result = await sendMessage({
-                type: 'openRecentConnection',
-                payload: {
-                    authId: this.recentList[index].authId,
-                }
-            });
-
-            if (result === true) {
-                window.close();
+        async openRecent(item) {
+            if (item.authType === 'webhook') {
+                this.openWebhook(item);
             }
         },
 
@@ -217,7 +213,7 @@ export default {
             const saveId = await sendMessage({
                 type: 'rememberAuth',
                 payload: {
-                    authId: this.recentList[index].authId,
+                    authId: this.activeList[index].authId,
                 }
             });
 
@@ -251,6 +247,12 @@ export default {
                 window.close();
             }
         },
+
+        async test() {
+            channel.sendMessageWithMultipleResponses(TYPE_REQUEST_ACTIVE_CONNECTIONS, null, ({ payload }) => {
+                console.log(payload);
+            });
+        }
     },
 }
 </script>

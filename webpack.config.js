@@ -16,7 +16,6 @@ const config = {
         'tab/index': './extension/index.js',
         'login/index': './login/index.js',
         'web/index': './web/index.js',
-        'web_sw': './webServiceWorker/index.js',
     },
     output: {
         path: __dirname + '/dist',
