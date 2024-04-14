@@ -45,13 +45,13 @@
                         :key="item.id"
                         :item="item"
                         :index="index"
-                        @itemClick="openRecent(item)"
+                        @itemClick="openActive(item)"
                     >
                         <template v-slot:actions>
                             <StarIcon
                                 class="auth-item__save"
                                 :class="{ 'auth-item__save--saved': savedIds.includes(item.id) }"
-                                @click="savedIds.includes(item.id) ? forgetAuth(item.id) : rememberAuth(index)"
+                                @click="savedIds.includes(item.id) ? forgetAuth(item.id) : rememberAuth(item)"
                             />
                         </template>
                     </AuthItem>
@@ -87,6 +87,17 @@ import { StarIcon, CloseIcon } from 'vue-bytesize-icons';
 import AuthItem from '@web/components/AuthItem';
 import BX24 from "lib/BX24";
 import channel, { TYPE_REQUEST_ACTIVE_CONNECTIONS } from "@web/etc/channel";
+import { parseWebhookFromUserInput} from "lib/functions";
+import md5 from "md5";
+
+const STORAGE_SAVED_KEY = 'bx24dev.saved';
+
+/**
+ * @typedef {Object} SavedConnection
+ * @property {String} id
+ * @property {String} type
+ * @property {Object} credentials
+ */
 
 export default {
     components: {
@@ -97,52 +108,60 @@ export default {
 
     data() {
         return {
-            activeList: [],
             savedList: [],
+            activeConnections: [],
         };
     },
 
     mounted() {
         this.$refs['webhookUrl'].focus();
-        //this.getSavedList();
-        this.getRecentList();
+        this.loadSavedList();
+        this.loadActiveList();
     },
 
     computed: {
+        activeList() {
+            const result = [];
+
+            for (let connection of this.activeConnections) {
+                /** @var {ConnectionTemplateItem} */
+                let item;
+
+                switch (connection.authType) {
+                    case 'webhook':
+                        item = {
+                            id: this.getUniqIdByCredentials('webhook', connection.auth),
+                            title: connection.title,
+                            portal: connection.portal,
+                            extra: connection.auth.url.replace(/\/(.)[^\\/]*\/?$/si, '/$1***'),
+                        };
+                        break;
+
+                    case 'oauth':
+                        // @todo needs to be checked for Token
+                        item.extra = item.appUrl;
+                        break;
+
+                    default:
+                        return;
+                }
+
+                result.push(item);
+            }
+
+            return result;
+        },
+
         savedIds() {
             return this.savedList.map(item => item.id);
         }
     },
 
     methods: {
-        async create(name, payload) {
-            const result = await sendMessage({
-                type: 'createWebInstance',
-                payload: {
-                    providerName: name,
-                    providerPayload: payload,
-                }
-            });
-
-            this.$router.push({ path: 'app' }, { authId: result.instanceId });
-            console.log(result);
-        },
-
         async webhookSubmit() {
-            let webhook = document.getElementById('webhookUrl').value;
-            let result = /^https:\/\/([^/]+)\/rest\/[0-9]+\/[^/]+/.exec(webhook);
+            const webhookData = parseWebhookFromUserInput(document.getElementById('webhookUrl').value);
 
-            if (result === null) {
-                // Check whether user entered separate parts of webhook (domain, user id, token)
-                result = /^(\S+)\s+([0-9]+)\s+(\S+)$/.exec(webhook);
-
-                if (result !== null) {
-                    // Build webhook url
-                    webhook = `https://${result[1]}/rest/${result[2]}/${result[3]}`;
-                }
-            }
-
-            if (result === null) {
+            if (webhookData === null) {
                 alert('Неверный формат данных для вебхука');
                 return;
             }
@@ -150,17 +169,20 @@ export default {
             /** @var {AuthorizationData} */
             let appData = {
                 title: 'Webhook',
-                portal: result[1],
+                portal: webhookData.domain,
                 authType: 'webhook',
                 auth: {
-                    domain: result[1],
-                    url: webhook,
+                    domain: webhookData.domain,
+                    url: webhookData.url,
                 },
             };
 
             this.openWebhook(appData);
         },
 
+        /**
+         * @param {AuthorizationData} appData
+         */
         openWebhook(appData) {
             this.$store.commit('setAppData', appData);
             BX24.setAuth(BX24.TYPE_WEBHOOK, appData.auth);
@@ -174,85 +196,181 @@ export default {
             });
         },
 
-        async getSavedList() {
-            this.savedList = await sendMessage({
-                type: 'getSavedList',
-                payload: {}
-            });
-        },
+        loadActiveList() {
+            this.activeConnections = [];
 
-        async getRecentList() {
             channel.sendMessageWithMultipleResponses(TYPE_REQUEST_ACTIVE_CONNECTIONS, null, ({ payload }) => {
+                /** @var {AuthorizationData} payload */
+                payload.id = this.getUniqIdByCredentials('webhook', payload.auth);
                 // @todo Check for duplicates
-                switch (payload.authType) {
-                    case 'webhook':
-                        payload.extra = payload.auth.url.replace(/\/(.)[^\\/]*\/?$/si, '/$1***');
-                        break;
-
-                    case 'oauth':
-                        // @todo needs to be checked for Token
-                        item.extra = item.appUrl;
-                        break;
-
-                    default:
-                        return;
-                        break;
-                }
-
-                this.activeList.push(payload);
+                this.activeConnections.push(payload);
             });
         },
 
-        async openRecent(item) {
-            if (item.authType === 'webhook') {
-                this.openWebhook(item);
+        /**
+         * @param {ConnectionTemplateItem} item
+         */
+        openActive(item) {
+            console.log(item);
+            const connection = this.activeConnections.find(el => el.id === item.id);
+
+            if (!connection) {
+                console.error('Connection with requested id not found');
+                return;
+            }
+
+            if (connection.authType === 'webhook') {
+                this.openWebhook(connection);
             }
         },
 
-        async rememberAuth(index) {
-            const saveId = await sendMessage({
-                type: 'rememberAuth',
-                payload: {
-                    authId: this.activeList[index].authId,
-                }
-            });
+        loadSavedList() {
+            const connections = this.getSavedConnections();
 
-            await this.getSavedList();
+            /** @var {ConnectionTemplateItem[]} */
+            const items = [];
+
+            for (let connection of connections) {
+                /** @var {ConnectionTemplateItem} */
+                let item;
+
+                switch (connection.type) {
+                    case 'webhook':
+                        let parts = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)\/?$/.exec(connection.credentials.url);
+
+                        item = {
+                            id: connection.id,
+                            title: 'Webhook',
+                            portal: parts[1],
+                            extra: connection.credentials.url.replace(/\/(.)[^\\/]*\/?$/si, '/$1***'),
+                        };
+                        break;
+
+                    default:
+                        throw new Error('Unsupported provider');
+                }
+
+                items.push(item);
+            }
+
+            this.savedList = items;
         },
 
-        async forgetAuth(id) {
+        /**
+         * @returns {SavedConnection[]}
+         */
+        getSavedConnections() {
+            let savedItems = window.localStorage.getItem(STORAGE_SAVED_KEY);
+
+            if (savedItems === null) {
+                savedItems = [];
+            } else {
+                try {
+                    savedItems = JSON.parse(savedItems);
+                } catch (ex) {
+                    console.error('Failed to parse savedItems', ex);
+                }
+
+                if (!Array.isArray(savedItems)) {
+                    savedItems = [];
+                }
+            }
+
+            return savedItems;
+        },
+
+        /**
+         * @param {AuthorizationData} item
+         * @returns {void}
+         */
+        rememberAuth(item) {
+            /** @var {SavedConnection} newItem */
+            let newItem;
+
+            switch (item.authType) {
+                case 'webhook':
+                    newItem = {
+                        type: 'webhook',
+                        id: this.getUniqIdByCredentials('webhook', item.auth),
+                        credentials: item.auth,
+                    };
+                    break;
+
+                default:
+                    throw new Error('Unsupported provider');
+            }
+
+            let savedItems = this.getSavedConnections();
+
+            if (savedItems.map(item => item.id).includes(newItem.id)) {
+                console.warn('The auth already saved');
+                return;
+            }
+
+            savedItems.push(newItem);
+            window.localStorage.setItem(STORAGE_SAVED_KEY, JSON.stringify(savedItems));
+            this.loadSavedList();
+        },
+
+        forgetAuth(id) {
             if (!confirm('Удалить?')) {
                 return;
             }
 
-            await sendMessage({
-                type: 'forgetAuth',
-                payload: {
-                    id: id
-                }
-            });
+            let savedItems = this.getSavedConnections();
 
-            await this.getSavedList();
+            for (let index in savedItems) {
+                let item = savedItems[index];
+
+                if (item.id === id) {
+                    savedItems = savedItems.slice(0, index).concat(savedItems.slice(index + 1));
+                    break;
+                }
+            }
+
+            window.localStorage.setItem(STORAGE_SAVED_KEY, JSON.stringify(savedItems));
+            this.loadSavedList();
         },
 
         async openSaved(id) {
-            let result = await sendMessage({
-                type: 'openSavedConnection',
-                payload: {
-                    id: id
-                }
-            });
+            let savedItems = this.getSavedConnections();
 
-            if (result === true) {
-                window.close();
+            for (let index in savedItems) {
+                let item = savedItems[index];
+
+                if (item.id === id) {
+                    /** @var {AuthorizationData} */
+                    let appData = {
+                        title: 'Webhook',
+                        portal: item.credentials.domain,
+                        authType: 'webhook',
+                        auth: {
+                            domain: item.credentials.domain,
+                            url: item.credentials.url,
+                        },
+                    };
+
+                    this.openWebhook(appData);
+
+                    break;
+                }
             }
         },
 
-        async test() {
-            channel.sendMessageWithMultipleResponses(TYPE_REQUEST_ACTIVE_CONNECTIONS, null, ({ payload }) => {
-                console.log(payload);
-            });
-        }
+        /**
+         * @param {string} type
+         * @param {Object} credentials
+         * @returns {string}
+         */
+        getUniqIdByCredentials(type, credentials) {
+            switch (type) {
+                case 'webhook':
+                    return md5(credentials.url);
+
+                default:
+                    throw new Error('Unknown type of credentials');
+            }
+        },
     },
 }
 </script>

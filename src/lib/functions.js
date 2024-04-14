@@ -71,3 +71,45 @@ export function sleep(delay) {
 export function vueToObject(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
+
+
+/**
+ * @typedef {Object} WebhookParseResult
+ * @property {String} url
+ * @property {String} domain
+ */
+
+/**
+ *
+ * @param {String} str
+ * @returns {WebhookParseResult|null}
+ */
+export function parseWebhookFromUserInput(str) {
+    let domain;
+    let url;
+    let result = /^https:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)/.exec(str);
+
+    if (result === null) {
+        // Check whether user entered separate parts of webhook (domain, user id, token)
+        result = /^(\S+)\s+([0-9]+)\s+(\S+)$/.exec(str);
+
+        if (result !== null) {
+            // Build webhook url
+            url = `https://${result[1]}/rest/${result[2]}/${result[3]}`;
+            domain = result[1];
+        }
+    } else {
+        // Make clean url
+        url = `https://${result[1]}/rest/${result[2]}/${result[3]}`;
+        domain = result[1];
+    }
+
+    if (result === null) {
+        return null;
+    }
+
+    return {
+        url,
+        domain,
+    };
+}

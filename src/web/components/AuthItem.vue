@@ -11,6 +11,14 @@
 </template>
 
 <script>
+/**
+ * @typedef {Object} ConnectionTemplateItem
+ * @property {String} id
+ * @property {String} portal
+ * @property {String} title
+ * @property {String} extra
+ */
+
 export default {
     props: {
         item: Object,
