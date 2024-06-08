@@ -41,6 +41,12 @@ export default {
     },
 
     props: {
+        mode: {
+            type: String,
+            validator(value) {
+                return ['web', 'extension'].includes(value);
+            },
+        },
         title: String,
         portal: String,
     },
@@ -60,7 +66,7 @@ export default {
         // index - index page when login from extension
         // app - index of the app when login from web
         if (['index', 'app'].includes(this.$route.name)) {
-            this.$root.goToRoute({ name: 'console' });
+            this.$root.goToRoute({ name: 'console' }, true);
         }
     },
 }

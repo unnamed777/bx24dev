@@ -88,9 +88,8 @@ import AuthItem from '@web/components/AuthItem';
 import BX24 from "lib/BX24";
 import channel, { TYPE_REQUEST_ACTIVE_CONNECTIONS } from "@web/etc/channel";
 import { parseWebhookFromUserInput} from "lib/functions";
+import { LOCAL_STORAGE_SAVED_KEY } from '@web/etc/storage';
 import md5 from "md5";
-
-const STORAGE_SAVED_KEY = 'bx24dev.saved';
 
 /**
  * @typedef {Object} SavedConnection
@@ -202,7 +201,13 @@ export default {
             channel.sendMessageWithMultipleResponses(TYPE_REQUEST_ACTIVE_CONNECTIONS, null, ({ payload }) => {
                 /** @var {AuthorizationData} payload */
                 payload.id = this.getUniqIdByCredentials('webhook', payload.auth);
-                // @todo Check for duplicates
+
+                for (let connection of this.activeConnections) {
+                    if (connection.id === payload.id) {
+                        return;
+                    }
+                }
+
                 this.activeConnections.push(payload);
             });
         },
@@ -260,7 +265,7 @@ export default {
          * @returns {SavedConnection[]}
          */
         getSavedConnections() {
-            let savedItems = window.localStorage.getItem(STORAGE_SAVED_KEY);
+            let savedItems = window.localStorage.getItem(LOCAL_STORAGE_SAVED_KEY);
 
             if (savedItems === null) {
                 savedItems = [];
@@ -308,7 +313,7 @@ export default {
             }
 
             savedItems.push(newItem);
-            window.localStorage.setItem(STORAGE_SAVED_KEY, JSON.stringify(savedItems));
+            window.localStorage.setItem(LOCAL_STORAGE_SAVED_KEY, JSON.stringify(savedItems));
             this.loadSavedList();
         },
 
@@ -328,7 +333,7 @@ export default {
                 }
             }
 
-            window.localStorage.setItem(STORAGE_SAVED_KEY, JSON.stringify(savedItems));
+            window.localStorage.setItem(LOCAL_STORAGE_SAVED_KEY, JSON.stringify(savedItems));
             this.loadSavedList();
         },
 

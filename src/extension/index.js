@@ -74,6 +74,7 @@ const initBX24 = (authId, authData) => {
 
         render: h => h(App, {
             props: {
+                mode: 'extension',
                 title: authData.title,
                 portal: authData.portal,
             },
