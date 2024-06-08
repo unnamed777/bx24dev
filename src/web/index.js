@@ -3,7 +3,7 @@ import App from '@web/App';
 import store from '@app/store';
 import router from '@web/router';
 import channel, { TYPE_REQUEST_ACTIVE_CONNECTIONS, TYPE_REQUEST_AUTH_DATA_BY_UUID } from "@web/etc/channel";
-import { SESSION_STORAGE_ACTIVE_KEY } from "@web/etc/storage";
+import { addToActiveConnections } from "@web/etc/storage";
 
 window.app = new Vue({
     el: '#app',
@@ -85,18 +85,5 @@ document.addEventListener('visibilitychange', () => {
         return;
     }
 
-    let items = window.sessionStorage.getItem(SESSION_STORAGE_ACTIVE_KEY);
-
-    if (items === null) {
-        items = {};
-    } else {
-        try {
-            items = JSON.parse(items);
-        } catch (ex) {
-            items = {};
-        }
-    }
-
-    items[authId] = store.state.appData;
-    window.sessionStorage.setItem(SESSION_STORAGE_ACTIVE_KEY, JSON.stringify(items));
+    addToActiveConnections(authId, store.state.appData);
 });

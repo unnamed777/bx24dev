@@ -3,12 +3,17 @@
     <div class="container-fluid" style="height: calc(100%);">
         <div class="row">
             <div class="sidebar col-2 bg-light">
-                <div class="b24app">
+                <div
+                    class="b24app"
+                    :class="{ 'b24app--menu': !!$slots.appTitleMenu }"
+                    :data-toggle="$slots.appTitleMenu ? 'dropdown' : null"
+                >
                     <div class="b24app__title">
                         {{ title }}
                     </div>
                     <div class="b24app__portal">{{ portal }}</div>
                 </div>
+                <slot name="appTitleMenu"></slot>
 
                 <SidebarMenu />
 
@@ -137,7 +142,7 @@ body {
 }
 
 .b24app {
-    padding: 0.5rem 0;
+    margin: 0.5rem 0;
     white-space: nowrap;
 
     &__title {
@@ -148,6 +153,10 @@ body {
 
     &__portal {
         font-size: 0.7rem;
+    }
+
+    &--menu {
+        cursor: pointer;
     }
 }
 

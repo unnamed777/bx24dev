@@ -4,7 +4,15 @@
             :mode="'web'"
             :title="$store.state.appData.title"
             :portal="$store.state.appData.portal"
-        />
+        >
+            <template #appTitleMenu>
+                <ul class="dropdown-menu">
+                    <li v-if="!isConnectionSaved"><button class="dropdown-item" @click="saveConnection">Сохранить подключение</button></li>
+                    <li v-if="isConnectionSaved"><button class="dropdown-item" @click="removeConnection">Забыть подключение</button></li>
+                    <li><button class="dropdown-item" @click="logout">Выйти</button></li>
+                </ul>
+            </template>
+    </App>
         <div v-else class="text-secondary m-1 opacity-25">
             Загрузка...
         </div>
@@ -15,7 +23,15 @@ import App from "@app/App";
 import loadInitialData from "@app/etc/loadInitialData";
 import BX24 from "lib/BX24";
 import channel, { TYPE_REQUEST_AUTH_DATA_BY_UUID } from "@web/etc/channel";
-import { SESSION_STORAGE_ACTIVE_KEY } from "@web/etc/storage";
+
+import {
+    getActiveConnectionByAuthId,
+    removeFromActiveConnections,
+    addToSavedConnections,
+    existsInSavedConnections,
+    removeFromSavedConnections,
+    getUniqIdByCredentials
+} from "@web/etc/storage";
 
 export default {
     components: {
@@ -25,6 +41,7 @@ export default {
     data() {
         return {
             isLoaded: false,
+            isConnectionSaved: false,
         };
     },
 
@@ -43,6 +60,8 @@ export default {
         // Postpone App rendering until scope is loaded
         await loadInitialData();
         this.isLoaded = true;
+
+        this.isConnectionSaved = existsInSavedConnections(this.$store.state.appData);
     },
 
     methods: {
@@ -52,15 +71,8 @@ export default {
             const authId = this.$router.currentRoute.params.authId;
 
             // Try to obtain auth data from session storage by authId
-            if (this.$route.params.authId) {
-                let activeList = window.sessionStorage.getItem(SESSION_STORAGE_ACTIVE_KEY);
-
-                if (activeList) {
-                    try {
-                        activeList = JSON.parse(activeList);
-                        appData = activeList[authId] ?? null;
-                    } catch (ex) {}
-                }
+            if (authId) {
+                appData = getActiveConnectionByAuthId(authId);
             }
 
             // If failed, asks other app tabs for auth data
@@ -76,6 +88,24 @@ export default {
 
             this.$store.commit('setAppData', appData);
             BX24.setAuth(BX24.TYPE_WEBHOOK, appData.auth);
+        },
+
+        logout() {
+            this.$store.commit('setAppData', null);
+            BX24.setAuth(null, null);
+            removeFromActiveConnections(this.$router.currentRoute.params.authId);
+            this.$router.push({ name: 'login' });
+        },
+
+        saveConnection() {
+            addToSavedConnections(this.$store.state.appData);
+            this.isConnectionSaved = true;
+        },
+
+        removeConnection() {
+            const authData = this.$store.state.appData;
+            removeFromSavedConnections(getUniqIdByCredentials(authData.authType, authData.auth));
+            this.isConnectionSaved = false;
         }
     },
 };

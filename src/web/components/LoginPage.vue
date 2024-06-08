@@ -88,15 +88,14 @@ import AuthItem from '@web/components/AuthItem';
 import BX24 from "lib/BX24";
 import channel, { TYPE_REQUEST_ACTIVE_CONNECTIONS } from "@web/etc/channel";
 import { parseWebhookFromUserInput} from "lib/functions";
-import { LOCAL_STORAGE_SAVED_KEY } from '@web/etc/storage';
-import md5 from "md5";
 
-/**
- * @typedef {Object} SavedConnection
- * @property {String} id
- * @property {String} type
- * @property {Object} credentials
- */
+import {
+    getSavedConnections,
+    addToSavedConnections,
+    removeFromSavedConnections,
+    getUniqIdByCredentials,
+} from '@web/etc/storage';
+
 
 export default {
     components: {
@@ -129,7 +128,7 @@ export default {
                 switch (connection.authType) {
                     case 'webhook':
                         item = {
-                            id: this.getUniqIdByCredentials('webhook', connection.auth),
+                            id: getUniqIdByCredentials('webhook', connection.auth),
                             title: connection.title,
                             portal: connection.portal,
                             extra: connection.auth.url.replace(/\/(.)[^\\/]*\/?$/si, '/$1***'),
@@ -200,7 +199,7 @@ export default {
 
             channel.sendMessageWithMultipleResponses(TYPE_REQUEST_ACTIVE_CONNECTIONS, null, ({ payload }) => {
                 /** @var {AuthorizationData} payload */
-                payload.id = this.getUniqIdByCredentials('webhook', payload.auth);
+                payload.id = getUniqIdByCredentials('webhook', payload.auth);
 
                 for (let connection of this.activeConnections) {
                     if (connection.id === payload.id) {
@@ -230,7 +229,7 @@ export default {
         },
 
         loadSavedList() {
-            const connections = this.getSavedConnections();
+            const connections = getSavedConnections();
 
             /** @var {ConnectionTemplateItem[]} */
             const items = [];
@@ -262,58 +261,11 @@ export default {
         },
 
         /**
-         * @returns {SavedConnection[]}
-         */
-        getSavedConnections() {
-            let savedItems = window.localStorage.getItem(LOCAL_STORAGE_SAVED_KEY);
-
-            if (savedItems === null) {
-                savedItems = [];
-            } else {
-                try {
-                    savedItems = JSON.parse(savedItems);
-                } catch (ex) {
-                    console.error('Failed to parse savedItems', ex);
-                }
-
-                if (!Array.isArray(savedItems)) {
-                    savedItems = [];
-                }
-            }
-
-            return savedItems;
-        },
-
-        /**
          * @param {AuthorizationData} item
          * @returns {void}
          */
         rememberAuth(item) {
-            /** @var {SavedConnection} newItem */
-            let newItem;
-
-            switch (item.authType) {
-                case 'webhook':
-                    newItem = {
-                        type: 'webhook',
-                        id: this.getUniqIdByCredentials('webhook', item.auth),
-                        credentials: item.auth,
-                    };
-                    break;
-
-                default:
-                    throw new Error('Unsupported provider');
-            }
-
-            let savedItems = this.getSavedConnections();
-
-            if (savedItems.map(item => item.id).includes(newItem.id)) {
-                console.warn('The auth already saved');
-                return;
-            }
-
-            savedItems.push(newItem);
-            window.localStorage.setItem(LOCAL_STORAGE_SAVED_KEY, JSON.stringify(savedItems));
+            addToSavedConnections(item);
             this.loadSavedList();
         },
 
@@ -322,23 +274,12 @@ export default {
                 return;
             }
 
-            let savedItems = this.getSavedConnections();
-
-            for (let index in savedItems) {
-                let item = savedItems[index];
-
-                if (item.id === id) {
-                    savedItems = savedItems.slice(0, index).concat(savedItems.slice(index + 1));
-                    break;
-                }
-            }
-
-            window.localStorage.setItem(LOCAL_STORAGE_SAVED_KEY, JSON.stringify(savedItems));
+            removeFromSavedConnections(id);
             this.loadSavedList();
         },
 
         async openSaved(id) {
-            let savedItems = this.getSavedConnections();
+            let savedItems = getSavedConnections();
 
             for (let index in savedItems) {
                 let item = savedItems[index];
@@ -359,21 +300,6 @@ export default {
 
                     break;
                 }
-            }
-        },
-
-        /**
-         * @param {string} type
-         * @param {Object} credentials
-         * @returns {string}
-         */
-        getUniqIdByCredentials(type, credentials) {
-            switch (type) {
-                case 'webhook':
-                    return md5(credentials.url);
-
-                default:
-                    throw new Error('Unknown type of credentials');
             }
         },
     },
