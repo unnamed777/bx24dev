@@ -1,7 +1,7 @@
 import messageListener from '../MessageListener/extensionMessageListener';
 import AbstractManager from './AbstractManager';
 import ExtensionInstance from 'lib/Instance/ExtensionInstance';
-//import browser from 'webextension-polyfill';
+import browser from 'lib/browser-stub';
 import md5 from 'md5';
 
 class ExtensionManager extends AbstractManager {
@@ -53,8 +53,10 @@ class ExtensionManager extends AbstractManager {
     async openByButton({ callerTab }) {
         let providerName = null;
         let providerPayload = {};
+        console.log('openByButton');
 
         if (/bitrix24\.ru\/marketplace\/app\//i.test(callerTab.url) !== false) {
+            console.log('*.bitrix24.ru app');
             // App's page
             // noinspection JSVoidFunctionReturnValueUsed
             let frames = await browser.webNavigation.getAllFrames({ tabId: callerTab.id });
@@ -68,6 +70,8 @@ class ExtensionManager extends AbstractManager {
                     break;
                 }
             }
+
+            console.log('appFound', appFound);
 
             if (appFound) {
                 providerPayload.tabId = callerTab.id;
@@ -97,6 +101,8 @@ class ExtensionManager extends AbstractManager {
 
             providerName = 'grabOauth';
         }
+
+        console.log('provider', providerName, providerPayload);
 
         if (providerName) {
             this.createTabInstance({

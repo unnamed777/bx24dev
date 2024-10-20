@@ -1,4 +1,5 @@
 import md5 from "md5";
+import browser from 'lib/browser-stub';
 
 export default class AbstractManager {
     /** @var AbstractInstance */
@@ -106,7 +107,7 @@ export default class AbstractManager {
         }
 
         console.log('AbstractManager.onMessageGetRecentList() end');
-        console.log('return fake result');
+        /*console.log('return fake result');
         return [
             {
                 "type": "webhook",
@@ -116,7 +117,7 @@ export default class AbstractManager {
                 "portal": "test.bitrix24.ru",
                 "url": "https://test.bitrix24.ru/rest/1/asdf"
             }
-        ];
+        ];*/
 
         return result;
     }

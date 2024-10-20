@@ -1,5 +1,4 @@
-// @todo This will be an issue in Chrome. Fix later by moving it to root script
-//import browser from 'webextension-polyfill';
+import browser from 'lib/browser-stub';
 
 export function getExposedPromise() {
     let exportResolve, exportReject;
@@ -14,7 +13,7 @@ export function getExposedPromise() {
         resolve: exportResolve,
         reject: exportReject
     };
-};
+}
 
 export function prepareCrmEntityFields(crmFields) {
     const items = [];
@@ -52,8 +51,19 @@ export function getFieldLabel(field) {
     return field.formLabel || field.title || field.code;
 }
 
-export function alert(message) {
-    browser.tabs.executeScript({code : `alert(${JSON.stringify(message)});`});
+export async function alert(message) {
+    console.log('Show alert: %s', message);
+    const activeTab = (await browser.tabs.query({ active: true }))[0];
+
+    browser.scripting.executeScript({
+        target: {
+            tabId: activeTab.id,
+        },
+        args: [message],
+        func: (message) => {
+            window.alert(message);
+        },
+    });
 }
 
 /**

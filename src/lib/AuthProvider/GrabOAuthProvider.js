@@ -1,6 +1,6 @@
 import AbstractOAuthProvider from './AbstractOAuthProvider';
 import { alert } from 'lib/functions';
-//import browser from 'webextension-polyfill';
+import browser from 'lib/browser-stub';
 
 export default class GrabOAuthProvider extends AbstractOAuthProvider {
     constructor({tabId, frameId}) {

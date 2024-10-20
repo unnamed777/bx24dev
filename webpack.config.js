@@ -14,6 +14,7 @@ const config = {
     entry: {
         'background': './background.js',
         'tab/index': './extension/index.js',
+        'tab/pc_app_provider': './extension/pc_app_provider.js',
         'login/index': './login/index.js',
         'web/index': './web/index.js',
     },

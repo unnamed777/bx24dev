@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from '@app/App';
 import router from '@app/router';
 import store from '@app/store';
-import browser from 'webextension-polyfill';
+import browser from 'lib/browser-stub';
 import BX24 from 'lib/BX24';
 import loadInitialData from "@app/etc/loadInitialData";
 

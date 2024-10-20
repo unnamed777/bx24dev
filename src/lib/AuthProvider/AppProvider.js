@@ -1,5 +1,5 @@
 import { alert, getExposedPromise } from 'lib/functions';
-//import browser from 'webextension-polyfill';
+import browser from 'lib/browser-stub';
 
 export default class AppProvider {
     constructor({ tabId, frameId, instanceId, instance, messageListener }) {
@@ -26,85 +26,79 @@ export default class AppProvider {
         console.log('instanceId', this.instanceId);
 
         try {
-            // Chrome version is too tangled, but seems to work with firefox too
-            if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1 || true) {
-                // Chrome
-                this.returnAuthCallbackId = this.messageListener.subscribe(`AppProvider_${this.instanceId}:returnAuth`, this.onReturnAuth.bind(this));
+            this.returnAuthCallbackId = this.messageListener.subscribe(`AppProvider_${this.instanceId}:returnAuth`, this.onReturnAuth.bind(this));
 
-                const {promise, resolve } = getExposedPromise();
-                this.getAuthResultResolve = resolve;
-                this.getAuthResultTimeout = setTimeout(this.onGetAuthResultFailed.bind(this), 3000);
+            const { promise, resolve } = getExposedPromise();
+            this.getAuthResultResolve = resolve;
+            this.getAuthResultTimeout = setTimeout(this.onGetAuthResultFailed.bind(this), 3000);
 
+            // Keep it for debug purposes
+            /*console.log('before');
+            await browser.scripting.executeScript({
+                target: {
+                    tabId: this.tabId,
+                    frameIds: [this.frameId],
+                },
+                func: () => {
+                    window.alert('here');
+                },
+            });
+            console.log('after');
+            return;*/
+
+            await browser.scripting.executeScript({
+                target: {
+                    tabId: this.tabId,
+                    frameIds: [this.frameId],
+                },
+                args: [this.instanceId],
                 // Inject a code to inject a code to run a code. Inception.jpg
-                await browser.tabs.executeScript(this.tabId, {
-                    frameId: this.frameId,
-                    code: `
-                        // 1. Inject code in page context to run BX24.getAuth()
-                        // 2. Injected code is run immediately and it emits event "bx24_dev_xxx:getAuthResult" with auth data
-                        // 3. This code (content page context) catches the event from injected code
-                        // 4. This code sends a message "AppProvider:returnAuth" to extension background page and passes auth data
-                        
-                        let script = document.createElement('script');
-                        
-                        let injectFunction = function () {
-                            document.dispatchEvent(new CustomEvent('bx24dev_${this.instanceId}:getAuthResult', { detail: BX24.getAuth() }));
-                        };
-                        
-                        let injectRefreshFunction = function () {
-                            console.log('injectRefreshFunction');
-                            
-                            BX24.refreshAuth((auth) => {
-                                document.dispatchEvent(new CustomEvent('bx24dev_${this.instanceId}:getRefreshResult', { detail: auth }));
-                            });
-                        };
-                        
-                        document.addEventListener('bx24dev_${this.instanceId}:getAuthResult', (e) => {
-                            chrome.runtime.sendMessage({
-                                type: 'AppProvider_${this.instanceId}:returnAuth',
-                                payload: {
-                                    instanceId: ${this.instanceId},
-                                    auth: e.detail,
-                                },
-                            });
-                        });
-                        
-                        document.addEventListener('bx24dev_${this.instanceId}:getRefreshResult', (e) => {
-                            chrome.runtime.sendMessage({
-                                type: 'AppProvider_${this.instanceId}:authRefreshed',
-                                payload: {
-                                    instanceId: ${this.instanceId},
-                                    auth: e.detail,
-                                },
-                            });
-                        });
-                        
-                        script.textContent = '(' + injectFunction.toString() + ')();';
-                        document.body.appendChild(script);
-                        delete script;
-                    `,
-                });
+                func: (instanceId) => {
+                    // 1. In content page context subscribe to custom event to receive auth data
+                    // 2. Add a script `pc_app_provider` to the page in page context to get access to page global variables.
+                    // 3. `pc_app_provider` call bx24 api and emit custom event with auth data
+                    // 4. This content page context script catches event and transmits it back to extension context
+                    // 5. AppProvider waits for 3 secs for that answer or throws an error
 
-                result = promise;
-            } else {
-                // Firefox
-                result = (await browser.tabs.executeScript(this.tabId, {
-                    frameId: this.frameId,
-                    code: `
-                        function refreshAuthHelper(auth) {
-                            browser.runtime.sendMessage({
-                                type: 'AppProvider_${this.instanceId}:authRefreshed',
-                                payload: {
-                                    id: ${this.instanceId},
-                                    auth: auth,
-                                }
-                            });
-                        }
+                    // @todo Has to be fixed too
+                    let injectRefreshFunction = function () {
+                        console.log('injectRefreshFunction');
 
-                        exportFunction(refreshAuthHelper, window, {defineAs: 'refreshAuthHelper'});
-                        window.wrappedJSObject.BX24.getAuth();
-                    `,
-                }))[0];
-            }
+                        BX24.refreshAuth((auth) => {
+                            document.dispatchEvent(new CustomEvent(`bx24dev_${instanceId}:getRefreshResult`, { detail: auth }));
+                        });
+                    };
+
+                    document.addEventListener(`bx24dev_${instanceId}:getAuthResult`, (e) => {
+                        chrome.runtime.sendMessage({
+                            type: `AppProvider_${instanceId}:returnAuth`,
+                            payload: {
+                                instanceId: instanceId,
+                                auth: e.detail,
+                            },
+                        });
+                    });
+
+                    document.addEventListener(`bx24dev_${instanceId}:getRefreshResult`, (e) => {
+                        chrome.runtime.sendMessage({
+                            type: `AppProvider_${instanceId}:authRefreshed`,
+                            payload: {
+                                instanceId: instanceId,
+                                auth: e.detail,
+                            },
+                        });
+                    });
+
+                    let script = document.createElement('script');
+                    script.src = chrome.runtime.getURL('tab/pc_app_provider.js');
+                    script.dataset.instanceId = instanceId;
+                    //script.onload = function() { this.remove(); };
+                    (document.head || document.documentElement).appendChild(script);
+                    script = null;
+                },
+            });
+
+            result = promise;
 
         } catch (ex) {
             this.authError = 'Возможно, для этого приложения уже был запущен инстанс bx24dev';

@@ -1,6 +1,6 @@
 import { alert, sleep } from 'lib/functions';
 import { getExposedPromise } from 'lib/functions';
-//import browser from 'webextension-polyfill';
+import browser from 'lib/browser-stub';
 
 export default class AbstractOAuthProvider {
     constructor() {

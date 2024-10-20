@@ -1,5 +1,5 @@
 import AbstractInstance from 'lib/Instance/AbstractInstance';
-import browser from 'webextension-polyfill';
+import browser from 'lib/browser-stub';
 import AppProvider from 'lib/AuthProvider/AppProvider';
 import GrabOAuthProvider from 'lib/AuthProvider/GrabOAuthProvider';
 import WebhookProvider from 'lib/AuthProvider/WebhookProvider';
