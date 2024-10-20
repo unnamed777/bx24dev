@@ -3,6 +3,9 @@ import messageListener from 'lib/MessageListener/serviceWorkerMessageListener';
 import ServiceWorkerInstance from 'lib/Instance/ServiceWorkerInstance';
 import localforage from "localforage";
 
+/**
+ * @deprecated
+ */
 class ServiceWorkerManager extends AbstractManager {
     constructor(messageListener) {
         console.log('ServiceWorkerManager.constructor()');

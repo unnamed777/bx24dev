@@ -2,7 +2,7 @@ import messageListener from '../MessageListener/extensionMessageListener';
 import AbstractManager from './AbstractManager';
 import ExtensionInstance from 'lib/Instance/ExtensionInstance';
 import browser from 'lib/browser-stub';
-import md5 from 'md5';
+import { sleep } from 'lib/functions';
 
 class ExtensionManager extends AbstractManager {
     constructor(messageListener) {
@@ -21,18 +21,38 @@ class ExtensionManager extends AbstractManager {
         });
     }
 
-    onMessageGetAuth(payload, sender, sendResponse) {
-        // or instanceId? Just changed it
-        const authId = payload.payload.authId;
-        console.log('Manager.onMessageGetAuth()', authId, payload);
+    /**
+     * Message "getAuth" used in an Extension tab to obtain auth of the instance
+     */
+    async onMessageGetAuth(payload, sender, sendResponse) {
+        const instanceId = payload.payload.authId;
+        console.log('Manager.onMessageGetAuth()', instanceId, payload);
 
-        if (!this.instances[authId]) {
-            console.error(`Authorization with ID ${authId} not found`);
-            return;
+        if (!this.instances[instanceId]) {
+            console.log('Instance isn\'t in memory, try to hydrate');
+            // If there is no instance in memory, try to hydrate it from session data
+            let result = (await browser.storage.session.get('instanceData')) || { instanceData: {} };
+            const data = result.instanceData[instanceId];
+
+            if (!data) {
+                console.error(`Authorization with ID ${instanceId} not found`);
+                return;
+            }
+
+            this.instances[instanceId] = ExtensionInstance.hydrate({
+                id: data.id,
+                // @todo Try to find tab
+                tab: null,
+                providerName: data.providerName,
+                providerPayload: data.providerPayload,
+                providerSerializedData: data.provider,
+                messageListener: this.messageListener,
+            });
         }
 
-        console.log(this.instances[authId].getData());
-        sendResponse(this.instances[authId].getData());
+        //await sleep(5000);
+        console.log('Data will be sent as response', this.instances[instanceId].getData());
+        sendResponse(this.instances[instanceId].getData());
     }
 
     async onMessageRefreshAuth(payload, sender, sendResponse) {
@@ -46,8 +66,7 @@ class ExtensionManager extends AbstractManager {
 
         let result = await this.instances[authId].refreshAuth();
         console.log('Manager.onMessageRefreshAuth(), result', result);
-        return result;
-        //sendResponse(result);
+        sendResponse(result);
     }
 
     async openByButton({ callerTab }) {
@@ -129,11 +148,11 @@ class ExtensionManager extends AbstractManager {
      * @param {Object} providerPayload
      * @returns {AbstractInstance}
      */
-    createTabInstance({ tab, providerName, providerPayload }) {
+    async createTabInstance({ tab, providerName, providerPayload }) {
         console.log('Manager.createTabInstance()');
 
-        this.instances.push(null);
-        const newInstanceId = this.instances.length - 1;
+        let { lastInstanceId = 0, instanceData = {} } = await browser.storage.session.get(['lastInstanceId', 'instanceData']);
+        const newInstanceId = lastInstanceId + 1;
 
         let instance = new ExtensionInstance({
             id: newInstanceId,
@@ -144,6 +163,23 @@ class ExtensionManager extends AbstractManager {
         });
 
         this.instances[newInstanceId] = instance;
+        console.log('instance created');
+
+        if ((await instance.obtainAuth()) === false) {
+            return;
+        }
+
+        console.log('after obtainAuth()');
+
+        await instance.openTab();
+
+        // Save data into session for further hydration
+        instanceData[newInstanceId] = instance.serialize();
+
+        browser.storage.session.set({
+            lastInstanceId: newInstanceId,
+            instanceData: instanceData,
+        });
 
         return instance;
     }

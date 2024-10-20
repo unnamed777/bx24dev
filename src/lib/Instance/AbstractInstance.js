@@ -19,7 +19,7 @@ import { alert } from 'lib/functions';
  * @property {B24Auth} auth
  */
 export default class AbstractInstance {
-    constructor({id, tab, providerName, messageListener, providerPayload}) {
+    constructor({ id, tab, providerName, messageListener, providerPayload }) {
         console.log('AbstractInstance.constructor()', providerName);
         this.id = id;
         this.callerTab = tab;
@@ -28,11 +28,11 @@ export default class AbstractInstance {
         this.providerName = providerName;
         this.providerPayload = providerPayload;
 
-        // noinspection JSIgnoredPromiseFromCall
-        this.run();
+        //this.run();
     }
 
-    async run() {
+    async obtainAuth() {
+        // Initialize auth provider
         this.provider = new (this.constructor.providers[this.providerName])({
             instance: this,
             instanceId: this.id,
@@ -40,11 +40,12 @@ export default class AbstractInstance {
             ...this.providerPayload,
         });
 
+        // Obtain auth
         try {
             this.auth = await this.provider.obtain();
         } catch (ex) {
             alert(ex.toString());
-            return;
+            return false;
         }
 
         console.log('Auth from provider', this.auth);
@@ -52,10 +53,38 @@ export default class AbstractInstance {
         if (!this.auth) {
             this.provider.suppressOwnAlert = true;
             alert('Авторизация не была получена. ' + this.provider.authError);
-            return;
+            return false;
         }
 
-        await this.onInstanceReady();
+        return true;
+    }
+
+    /**
+     * @param {SessionInstanceData}
+     * @returns {AbstractInstance}
+     */
+    static hydrate({id, tab, providerName, messageListener, providerPayload, providerSerializedData}) {
+        const instance = new this.prototype.constructor({
+            id,
+            tab,
+            providerName,
+            messageListener,
+            providerPayload,
+        });
+
+        if (typeof instance.constructor.providers[instance.providerName].hydrate !== 'function') {
+            throw new Error(`Provider ${instance.providerName} doesn't support hydration`);
+        }
+
+        instance.provider = (instance.constructor.providers[instance.providerName]).hydrate({
+            instance,
+            instanceId: instance.id,
+            messageListener: messageListener,
+            ...instance.providerPayload,
+            serializedData: providerSerializedData,
+        });
+
+        return instance;
     }
 
     async onInstanceReady() {}
@@ -79,5 +108,19 @@ export default class AbstractInstance {
 
     getProviderName() {
         return this.providerName;
+    }
+
+    /**
+     *
+     * @returns {SessionInstanceData}
+     */
+    serialize() {
+        return {
+            id: this.id,
+            callerTabId: this.callerTab.id,
+            providerName: this.providerName,
+            providerPayload: this.providerPayload,
+            provider: typeof this.provider.serialize === 'function' ? this.provider.serialize() : null,
+        };
     }
 }

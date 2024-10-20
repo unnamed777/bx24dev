@@ -23,7 +23,19 @@ const messageListener = {
                 return;
             }
 
-            return callback(payload, sender, sendResponse);
+            // Firefox supports returning of result via Promise from the listener but Chrome does not.
+            // So it's required to use sendResponse() in the listeners (`callback`).
+            // https://developer.chrome.com/docs/extensions/develop/concepts/messaging
+            // "Async functions are not supported because they return a Promise, which is not supported"
+            const result = callback(payload, sender, sendResponse);
+
+            if (result instanceof Promise) {
+                // Tell the browser that the listener is async, and it's needed to wait for response via sendResponse()
+                return true;
+            } else {
+                // The listener is sync, return result immediately
+                return result;
+            }
         };
 
         // Is not better to have single onMessage() and call callbacks there?

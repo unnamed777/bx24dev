@@ -20,6 +20,7 @@ const getAuthId = () => {
 
 const obtainAuthData = async (authId) => {
     /** @var {AuthorizationData} */
+    /** @see ExtensionManager.onMessageGetAuth() */
     let authData = await browser.runtime.sendMessage({
         type: 'getAuth',
         payload: {
@@ -27,7 +28,7 @@ const obtainAuthData = async (authId) => {
         },
     });
 
-    console.log('obtainAuthData(), got message response');
+    console.log('obtainAuthData(), got message response', authData);
 
     await store.commit('setAppData', authData);
     return authData;

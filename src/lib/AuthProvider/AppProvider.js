@@ -11,6 +11,29 @@ export default class AppProvider {
     }
 
     /**
+     *
+     * @param {SessionAppProviderData}
+     * @returns {AppProvider}
+     */
+    static hydrate({ tabId, frameId, instanceId, instance, messageListener, serializedData }) {
+        const provider = new this.prototype.constructor({
+            tabId,
+            frameId,
+            instanceId,
+            messageListener,
+        });
+
+        provider.appName = serializedData.appName;
+        provider.domain = serializedData.domain;
+        provider.appUrl = serializedData.appUrl;
+        provider.type = serializedData.type;
+        provider.auth = serializedData.auth;
+        instance.auth = provider.auth;
+
+        return provider;
+    }
+
+    /**
      * @returns {Promise<B24Auth>|null}
      */
     async obtain() {
@@ -195,5 +218,21 @@ export default class AppProvider {
             this.authRefreshedResultResolve(null);
             delete this.authRefreshedResultResolve;
         }
+    }
+
+    /**
+     * @returns {SessionAppProviderData}
+     */
+    serialize() {
+        return {
+            tabId: this.tabId,
+            frameId: this.frameId,
+            instanceId: this.instanceId,
+            appName: this.appName,
+            domain: this.domain,
+            appUrl: this.appUrl,
+            type: this.type,
+            auth: this.auth,
+        };
     }
 }

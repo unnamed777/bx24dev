@@ -18,8 +18,8 @@ export default class ExtensionInstance extends AbstractInstance
         };
     }
 
-    async onInstanceReady() {
-        console.log('ExtensionInstance.onInstanceReady()');
+    async openTab() {
+        console.log('ExtensionInstance.openTab()');
 
         // Could be race condition for webhook + instance.id
         this.extensionTab = await browser.tabs.create({

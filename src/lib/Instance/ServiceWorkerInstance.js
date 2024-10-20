@@ -3,6 +3,9 @@ import WebhookProvider from 'lib/AuthProvider/WebhookProvider';
 import TokenProvider from 'lib/AuthProvider/TokenProvider';
 import { getExposedPromise } from "lib/functions";
 
+/**
+ * @deprecated
+ */
 export default class ServiceWorkerInstance extends AbstractInstance
 {
     readyPromise;
