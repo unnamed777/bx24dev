@@ -204,8 +204,20 @@ class ExtensionManager extends AbstractManager {
         await browser.storage.local.set({ savedAuth });
     }
 
+    async hydrateInstanceById(instanceId) {
+        let result = (await browser.storage.session.get('instanceData')) || { instanceData: {} };
+        const data = result.instanceData[instanceId];
+
+        if (!data) {
+            console.error(`Authorization with ID ${instanceId} not found`);
+            return null;
+        }
+
+        return this.hydrateInstance(data);
+    }
+
     hydrateInstance(data) {
-        this.instances[data.id] = ExtensionInstance.hydrate({
+        return this.instances[data.id] = ExtensionInstance.hydrate({
             id: data.id,
             // @todo Try to find tab
             tab: null,

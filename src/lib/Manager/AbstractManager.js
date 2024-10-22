@@ -128,6 +128,13 @@ export default class AbstractManager {
     }
 
     async onMessageOpenRecentConnection({ payload }, sender, sendResponse) {
+        if (!this.instances[payload.authId]) {
+            if (!(await this.hydrateInstanceById(payload.authId))) {
+                sendResponse(false);
+                return;
+            }
+        }
+
         const recentInstance = this.instances[payload.authId];
         let providerName;
 
@@ -140,6 +147,8 @@ export default class AbstractManager {
         if (recentInstance.provider.getCredentials === undefined) {
             throw new Error('Provider doesn\'t have reusable credentials');
         }
+
+        console.log(recentInstance);
 
         await this.createTabInstance({
             tab: null,
@@ -365,5 +374,13 @@ export default class AbstractManager {
             default:
                 throw new Error('Unknown type of credentials');
         }
+    }
+
+    hydrateInstance(data) {
+        // To be overriden
+    }
+
+    hydrateInstanceById(id) {
+        // To be overriden
     }
 }

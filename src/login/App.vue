@@ -187,6 +187,7 @@ export default {
         },
 
         async openRecent(index) {
+            /** @see ExtensionManager.onMessageOpenRecentConnection */
             const result = await browser.runtime.sendMessage(null, {
                 type: 'openRecentConnection',
                 payload: {

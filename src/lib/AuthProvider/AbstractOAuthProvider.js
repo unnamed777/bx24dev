@@ -3,6 +3,10 @@ import { getExposedPromise } from 'lib/functions';
 import browser from 'lib/browser-stub';
 
 export default class AbstractOAuthProvider {
+    tabId;
+    frameId;
+    credentials;
+
     /**
      * @param instance
      * @param instanceId
@@ -34,6 +38,7 @@ export default class AbstractOAuthProvider {
         provider.appUrl = serializedData.appUrl;
         provider.type = serializedData.type;
         provider.auth = serializedData.auth;
+        provider.credentials = serializedData.credentials;
         instance.auth = provider.auth;
 
         return provider;
@@ -240,6 +245,7 @@ export default class AbstractOAuthProvider {
             appUrl: this.appUrl,
             type: this.type,
             auth: this.auth,
+            credentials: this.credentials,
         };
     }
 }
