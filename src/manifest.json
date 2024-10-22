@@ -16,12 +16,17 @@
     },
     "web_accessible_resources": [{
         "resources": [
-            "tab/pc_app_provider.js",
-            "tab/redirect.html",
-            "tab/redirect.js"
+            "tab/helpers/pc_app_provider.js",
+            "tab/helpers/redirect.html",
+            "tab/helpers/redirect.js"
         ],
         "matches": ["<all_urls>"]
     }],
+    "sandbox": {
+        "pages": [
+            "tab/helpers/sandbox_console.html"
+        ]
+    },
     "permissions": [
         "webNavigation",
         "declarativeNetRequestWithHostAccess",
@@ -34,6 +39,7 @@
         "<all_urls>"
     ],
     "content_security_policy": {
-        "extension_pages": "script-src 'self';"
+        "extension_pages": "script-src 'self';",
+        "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval'; script-src-elem 'self' 'unsafe-inline'"
     }
 }

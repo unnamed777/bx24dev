@@ -1,0 +1,33 @@
+<html>
+<body>
+<script>
+window.addEventListener('message', function (e) {
+    let obj;
+
+    if (e.data.type !== 'eval') {
+        return;
+    }
+
+    try {
+        obj = Function('"use strict";return (' + e.data.code + ');')();
+    } catch (err) {
+        console.error(err);
+
+        e.source.postMessage({
+            id: e.data.id,
+            success: false
+        }, e.origin);
+
+        return;
+    }
+
+    e.source.postMessage({
+        type: 'eval',
+        id: e.data.id,
+        success: true,
+        json: JSON.stringify(obj),
+    }, e.origin);
+});
+</script>
+</body>
+</html>

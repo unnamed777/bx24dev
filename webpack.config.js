@@ -14,7 +14,7 @@ const config = {
     entry: {
         'background': './background.js',
         'tab/index': './extension/index.js',
-        'tab/pc_app_provider': './extension/pc_app_provider.js',
+        'tab/helpers/pc_app_provider': './extension/helpers/pc_app_provider.js',
         'login/index': './login/index.js',
         'web/index': './web/index.js',
     },
@@ -94,8 +94,7 @@ const config = {
             patterns: [
                 { from: 'icons', to: 'icons' },
                 { from: 'extension/index.html', to: 'tab/index.html', transform: transformHtml },
-                { from: 'extension/redirect.html', to: 'tab/redirect.html' },
-                { from: 'extension/redirect.js', to: 'tab/redirect.js' },
+                { from: 'extension/helpers', to: 'tab/helpers' },
                 { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
                 { from: 'web/index.html', to: 'web/index.html', transform: transformHtml },
                 //{ from: 'login', to: 'login' },

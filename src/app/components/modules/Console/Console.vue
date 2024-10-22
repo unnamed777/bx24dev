@@ -122,6 +122,13 @@
             <Response :response="callResult" />
         </div>
         <div class="loading-overlay" v-show="isLoading"></div>
+
+        <iframe
+            v-if="isFirefox === false"
+            ref="sandbox"
+            src="/tab/helpers/sandbox_console.html"
+            style="height: 0; width: 0; opacity: 0; position: absolute; top: -10px; left: -10px;"
+        ></iframe>
     </div>
 </template>
 
@@ -133,6 +140,7 @@ import BaseInput from 'components/ui/BaseInput';
 import Response from './Response';
 import yaml from 'js-yaml';
 import methodsByScope from '@app/etc/methods';
+import { getExposedPromise } from "lib/functions";
 
 export default {
     components: {
@@ -151,6 +159,8 @@ export default {
         let showManual = window.localStorage.getItem('console/showManual') === 'true';
         let useJsonBody = window.localStorage.getItem('console/useJsonBody') === 'true';
 
+        this.sandboxResolves = {};
+
         return {
             info: {},
             method: this.queryMethod || '',
@@ -164,6 +174,8 @@ export default {
             expertMode: !!this.$route.query.expert,
             httpMethod: 'POST',
             useJsonBody: useJsonBody,
+            sandbox: null,
+            isFirefox: (globalThis.browser || globalThis.chrome).runtime.getURL('').startsWith('moz-extension://'),
         };
     },
 
@@ -257,6 +269,8 @@ export default {
 
     mounted() {
         this.setBreadcrumb(['Консоль']);
+
+        window.addEventListener('message', this.onMessage.bind(this));
     },
 
     methods: {
@@ -270,7 +284,7 @@ export default {
                 if (this.inputMode === 'yaml') {
                     requestObject = this.yamlToObject(this.body);
                 } else {
-                    requestObject = this.codeToObject(this.body);
+                    requestObject = await this.codeToObject(this.body);
                 }
 
                 if (requestObject === false) {
@@ -288,19 +302,74 @@ export default {
             }
         },
 
+        /**
+         *
+         * @param {String} request
+         * @returns {Object}
+         */
         codeToObject(request) {
             if (!request) {
                 return {};
             }
 
-            try {
-                return Function('"use strict";return (' + request + ');')();
-            } catch (ex) {
+            if (this.isFirefox) {
+                return this.codeToObjectSimple(request);
+            } else {
+                return this.codeToObjectSandbox(request);
+            }
+        },
+
+        /**
+         * Evaluate js code and convert it to json via sandbox.
+         * Safe method to eval() for manifest v3 supported by Chrome.
+         * @see https://developer.chrome.com/docs/extensions/reference/manifest/sandbox
+         */
+        async codeToObjectSandbox() {
+            const messageId = Date.now();
+            const { promise, resolve } = getExposedPromise();
+            this.sandboxResolves[messageId] = resolve;
+
+            this.$refs['sandbox'].contentWindow.postMessage({
+                type: 'eval',
+                id: messageId,
+                code: this.body,
+            }, '*');
+
+            const result = await promise;
+            delete this.sandboxResolves[messageId];
+
+            if (result.success !== true) {
                 alert('Ошибка парсинга кода');
-                console.error('Error while convert object', ex);
+                return;
+            }
+
+            return JSON.parse(result.json);
+        },
+
+        /**
+         * Simple code-to-json converter for Firefox.
+         * It doesn't support sandbox yet.
+         */
+        codeToObjectSimple(request) {
+            let str = request
+                // Add quotes around keys
+                .replace(/([a-zA-Z0-9_]+):/g, '"$1":')
+                // Replace single quotes with double quotes
+                .replace(/'/g, '"')
+                // Remove trailing commas before closing brackets
+                .replace(/,\s*([}\]])/g, '$1')
+                 // Remove consecutive commas
+                .replace(/,(\s*,)+/g, ',');
+
+            try {
+                return JSON.parse(str);
+            } catch (e) {
+                console.error("Failed to convert: %s", str);
+                alert('Ошибка парсинга кода');
                 return false;
             }
         },
+
 
         yamlToObject(request) {
             if (!request) {
@@ -435,6 +504,18 @@ export default {
             }
 
             return result;
+        },
+
+        onMessage(e) {
+            if (e.data.type !== 'eval') {
+                return;
+            }
+
+            if (!this.sandboxResolves[e.data.id]) {
+                return;
+            }
+
+            this.sandboxResolves[e.data.id](e.data);
         },
 
         ...mapMutations({

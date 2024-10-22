@@ -82,7 +82,7 @@ export default class AbstractOAuthProvider {
                 action: {
                     type: "redirect",
 					redirect: {
-						regexSubstitution: `${browser.runtime.getURL('/tab/redirect.html')}#id=${this.requestId}&\\1`
+						regexSubstitution: `${browser.runtime.getURL('/tab/helpers/redirect.html')}#id=${this.requestId}&\\1`
 					}
                 }
             }

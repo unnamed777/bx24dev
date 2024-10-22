@@ -113,7 +113,7 @@ export default class AppProvider {
                     });
 
                     let script = document.createElement('script');
-                    script.src = chrome.runtime.getURL('tab/pc_app_provider.js');
+                    script.src = chrome.runtime.getURL('tab/helpers/pc_app_provider.js');
                     script.dataset.instanceId = instanceId;
                     //script.onload = function() { this.remove(); };
                     (document.head || document.documentElement).appendChild(script);
