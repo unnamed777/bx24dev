@@ -94,6 +94,8 @@ const config = {
             patterns: [
                 { from: 'icons', to: 'icons' },
                 { from: 'extension/index.html', to: 'tab/index.html', transform: transformHtml },
+                { from: 'extension/redirect.html', to: 'tab/redirect.html' },
+                { from: 'extension/redirect.js', to: 'tab/redirect.js' },
                 { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
                 { from: 'web/index.html', to: 'web/index.html', transform: transformHtml },
                 //{ from: 'login', to: 'login' },

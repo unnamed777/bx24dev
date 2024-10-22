@@ -15,13 +15,16 @@
         "scripts": ["background.js"]
     },
     "web_accessible_resources": [{
-        "resources": ["tab/pc_app_provider.js"],
+        "resources": [
+            "tab/pc_app_provider.js",
+            "tab/redirect.html",
+            "tab/redirect.js"
+        ],
         "matches": ["<all_urls>"]
     }],
     "permissions": [
         "webNavigation",
-        "webRequest",
-        "webRequestBlocking",
+        "declarativeNetRequestWithHostAccess",
         "tabs",
         "storage",
         "scripting",

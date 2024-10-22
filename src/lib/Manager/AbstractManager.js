@@ -12,7 +12,6 @@ export default class AbstractManager {
 
         console.log('AbstractManager.constructor()');
         this.messageListener.subscribe('getRecentList', this.onMessageGetRecentList.bind(this));
-        console.log('AbstractManager.1');
         this.messageListener.subscribe('openRecentConnection', this.onMessageOpenRecentConnection.bind(this));
         this.messageListener.subscribe('getSavedList', this.onMessageGetSavedList.bind(this));
         this.messageListener.subscribe('rememberAuth', this.onMessageRememberAuth.bind(this));
@@ -49,10 +48,15 @@ export default class AbstractManager {
         return instance;
     }
 
+    hydrateAllInstances() {
+    }
+
     async onMessageGetRecentList(payload, sender, sendResponse) {
         console.log('AbstractManager.onMessageGetRecentList()');
         let result = [];
         let uniq = new Set();
+
+        this.hydrateAllInstances();
 
         for (let instance of this.instances) {
             if (!instance) {
@@ -119,7 +123,8 @@ export default class AbstractManager {
             }
         ];*/
 
-        return result;
+        sendResponse(result);
+        //return result;
     }
 
     async onMessageOpenRecentConnection({ payload }, sender, sendResponse) {
@@ -142,7 +147,7 @@ export default class AbstractManager {
             providerPayload: recentInstance.provider.getCredentials(),
         });
 
-        return true;
+        sendResponse(true);
     }
 
     async onMessageGetSavedList(payload, sender, sendResponse) {
@@ -185,7 +190,7 @@ export default class AbstractManager {
             result.push(exportItem);
         }
 
-        return result;
+        sendResponse(result);
     }
 
     /**
@@ -259,7 +264,7 @@ export default class AbstractManager {
 
         console.log('AbstractManager.onMessageRememberAuth() done, id %s', newItem.id);
 
-        return newItem.id;
+        sendResponse(newItem.id);
     }
 
     /**
@@ -299,6 +304,7 @@ export default class AbstractManager {
         }
 
         await browser.storage.local.set({ savedAuth });
+        sendResponse(null);
     }
 
     async onMessageOpenSavedConnection(payload, sender, sendResponse) {
@@ -339,7 +345,7 @@ export default class AbstractManager {
             providerPayload: providerPayload,
         });
 
-        return true;
+        sendResponse(true);
     }
 
     /**

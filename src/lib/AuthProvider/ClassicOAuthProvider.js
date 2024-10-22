@@ -2,7 +2,7 @@ import AbstractOAuthProvider from 'lib/AuthProvider/AbstractOAuthProvider';
 
 export default class ClassicOAuthProvider extends AbstractOAuthProvider {
     constructor(args) {
-        super();
+        super(args);
 
         this.credentials = {
             appName: args.appName,
@@ -11,8 +11,6 @@ export default class ClassicOAuthProvider extends AbstractOAuthProvider {
             clientId: args.clientId,
             clientSecret: args.clientSecret,
         };
-
-        this.redirectCallback = this.redirectCallback.bind(this);
     }
 
     /**

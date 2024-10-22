@@ -3,11 +3,10 @@ import { alert } from 'lib/functions';
 import browser from 'lib/browser-stub';
 
 export default class GrabOAuthProvider extends AbstractOAuthProvider {
-    constructor({tabId, frameId}) {
-        super();
-        this.tabId = tabId;
-        this.frameId = frameId;
-        this.redirectCallback = this.redirectCallback.bind(this);
+    constructor(args) {
+        super(args);
+        this.tabId = args.tabId;
+        this.frameId = args.frameId;
     }
 
     /**
@@ -32,9 +31,12 @@ export default class GrabOAuthProvider extends AbstractOAuthProvider {
         let result;
 
         try {
-            result = (await browser.tabs.executeScript(this.tabId, {
-                frameId: this.frameId,
-                code: `(function () {
+            result = (await browser.scripting.executeScript({
+                target: {
+                    tabId: this.tabId,
+                    frameIds: [this.frameId],
+                },
+                func: () => {
                     let appName = document.querySelector('#pagetitle .ui-side-panel-wrap-title-name').innerHTML.trim();
                     let appUrl = document.querySelector('input[name="APPLICATION_URL_HANDLER"]').value;
                     let clientId = document.querySelector('input[name="APPLICATION_DATA_CLIENT_ID"]').value;
@@ -49,8 +51,9 @@ export default class GrabOAuthProvider extends AbstractOAuthProvider {
                         clientId,
                         clientSecret,
                     };
-                })();`,
-            }))[0];
+                },
+            }))[0].result;
+            console.log(result);
         } catch (ex) {
             console.error(ex);
             alert('Ошибка получения данных OAuth со страницы редактирования приложения');

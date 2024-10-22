@@ -39,15 +39,7 @@ class ExtensionManager extends AbstractManager {
                 return;
             }
 
-            this.instances[instanceId] = ExtensionInstance.hydrate({
-                id: data.id,
-                // @todo Try to find tab
-                tab: null,
-                providerName: data.providerName,
-                providerPayload: data.providerPayload,
-                providerSerializedData: data.provider,
-                messageListener: this.messageListener,
-            });
+            this.hydrateInstance(data);
         }
 
         //await sleep(5000);
@@ -72,9 +64,16 @@ class ExtensionManager extends AbstractManager {
     async openByButton({ callerTab }) {
         let providerName = null;
         let providerPayload = {};
-        console.log('openByButton');
+        console.log('openByButton, tabId %d', callerTab.id);
 
-        if (/bitrix24\.ru\/marketplace\/app\//i.test(callerTab.url) !== false) {
+        if (
+            /\/marketplace\/app\//i.test(callerTab.url) !== false
+            || /\/crm\/deal\/details\//i.test(callerTab.url) !== false
+            || /\/crm\/contact\/details\//i.test(callerTab.url) !== false
+            || /\/crm\/company\/details\//i.test(callerTab.url) !== false
+            || /\/crm\/lead\/details\//i.test(callerTab.url) !== false
+            || /\/crm\/type\/\d+\/details\//i.test(callerTab.url) !== false
+        ) {
             console.log('*.bitrix24.ru app');
             // App's page
             // noinspection JSVoidFunctionReturnValueUsed
@@ -99,7 +98,7 @@ class ExtensionManager extends AbstractManager {
                 providerPayload.appUrl = frame.url;
                 providerName = 'app';
             }
-        } else if (/bitrix24\.ru\/devops\/edit\/application\/\d+\//.test(callerTab.url)) {
+        } else if (/\/devops\/edit\/application\/\d+\//.test(callerTab.url)) {
             // "Edit app" page
             // noinspection JSVoidFunctionReturnValueUsed
             let frames = await browser.webNavigation.getAllFrames({ tabId: callerTab.id });
@@ -107,7 +106,7 @@ class ExtensionManager extends AbstractManager {
             let frame;
 
             for (frame of frames) {
-                if (/bitrix24\.ru\/devops\/edit\/application\/\d+\/\?.*IFRAME.*/.test(frame.url) !== false) {
+                if (/\/devops\/edit\/application\/\d+\/\?.*IFRAME.*/.test(frame.url) !== false) {
                     frameFound = true;
                     break;
                 }
@@ -203,6 +202,26 @@ class ExtensionManager extends AbstractManager {
      */
     async innerSetSavedAuthList(savedAuth) {
         await browser.storage.local.set({ savedAuth });
+    }
+
+    hydrateInstance(data) {
+        this.instances[data.id] = ExtensionInstance.hydrate({
+            id: data.id,
+            // @todo Try to find tab
+            tab: null,
+            providerName: data.providerName,
+            providerPayload: data.providerPayload,
+            providerSerializedData: data.provider,
+            messageListener: this.messageListener,
+        });
+    }
+
+    async hydrateAllInstances() {
+        let result = (await browser.storage.session.get('instanceData')) || { instanceData: {} };
+
+        for (let data of Object.values(result.instanceData)) {
+            this.hydrateInstance(data);
+        }
     }
 }
 

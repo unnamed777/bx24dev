@@ -26,6 +26,11 @@ export default class ExtensionInstance extends AbstractInstance
             url: '/tab/index.html#/' + this.id,
             openerTabId: this.callerTab ? this.callerTab.id : null,
         });
+
+        // Promise may not resolve if an error occurs on the extension page.
+        // For instance, if <script src="https://localhost/"> (vue-devtools) is on the page.
+
+        console.log('ExtensionInstance.openTab(): opened');
     }
 
     async refreshAuth() {

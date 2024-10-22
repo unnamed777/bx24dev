@@ -3,8 +3,40 @@ import { getExposedPromise } from 'lib/functions';
 import browser from 'lib/browser-stub';
 
 export default class AbstractOAuthProvider {
-    constructor() {
+    /**
+     * @param instance
+     * @param instanceId
+     * @param {MessageListener} messageListener
+     */
+    constructor({ instance, instanceId, messageListener }) {
         this.debug = false;
+        this.instance = instance;
+        this.instanceId = instanceId;
+        this.messageListener = messageListener;
+        this.requestId = null;
+    }
+
+    /**
+     *
+     * @param {FullOAuthProviderData}
+     * @returns {AbstractOAuthProvider}
+     */
+    static hydrate({ tabId, frameId, instanceId, instance, messageListener, serializedData }) {
+        const provider = new this.prototype.constructor({
+            tabId,
+            frameId,
+            instanceId,
+            messageListener,
+        });
+
+        provider.appName = serializedData.appName;
+        provider.domain = serializedData.domain;
+        provider.appUrl = serializedData.appUrl;
+        provider.type = serializedData.type;
+        provider.auth = serializedData.auth;
+        instance.auth = provider.auth;
+
+        return provider;
     }
 
     /**
@@ -23,6 +55,34 @@ export default class AbstractOAuthProvider {
     }
 
     async obtainCode() {
+        this.requestId = Date.now();
+
+        this.messageListener.subscribe('oauthCallback', this.onOAuthCallback.bind(this));
+
+        let oldRuleIds = [
+            //...(await browser.declarativeNetRequest.getDynamicRules()).map(rule => rule.id),
+            ...(await browser.declarativeNetRequest.getSessionRules()).map(rule => rule.id),
+        ];
+
+        await browser.declarativeNetRequest.updateSessionRules({
+            removeRuleIds: oldRuleIds,
+            addRules: [{
+                id: 1,
+                priority: 1,
+                condition: {
+                    // Maybe escape of appUrl needed
+                    regexFilter: "^" + this.credentials.appUrl + ".*?\\?(.*)$",
+                    resourceTypes: ["main_frame"]
+                },
+                action: {
+                    type: "redirect",
+					redirect: {
+						regexSubstitution: `${browser.runtime.getURL('/tab/redirect.html')}#id=${this.requestId}&\\1`
+					}
+                }
+            }
+        ]})
+
         const authUrl = `https://${this.credentials.domain}/oauth/authorize/?client_id=${this.credentials.clientId}&state=bx24dev-ext-auth`;
         this.debug && console.log('authUrl = %s', authUrl);
 
@@ -38,18 +98,6 @@ export default class AbstractOAuthProvider {
 
         this.debug && console.log('Tab created, id = ', authTab.id);
 
-        // Get rid of port. Url with port doesn't match pattern with port
-        // However, url with port matches pattern without port
-        const waitForUrl = this.credentials.appUrl.replace(/^(.*:\/\/)(?:([^/:]*)(:[0-9]{2,5})?)(.*)$/gi, '$1$2$4');
-        this.debug && console.log('waitForUrl = %s', waitForUrl);
-
-        browser.webRequest.onBeforeRequest.addListener(this.redirectCallback, {
-            urls: [waitForUrl + '?*'],
-            tabId: authTab.id,
-        }, ['blocking']);
-
-        this.debug && console.log('onBeforeRequest listener added');
-
         try {
             // Firefox 106 has a bug - if tab has been just created and immediately updated after that,
             // url isn't changed. I need to wait a bit before updating the tab
@@ -58,25 +106,34 @@ export default class AbstractOAuthProvider {
             }
         } catch (ex) {}
 
+        // Go to bitrix24 auth url
         browser.tabs.update(authTab.id, { url: authUrl });
         this.debug && console.log('Tab url update requested');
 
         // Wait here till authorization is provided
-        this.debug && console.log('Start waiting for url with code');
-        /** @var {String} */
-        const redirectUrl = await promise;
-        this.debug && console.log('Url with code captured, %s', redirectUrl);
+        this.debug && console.log('Start waiting for the OAuth code');
+        this.code = await promise;
+        this.debug && console.log('OAuth code captured: %s', code);
 
         await browser.tabs.update(this.tabId, { active: true });
         this.debug && console.log('B24 tab selected');
         await browser.tabs.remove(authTab.id);
         this.debug && console.log('Auth tab removed');
 
-        this.code = (new URL(redirectUrl)).searchParams.get('code');
-        this.debug && console.log('OAuth code: %s', this.code);
         return this.code;
     }
 
+    onOAuthCallback(payload) {
+        if (parseInt(payload.params.id, 10) !== this.requestId) {
+            return;
+        }
+
+        this.onRedirectToApp(payload.params.code);
+    }
+
+    /**
+     * @deprecated
+     */
     async redirectCallback(details) {
         this.debug && console.log('Captured url details', details);
 
@@ -167,5 +224,22 @@ export default class AbstractOAuthProvider {
      */
     getCredentials() {
         return { ...this.credentials };
+    }
+
+    /**
+     *
+     * @returns {FullOAuthProviderData}
+     */
+    serialize() {
+        return {
+            tabId: this.tabId || null,
+            frameId: this.frameId || null,
+            instanceId: this.instanceId,
+            appName: this.appName,
+            domain: this.domain,
+            appUrl: this.appUrl,
+            type: this.type,
+            auth: this.auth,
+        };
     }
 }
