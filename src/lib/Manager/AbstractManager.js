@@ -164,12 +164,13 @@ export default class AbstractManager {
         const items = await this.innerGetSavedAuthList();
 
         if (items.length === 0) {
-            return [];
+            sendResponse([]);
+            return;
         }
 
         let result = [];
 
-        for (let item of storageData) {
+        for (let item of items) {
             let exportItem;
 
             switch (item.type) {
@@ -312,7 +313,7 @@ export default class AbstractManager {
             }
         }
 
-        await browser.storage.local.set({ savedAuth });
+        await this.innerSetSavedAuthList(savedAuth);
         sendResponse(null);
     }
 

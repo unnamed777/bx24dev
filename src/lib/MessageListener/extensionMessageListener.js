@@ -18,7 +18,7 @@ const messageListener = {
         // @todo Rewrite, dirty
         // Wrapper for callback. It allows to react for requested message type only.
         this.subscribers[type] = (payload, sender, sendResponse) => {
-            console.log('MessageListener wrapped callback, payload type: %s, expected type: %s', payload.type, type);
+            //console.log('MessageListener wrapped callback, payload type: %s, expected type: %s', payload.type, type);
             if (payload.type !== type) {
                 return;
             }
@@ -27,6 +27,7 @@ const messageListener = {
             // So it's required to use sendResponse() in the listeners (`callback`).
             // https://developer.chrome.com/docs/extensions/develop/concepts/messaging
             // "Async functions are not supported because they return a Promise, which is not supported"
+            console.log('MessageListener. Execute callback for type %s', payload.type);
             const result = callback(payload, sender, sendResponse);
 
             if (result instanceof Promise) {

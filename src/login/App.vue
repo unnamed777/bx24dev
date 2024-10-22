@@ -148,6 +148,7 @@ export default {
 
         async getSavedList() {
             // noinspection JSVoidFunctionReturnValueUsed
+            /** @see ExtensionManager.onMessageGetSavedList */
             this.savedList = await browser.runtime.sendMessage(null, {
                 type: 'getSavedList',
                 payload: {}
@@ -201,6 +202,7 @@ export default {
         },
 
         async rememberAuth(index) {
+            /** @see ExtensionManager.onMessageRememberAuth */
             const saveId = await browser.runtime.sendMessage(null, {
                 type: 'rememberAuth',
                 payload: {
@@ -216,17 +218,20 @@ export default {
                 return;
             }
 
+            /** @see ExtensionManager.onMessageForgetAuth */
             await browser.runtime.sendMessage(null, {
                 type: 'forgetAuth',
                 payload: {
                     id: id
                 }
             });
+            console.log('on after forgetAuth');
 
             await this.getSavedList();
         },
 
         async openSaved(id) {
+            /** @see ExtensionManager.onMessageOpenSavedConnection */
             let result = await browser.runtime.sendMessage(null, {
                 type: 'openSavedConnection',
                 payload: {
