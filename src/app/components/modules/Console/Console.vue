@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="btn-group" role="group">
-                    <button class="btn btn-primary" @click="execute()" title="Ctrl+Enter">Выполнить</button>
+                    <button class="btn btn-primary" ref="executeButton" @click="execute()" title="Ctrl+Enter">Выполнить</button>
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -174,6 +174,7 @@ export default {
             expertMode: !!this.$route.query.expert,
             httpMethod: 'POST',
             useJsonBody: useJsonBody,
+            executeButton: null,
             sandbox: null,
             isFirefox: (globalThis.browser || globalThis.chrome).runtime.getURL('').startsWith('moz-extension://'),
         };
@@ -275,6 +276,7 @@ export default {
 
     methods: {
         async execute() {
+            this.$refs['executeButton'].blur();
             this.isLoading = true;
 
             try {
