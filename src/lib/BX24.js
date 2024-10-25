@@ -15,7 +15,15 @@ export default {
     },
 
     async request(method, data, options = {}) {
+        // Some methods require arguments to be an array.
+        // In such cases auth token can't be added to the request if JSON is enabled.
+        // So we need to convert data to object.
+        if (Array.isArray(data)) {
+            data = { ...data };
+        }
+
         data.auth = this.auth.access_token;
+
         let httpMethod;
         let useJson = false;
 
