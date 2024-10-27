@@ -35,3 +35,9 @@ interface MessageListener {
     subscribe: (type: string, callback: (payload: any, sender: any, sendResponse: Function) => void) => void,
     unsubscribe: (type: string) => void,
 }
+
+interface CreateExtensionInstanceMessagePayload {
+    tabId: number,
+    providerName: string,
+    providerPayload: any,
+}

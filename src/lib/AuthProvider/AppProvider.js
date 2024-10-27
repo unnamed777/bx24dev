@@ -2,10 +2,11 @@ import { alert, getExposedPromise } from 'lib/functions';
 import browser from 'lib/browser-stub';
 
 export default class AppProvider {
-    constructor({ tabId, frameId, instanceId, instance, messageListener }) {
+    constructor({ tabId, frameId, instanceId, instance, messageListener, appName }) {
         this.tabId = tabId;
         this.frameId = frameId;
         this.instanceId = instanceId;
+        this.appName = appName;
         this.authError = null;
         this.messageListener = messageListener;
     }
@@ -42,7 +43,12 @@ export default class AppProvider {
         let result;
 
         const callerTab = (await browser.tabs.get(this.tabId));
-        this.appName = callerTab.title;
+
+        // if Manager didn't pass appName, get current tab title
+        if (!this.appName) {
+            this.appName = callerTab.title;
+        }
+
         this.domain = (new URL(callerTab.url)).hostname;
         this.appUrl = (await browser.webNavigation.getFrame({ tabId: this.tabId, frameId: this.frameId })).url;
         this.type = 'oauth';

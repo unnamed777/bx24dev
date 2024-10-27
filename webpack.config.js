@@ -14,6 +14,7 @@ const config = {
     entry: {
         'background': './background.js',
         'tab/index': './extension/index.js',
+        'popup/index': './popup/index.js',
         'tab/helpers/pc_app_provider': './extension/helpers/pc_app_provider.js',
         'login/index': './login/index.js',
         'web/index': './web/index.js',
@@ -33,6 +34,7 @@ const config = {
             '@lib': path.resolve(__dirname, 'src/lib'),
             '@app': path.resolve(__dirname, 'src/app'),
             '@web': path.resolve(__dirname, 'src/web'),
+            '@popup': path.resolve(__dirname, 'src/popup'),
             components: path.resolve(__dirname, 'src/app/components'),
             mixins: path.resolve(__dirname, 'src/app/mixins'),
             // Required for Vue Portal, because it imports another Vue and creates an error in runtime
@@ -97,6 +99,7 @@ const config = {
                 { from: 'extension/helpers', to: 'tab/helpers' },
                 { from: 'login/index.html', to: 'login/index.html', transform: transformHtml },
                 { from: 'web/index.html', to: 'web/index.html', transform: transformHtml },
+                { from: 'popup/index.html', to: 'popup/index.html', transform: transformHtml },
                 //{ from: 'login', to: 'login' },
                 { from: 'vendor', to: 'vendor'},
                 {

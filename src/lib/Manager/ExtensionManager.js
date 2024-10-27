@@ -11,14 +11,32 @@ class ExtensionManager extends AbstractManager {
         this.messageListener.subscribe('createExtensionInstance', this.onMessageCreateExtensionInstance.bind(this));
         this.messageListener.subscribe('getAuth', this.onMessageGetAuth.bind(this));
         this.messageListener.subscribe('refreshAuth', this.onMessageRefreshAuth.bind(this));
+        this.messageListener.subscribe('openLoginPage', this.onMessageOpenLoginPage.bind(this));
     }
 
-    onMessageCreateExtensionInstance({ payload }) {
-        console.log('Manager.onMessageCreateExtensionInstance()');
+    /**
+     *
+     * @param {CreateExtensionInstanceMessagePayload} payload
+     * @param sender
+     * @param sendResponse
+     * @returns {Promise<void>}
+     */
+    async onMessageCreateExtensionInstance({ payload }, sender, sendResponse) {
+        console.log('Manager.onMessageCreateExtensionInstance()', payload);
+
+        let tab;
+
+        if (payload.tabId) {
+            tab = await browser.tabs.get(payload.tabId);
+        }
+
         this.createTabInstance({
+            tab,
             providerName: payload.providerName,
             providerPayload: payload.providerPayload,
         });
+
+        sendResponse(null);
     }
 
     /**
@@ -31,7 +49,7 @@ class ExtensionManager extends AbstractManager {
         if (!this.instances[instanceId]) {
             console.log('Instance isn\'t in memory, try to hydrate');
             // If there is no instance in memory, try to hydrate it from session data
-            let result = (await browser.storage.session.get('instanceData')) || { instanceData: {} };
+            let result = await this.getSessionInstanceData();
             const data = result.instanceData[instanceId];
 
             if (!data) {
@@ -61,6 +79,10 @@ class ExtensionManager extends AbstractManager {
         sendResponse(result);
     }
 
+    /**
+     * The Popup is responsible for this functionality
+     * @deprecated
+     */
     async openByButton({ callerTab }) {
         let providerName = null;
         let providerPayload = {};
@@ -133,8 +155,16 @@ class ExtensionManager extends AbstractManager {
         }
     }
 
+    /**
+     * Message "MessageOpenLoginPage" used in the Popup page
+     */
+    async onMessageOpenLoginPage(payload, sender, sendResponse) {
+        await this.openLoginPage();
+        sendResponse(true);
+    }
+
     openLoginPage() {
-        browser.tabs.create({
+        return browser.tabs.create({
             url: '/login/index.html',
             //openerTabId: this.callerTab.id,
         });
@@ -204,8 +234,18 @@ class ExtensionManager extends AbstractManager {
         await browser.storage.local.set({ savedAuth });
     }
 
+    async getSessionInstanceData() {
+        let result = (await browser.storage.session.get('instanceData'));
+
+        if (!result || !result.instanceData) {
+            result.instanceData = {};
+        }
+
+        return result;
+    }
+
     async hydrateInstanceById(instanceId) {
-        let result = (await browser.storage.session.get('instanceData')) || { instanceData: {} };
+        let result = await this.getSessionInstanceData();
         const data = result.instanceData[instanceId];
 
         if (!data) {
@@ -229,7 +269,7 @@ class ExtensionManager extends AbstractManager {
     }
 
     async hydrateAllInstances() {
-        let result = (await browser.storage.session.get('instanceData')) || { instanceData: {} };
+        let result = await this.getSessionInstanceData();
 
         for (let data of Object.values(result.instanceData)) {
             this.hydrateInstance(data);

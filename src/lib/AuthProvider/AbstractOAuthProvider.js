@@ -62,6 +62,8 @@ export default class AbstractOAuthProvider {
     async obtainCode() {
         this.requestId = Date.now();
 
+        // The event will be fired when browser catches redirect to app oauth url
+        // and opens own helper `/tab/redirect.html` instead.
         this.messageListener.subscribe('oauthCallback', this.onOAuthCallback.bind(this));
 
         let oldRuleIds = [
@@ -72,7 +74,7 @@ export default class AbstractOAuthProvider {
         await browser.declarativeNetRequest.updateSessionRules({
             removeRuleIds: oldRuleIds,
             addRules: [{
-                id: 1,
+                id: this.requestId,
                 priority: 1,
                 condition: {
                     // Maybe escape of appUrl needed
@@ -133,21 +135,12 @@ export default class AbstractOAuthProvider {
             return;
         }
 
+        // Remove redirect rule
+        browser.declarativeNetRequest.updateSessionRules({
+            removeRuleIds: [this.requestId],
+        });
+
         this.onRedirectToApp(payload.params.code);
-    }
-
-    /**
-     * @deprecated
-     */
-    async redirectCallback(details) {
-        this.debug && console.log('Captured url details', details);
-
-        browser.webRequest.onBeforeRequest.removeListener(this.redirectCallback);
-        this.onRedirectToApp(details.url);
-
-        return {
-            cancel: true,
-        };
     }
 
     async obtainFirstToken() {
