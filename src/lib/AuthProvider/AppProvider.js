@@ -82,6 +82,7 @@ export default class AppProvider {
                 },
                 args: [this.instanceId],
                 // Inject a code to inject a code to run a code. Inception.jpg
+                // @todo Try to get rid of this and use ExecutionWorld MAIN
                 func: (instanceId) => {
                     // 1. In content page context subscribe to custom event to receive auth data
                     // 2. Add a script `pc_app_provider` to the page in page context to get access to page global variables.
@@ -99,12 +100,16 @@ export default class AppProvider {
                     };
 
                     document.addEventListener(`bx24dev_${instanceId}:getAuthResult`, (e) => {
+                        /** @var {AppProviderGetAuthResult} */
+                        const payload = {
+                            instanceId: instanceId,
+                            auth: e.detail.auth,
+                            placement: e.detail.placement,
+                        };
+
                         chrome.runtime.sendMessage({
                             type: `AppProvider_${instanceId}:returnAuth`,
-                            payload: {
-                                instanceId: instanceId,
-                                auth: e.detail,
-                            },
+                            payload,
                         });
                     });
 
@@ -139,6 +144,9 @@ export default class AppProvider {
         return result;
     }
 
+    /**
+     * @param {AppProviderGetAuthResult} payload
+     */
     onReturnAuth({ payload }) {
         console.log('AppProvider.onReturnAuth()');
         /*if (payload.instanceId !== this.instanceId) {
@@ -148,6 +156,7 @@ export default class AppProvider {
         // We don't need this event anymore
         this.messageListener.unsubscribe(`AppProvider_${this.instanceId}:returnAuth`);
         this.auth = payload.auth;
+
         console.log('Auth from iframe', payload.auth);
         this.getAuthResultResolve(payload.auth);
         clearTimeout(this.getAuthResultTimeout);

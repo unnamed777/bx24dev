@@ -67,8 +67,47 @@ const findEntrypoint = async (callerTab) => {
             if (/\/marketplace\/app\//i.test(callerTab.url) !== false) {
                 appName = callerTab.title;
             } else {
-                appName = 'Встройка в ' + callerTab.title;
+                let result = (await browser.scripting.executeScript({
+                    target: {
+                        tabId: callerTab.id,
+                        frameIds: [frame.frameId],
+                    },
+                    func: () => {
+                        let placementInfo;
+
+                        try {
+                            placementInfo = BX24.placement.info();
+                        } catch (err) {
+                            placementInfo = null;
+                        }
+
+                        return placementInfo;
+                    },
+                    world: browser.scripting.ExecutionWorld.MAIN,
+                }));
+
+                if (result[0]) {
+                    let placementInfo = result[0].result;
+
+                    switch (placementInfo.placement) {
+                        case 'DEFAULT':
+                            // App in slider
+                            // Do nothing
+                            break;
+
+                        case 'USERFIELD_TYPE':
+                            appName = `Поле ${placementInfo.options.FIELD_NAME}`;
+                            break;
+
+                        default:
+                            appName = placementInfo.placement;
+                    }
+                } else {
+                    appName = 'Встройка в ' + callerTab.title;
+                }
             }
+
+            console.log(appName);
 
             activeApps.push({
                 providerName: 'app',

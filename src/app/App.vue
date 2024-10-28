@@ -8,7 +8,7 @@
                     :class="{ 'b24app--menu': !!$slots.appTitleMenu }"
                     :data-toggle="$slots.appTitleMenu ? 'dropdown' : null"
                 >
-                    <div class="b24app__title">
+                    <div class="b24app__title" :title="title">
                         {{ title }}
                     </div>
                     <div class="b24app__portal">{{ portal }}</div>

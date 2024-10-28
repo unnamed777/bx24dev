@@ -10,13 +10,14 @@ export default class AbstractManager {
         console.log('AbstractManager.constructor()');
         this.messageListener = messageListener;
 
-        console.log('AbstractManager.constructor()');
         this.messageListener.subscribe('getRecentList', this.onMessageGetRecentList.bind(this));
         this.messageListener.subscribe('openRecentConnection', this.onMessageOpenRecentConnection.bind(this));
         this.messageListener.subscribe('getSavedList', this.onMessageGetSavedList.bind(this));
         this.messageListener.subscribe('rememberAuth', this.onMessageRememberAuth.bind(this));
         this.messageListener.subscribe('forgetAuth', this.onMessageForgetAuth.bind(this));
         this.messageListener.subscribe('openSavedConnection', this.onMessageOpenSavedConnection.bind(this));
+
+        browser.alarms.onAlarm.addListener(this.onAlarm.bind(this));
 
          /** @type {Array<AbstractInstance>} */
         this.instances = [null];
@@ -356,6 +357,12 @@ export default class AbstractManager {
         });
 
         sendResponse(true);
+    }
+
+    /**
+     * @param {browser.alarms.Alarm} alarmInfo
+     */
+    onAlarm(alarmInfo) {
     }
 
     /**

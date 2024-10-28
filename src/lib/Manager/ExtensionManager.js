@@ -3,6 +3,8 @@ import AbstractManager from './AbstractManager';
 import ExtensionInstance from 'lib/Instance/ExtensionInstance';
 import browser from 'lib/browser-stub';
 import { sleep } from 'lib/functions';
+import AppProvider from "lib/AuthProvider/AppProvider";
+import AbstractOAuthProvider from "lib/AuthProvider/AbstractOAuthProvider";
 
 class ExtensionManager extends AbstractManager {
     constructor(messageListener) {
@@ -168,6 +170,15 @@ class ExtensionManager extends AbstractManager {
             url: '/login/index.html',
             //openerTabId: this.callerTab.id,
         });
+    }
+
+    /**
+     * @param {browser.alarms.Alarm} alarmInfo
+     */
+    onAlarm(alarmInfo) {
+        if (alarmInfo.name.startsWith('dnr_clear')) {
+            AbstractOAuthProvider.onDnrClearAlarm(alarmInfo.name);
+        }
     }
 
     /**

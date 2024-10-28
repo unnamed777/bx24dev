@@ -88,7 +88,10 @@ export default class AbstractOAuthProvider {
 					}
                 }
             }
-        ]})
+        ]});
+
+        // Make sure that the redirect rule is removed in 1 minute
+        browser.alarms.create(`dnr_clear:${this.requestId}`, { delayInMinutes: 1 });
 
         const authUrl = `https://${this.credentials.domain}/oauth/authorize/?client_id=${this.credentials.clientId}&state=bx24dev-ext-auth`;
         this.debug && console.log('authUrl = %s', authUrl);
@@ -222,6 +225,14 @@ export default class AbstractOAuthProvider {
      */
     getCredentials() {
         return { ...this.credentials };
+    }
+
+    static onDnrClearAlarm(alarmName) {
+        const [, requestId] = alarmName.split(':');
+
+        browser.declarativeNetRequest.updateSessionRules({
+            removeRuleIds: [requestId * 1],
+        });
     }
 
     /**

@@ -28,7 +28,7 @@ const obtainAuthData = async (authId) => {
         },
     });
 
-    console.log('obtainAuthData(), got message response', authData);
+    //console.log('obtainAuthData(), got message response', authData);
 
     await store.commit('setAppData', authData);
     return authData;

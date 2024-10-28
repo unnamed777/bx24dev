@@ -34,6 +34,7 @@
         "tabs",
         "storage",
         "scripting",
+        "alarms",
         "contextualIdentities"
     ],
     "host_permissions": [

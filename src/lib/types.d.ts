@@ -41,3 +41,12 @@ interface CreateExtensionInstanceMessagePayload {
     providerName: string,
     providerPayload: any,
 }
+
+interface AppProviderGetAuthResult {
+    instanceId: number,
+    auth: B24ApplicationAuthorization ,
+    placement?: {
+        placement: string,
+        options: any,
+    },
+}

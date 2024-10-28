@@ -1,3 +1,4 @@
+/** @var {chrome} */
 let stub;
 
 if (typeof browser === 'undefined') {
