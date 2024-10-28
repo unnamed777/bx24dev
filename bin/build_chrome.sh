@@ -5,5 +5,5 @@ cp -R ./dist dist_chrome
 rm -rf ./dist_chrome/web-ext-artifacts
 rm -rf ./dist_chrome/.web-extension-id
 # Remove Firefox's containers permission
-jq 'del(.permissions[] | select(. == "contextualIdentities"))' manifest.json > manifest.tmp && mv manifest.tmp manifest.json
+jq 'del(.permissions[] | select(. == "contextualIdentities"))' ./dist_chrome/manifest.json > ./dist_chrome/manifest.tmp && mv ./dist_chrome/manifest.tmp ./dist_chrome/manifest.json
 cd ./dist_chrome && zip -r dist.zip * && cd ..

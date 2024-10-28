@@ -43,5 +43,11 @@
     "content_security_policy": {
         "extension_pages": "script-src 'self';",
         "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval'; script-src-elem 'self' 'unsafe-inline'"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{e34be483-4115-49b8-96a4-8e2cbfd908cc}",
+            "strict_min_version": "118.0"
+        }
     }
 }
