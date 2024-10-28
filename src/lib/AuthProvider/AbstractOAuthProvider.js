@@ -60,7 +60,8 @@ export default class AbstractOAuthProvider {
     }
 
     async obtainCode() {
-        this.requestId = Date.now();
+        // Must be <2^31
+        this.requestId = Math.round(Date.now() / 1000);
 
         // The event will be fired when browser catches redirect to app oauth url
         // and opens own helper `/tab/redirect.html` instead.
@@ -70,6 +71,8 @@ export default class AbstractOAuthProvider {
             //...(await browser.declarativeNetRequest.getDynamicRules()).map(rule => rule.id),
             ...(await browser.declarativeNetRequest.getSessionRules()).map(rule => rule.id),
         ];
+
+        console.log(oldRuleIds);
 
         await browser.declarativeNetRequest.updateSessionRules({
             removeRuleIds: oldRuleIds,

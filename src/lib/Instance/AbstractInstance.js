@@ -117,7 +117,7 @@ export default class AbstractInstance {
     serialize() {
         return {
             id: this.id,
-            callerTabId: this.callerTab.id,
+            callerTabId: this.callerTab?.id,
             providerName: this.providerName,
             providerPayload: this.providerPayload,
             provider: typeof this.provider.serialize === 'function' ? this.provider.serialize() : null,

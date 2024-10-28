@@ -3,9 +3,9 @@
         <div>На странице несколько активных приложений <br/>или встроек. Выберите нужное для подключения:</div>
         <div class="list-group mt-1">
             <button
-                v-for="item of appsFormatted"
+                v-for="(item, index) of appsFormatted"
                 class="list-group-item list-group-item-action"
-                @click="select(item)"
+                @click="select(index)"
             >
                 <div><b>{{ item.name }}</b></div>
                 <div>{{ item.primary }}<span style="opacity: 0.8;">{{ item.secondary }}</span><span v-if="item.params" style="opacity: 0.5;">{{ item.params }}</span></div>
@@ -41,12 +41,8 @@ export default {
     },
 
     methods: {
-        /**
-         * @param {CreateExtensionInstanceMessagePayload} item
-         */
-        select(item) {
-            console.log(item);
-            this.createExtensionInstance(item);
+        select(index) {
+            this.createExtensionInstance(this.apps[index]);
         }
     },
 };
