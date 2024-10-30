@@ -23,6 +23,31 @@ interface SessionAppProviderData extends BasicTokenProviderData {
 interface FullOAuthProviderData extends BasicTokenProviderData {
 }
 
+interface WebhookAuthProviderData {
+    appName: string,
+    domain: string,
+    type: string,
+    authData: {
+        url: string,
+        domain: string,
+        userId: string,
+        key: string,
+    },
+    credentials: {
+        url: string,
+    },
+}
+
+interface TokenAuthProviderData {
+    appName: string,
+    appUrl: string,
+    type: string,
+    auth: {
+        domain: string,
+        access_token: string,
+    },
+}
+
 interface B24ApplicationAuthorization {
     accessToken: string,
     domain: string,

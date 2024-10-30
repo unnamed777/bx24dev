@@ -165,6 +165,7 @@ const methods = {
         'crm.documentgenerator.template.getfields',
         'crm.documentgenerator.template.list',
         'crm.documentgenerator.template.update',
+        'crm.duplicate.findbycomm',
         'crm.externalchannel.activity.company',
         'crm.externalchannel.activity.contact',
         'crm.externalchannel.company',

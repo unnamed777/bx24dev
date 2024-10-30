@@ -9,7 +9,7 @@
                     <form class="webhook-form" @submit.prevent="webhookSubmit">
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control" id="webhookUrl" type="text" name="url" ref="webhookUrl" placeholder="url или &quot;domain user_id key&quot;" />
+                                <input class="form-control" id="webhookUrl" type="text" name="url" ref="webhookUrl" placeholder="url или &quot;domain user_id key&quot;" autocomplete="off" />
                             </div>
                             <div class="col-1">
                                 <button class="btn btn-primary" type="submit" tabindex="-1">➤</button>
@@ -23,13 +23,13 @@
                     <form class="token-form" @submit.prevent="tokenSubmit">
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control" type="text" id="tokenDomain" name="domain" placeholder="domain" /><br/>
+                                <input class="form-control" type="text" id="tokenDomain" name="domain" placeholder="domain" autocomplete="off"/><br/>
                             </div>
                             <div class="col-1"></div>
                         </div>
                         <div class="form-row">
                             <div class="col">
-                                <input class="form-control"type="text" id="tokenToken" name="token" placeholder="access_token" />
+                                <input class="form-control" type="text" id="tokenToken" name="token" placeholder="access_token" autocomplete="off"/>
                             </div>
                             <div class="col-1">
                                 <button class="btn btn-primary" type="submit" tabindex="-1">➤</button>

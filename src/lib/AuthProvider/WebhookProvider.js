@@ -15,9 +15,28 @@ export default class WebhookProvider {
         };
     }
 
-    obtain() {
-        let result = /^.*:\/\/([^/]+)\/rest\/([0-9]+)\/([^/]+)\/?$/.exec(this.credentials.url);
+    /**
+     * @param {WebhookAuthProviderData} serializedData
+     * @returns {WebhookProvider}
+     */
+    static hydrate({ tabId, frameId, instanceId, instance, messageListener, serializedData }) {
+        const provider = new this.prototype.constructor({
+            url: serializedData.credentials.url,
+        });
 
+        provider.appName = serializedData.appName;
+        provider.domain = serializedData.domain;
+        provider.type = serializedData.type;
+        provider.authData = serializedData.authData;
+        provider.credentials = serializedData.credentials;
+
+        return provider;
+    }
+
+    obtain() {
+        let result = /^.*:\/\/([^\/]+)\/rest\/([0-9]+)\/([^\/]+)(?:\/?|\/.+)?$$/.exec(this.credentials.url);
+
+        // Seems to be inconsistent with others. Use credentials?
         this.authData = {
             url: result[0],
             domain: result[1],
@@ -43,5 +62,18 @@ export default class WebhookProvider {
 
     getCredentials() {
         return { ...this.credentials };
+    }
+
+    /**
+     * @returns {WebhookAuthProviderData}
+     */
+    serialize() {
+        return {
+            appName: this.appName,
+            domain: this.domain,
+            type: this.type,
+            authData: this.authData,
+            credentials: this.credentials,
+        };
     }
 }

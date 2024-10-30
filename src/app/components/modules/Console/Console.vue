@@ -33,6 +33,7 @@
                 :select2Options="{
                     //tags: false,
                     //insertTag: expertMode ? addCustomMethod : undefined,
+                    width: '100%'
                 }"
                 :optionTemplate="select2Template"
                 v-model="chosenMethod"
