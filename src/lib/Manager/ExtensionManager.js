@@ -48,35 +48,28 @@ class ExtensionManager extends AbstractManager {
         const instanceId = payload.payload.authId;
         console.log('Manager.onMessageGetAuth()', instanceId, payload);
 
-        if (!this.instances[instanceId]) {
-            console.log('Instance isn\'t in memory, try to hydrate');
-            // If there is no instance in memory, try to hydrate it from session data
-            let result = await this.getSessionInstanceData();
-            const data = result.instanceData[instanceId];
+        let instance = await this.getInstance(instanceId);
 
-            if (!data) {
-                console.error(`Authorization with ID ${instanceId} not found`);
-                return;
-            }
-
-            this.hydrateInstance(data);
+        if (instance === null) {
+            return;
         }
 
         //await sleep(5000);
-        console.log('Data will be sent as response', this.instances[instanceId].getData());
-        sendResponse(this.instances[instanceId].getData());
+        console.log('Data will be sent as response', instance.getData());
+        sendResponse(instance.getData());
     }
 
     async onMessageRefreshAuth(payload, sender, sendResponse) {
         const authId = payload.payload.authId;
         console.log('Manager.onMessageRefreshAuth()', authId);
 
-        if (!this.instances[authId]) {
-            console.error(`Authorization with ID ${authId} not found`);
+        let instance = await this.getInstance(instanceId);
+
+        if (instance === null) {
             return;
         }
 
-        let result = await this.instances[authId].refreshAuth();
+        let result = await instance.refreshAuth();
         console.log('Manager.onMessageRefreshAuth(), result', result);
         sendResponse(result);
     }
@@ -285,6 +278,31 @@ class ExtensionManager extends AbstractManager {
         for (let data of Object.values(result.instanceData)) {
             this.hydrateInstance(data);
         }
+    }
+
+    /**
+     * Returns instance from memory. If nothing found,
+     * try to find it in session data and hydrate object.
+     *
+     * @param instanceId
+     * @returns {Promise<AbstractInstance|null>}
+     */
+    async getInstance(instanceId) {
+        if (!this.instances[instanceId]) {
+            console.log('Instance isn\'t in memory, try to hydrate');
+            // If there is no instance in memory, try to hydrate it from session data
+            let result = await this.getSessionInstanceData();
+            const data = result.instanceData[instanceId];
+
+            if (!data) {
+                console.error(`Authorization with ID ${instanceId} not found`);
+                return null;
+            }
+
+            this.hydrateInstance(data);
+        }
+
+        return this.instances[instanceId];
     }
 }
 
