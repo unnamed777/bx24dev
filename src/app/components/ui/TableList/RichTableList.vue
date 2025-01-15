@@ -40,7 +40,7 @@
                                 <div style="line-height: 1em;">{{ fieldsByCode[field]?.label || field }}</div>
                                 <div class="text-muted" style="font-size: 60%">{{ fieldsByCode[field]?.code || null }}</div>
                             </td>
-                            <td class="align-middle" style="line-height: 1em;">
+                            <td class="align-middle" style="line-height: 1em; word-break: break-all;">
                                 <span v-if="cardItem[field]">{{ cardItem[field] }}</span>
                                 <span v-else class="text-muted">null</span>
                             </td>
