@@ -60,8 +60,8 @@ class ExtensionManager extends AbstractManager {
     }
 
     async onMessageRefreshAuth(payload, sender, sendResponse) {
-        const authId = payload.payload.authId;
-        console.log('Manager.onMessageRefreshAuth()', authId);
+        const instanceId = payload.payload.authId;
+        console.log('Manager.onMessageRefreshAuth()', instanceId);
 
         let instance = await this.getInstance(instanceId);
 
@@ -285,7 +285,7 @@ class ExtensionManager extends AbstractManager {
      * try to find it in session data and hydrate object.
      *
      * @param instanceId
-     * @returns {Promise<AbstractInstance|null>}
+     * @returns {Promise<ExtensionInstance|null>}
      */
     async getInstance(instanceId) {
         if (!this.instances[instanceId]) {
