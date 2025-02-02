@@ -18,6 +18,7 @@
     "chrome": "bin/build_chrome.sh"
   },
   "dependencies": {
+    "@vueuse/core": "^5.3.0",
     "js-yaml": "^4.1.0",
     "json-formatter-js": "^2.3.4",
     "localforage": "^1.10.0",

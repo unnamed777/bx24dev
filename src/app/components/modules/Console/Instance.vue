@@ -31,8 +31,6 @@
                 :groups="methodGroups"
                 :search="true"
                 :select2Options="{
-                    //tags: false,
-                    //insertTag: expertMode ? addCustomMethod : undefined,
                     width: '100%'
                 }"
                 :optionTemplate="select2Template"
@@ -69,8 +67,8 @@
             <div class="mt-2 d-flex justify-content-end">
                 <div class="form-check mr-auto">
                     <small>
-                        <input class="form-check-input" id="showManual" type="checkbox" v-model="showManual" />
-                        <label class="form-check-label" for="showManual">Показать документацию</label>
+                        <input class="form-check-input" :id="'showManual' + instance.id" type="checkbox" v-model="showManual" />
+                        <label class="form-check-label" :for="'showManual' + instance.id">Показать документацию</label>
                     </small>
                 </div>
 
@@ -130,14 +128,6 @@
             src="/tab/helpers/sandbox_console.html"
             style="height: 0; width: 0; opacity: 0; position: absolute; top: -10px; left: -10px;"
         ></iframe>
-
-        <Portal to="breadcrumbAfter">
-            <div class="ml-2 mt-n2">
-                <button class="btn btn-sm btn-light">1</button>
-                <button class="btn btn-sm btn-light">2</button>
-                <button class="btn btn-sm">+</button>
-            </div>
-        </Portal>
     </div>
 </template>
 
@@ -163,6 +153,8 @@ export default {
     props: {
         queryMethod: String,
         queryCode: [String, Object],
+        // @todo Use for memory optimization when the instance inactive
+        instance: Object,
     },
 
     data() {
@@ -179,6 +171,7 @@ export default {
             body: this.queryCode ? (typeof this.queryCode === 'object' ? JSON.stringify(this.queryCode, null, 2) : this.queryCode) : '',
             callResult: {},
             runtimeMethods: [],
+            // @todo Sync with localStorage when instance become active
             showManual: showManual,
             isLoading: false,
             inputMode,
@@ -208,12 +201,6 @@ export default {
                 value: item,
                 group: 'methods',
             })));
-
-            /*result = result.concat(this.runtimeMethods.map((item) => ({
-                label: item,
-                value: item,
-                group: 'methods',
-            })));*/
 
             return result;
         },
@@ -280,8 +267,7 @@ export default {
     },
 
     mounted() {
-        this.setBreadcrumb(['Консоль']);
-
+        // @todo Add support of multiple consoles
         window.addEventListener('message', this.onMessage.bind(this));
     },
 
@@ -410,15 +396,6 @@ export default {
             return result;
         },
 
-        /**
-         * Dirty workaround to be able to use methods, which aren't listed
-         * in "methods", but available by scope (sale.* i.e.)
-         */
-        addCustomMethod(data, tag) {
-            data.push(tag);
-            this.runtimeMethods = [tag.id];
-        },
-
         onKeyPress(e) {
             switch (true) {
                 // Tab
@@ -476,11 +453,6 @@ export default {
             }
         },
 
-        setFromHistory(index) {
-            this.method = this.history[index].method;
-            this.body = this.history[index].data;
-        },
-
         select2Template(option) {
             let result;
 
@@ -530,10 +502,6 @@ export default {
 
             this.sandboxResolves[e.data.id](e.data);
         },
-
-        ...mapMutations({
-            setBreadcrumb: 'setBreadcrumb',
-        }),
 
         ...mapActions({
             addToHistory: 'console/addToHistory',

@@ -274,4 +274,10 @@ body .json-formatter-row {
     margin-top: 15px;
     opacity: 0.15;
 }
+
+.context-menu {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+}
 </style>
