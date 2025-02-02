@@ -71,6 +71,15 @@ class ExtensionManager extends AbstractManager {
 
         let result = await instance.refreshAuth();
         console.log('Manager.onMessageRefreshAuth(), result', result);
+
+        // Update data in session
+        const instanceData = await this.getSessionInstanceData();
+        instanceData[instance.getId()] = instance.serialize();
+
+        browser.storage.session.set({
+            instanceData: instanceData,
+        });
+
         sendResponse(result);
     }
 

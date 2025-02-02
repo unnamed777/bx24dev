@@ -130,6 +130,14 @@
             src="/tab/helpers/sandbox_console.html"
             style="height: 0; width: 0; opacity: 0; position: absolute; top: -10px; left: -10px;"
         ></iframe>
+
+        <Portal to="breadcrumbAfter">
+            <div class="ml-2 mt-n2">
+                <button class="btn btn-sm btn-light">1</button>
+                <button class="btn btn-sm btn-light">2</button>
+                <button class="btn btn-sm">+</button>
+            </div>
+        </Portal>
     </div>
 </template>
 
@@ -142,12 +150,14 @@ import Response from './Response';
 import yaml from 'js-yaml';
 import methodsByScope from '@app/etc/methods';
 import { getExposedPromise } from "lib/functions";
+import { Portal } from "portal-vue";
 
 export default {
     components: {
         BaseSelect,
         BaseInput,
         Response,
+        Portal,
     },
 
     props: {

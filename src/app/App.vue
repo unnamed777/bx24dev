@@ -25,11 +25,14 @@
                 </a>
             </div>
             <div class="col-10 pt-3">
-                <nav aria-label="breadcrumb" v-if="breadcrumb.length > 0">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">{{ item.text }}</li>
-                    </ol>
-                </nav>
+                <div class="d-flex">
+                    <nav aria-label="breadcrumb" v-if="breadcrumb.length > 0">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item" v-for="(item, index) in breadcrumb">{{ item.text }}</li>
+                        </ol>
+                    </nav>
+                    <PortalTarget name="breadcrumbAfter" slim />
+                </div>
                 <router-view></router-view>
             </div>
         </div>
@@ -39,10 +42,12 @@
 <script>
 import { mapState } from 'vuex';
 import SidebarMenu from 'components/SidebarMenu/SidebarMenu';
+import { PortalTarget } from 'portal-vue';
 
 export default {
     components: {
         SidebarMenu,
+        PortalTarget,
     },
 
     props: {

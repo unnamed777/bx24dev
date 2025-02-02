@@ -1,19 +1,24 @@
 <template>
-    <Portal selector=".slider-portal-container">
+    <MountingPortal
+        mountTo="#sliderPortalContainer"
+        name="primary"
+        :disabled="disabled"
+    >
         <div class="modal-slider">
             <div class="modal-slider__overlay" @click="close" :style="{ opacity: overlayOpacity }"></div>
             <div class="modal-slider__content" :style="{ width: width, left: cssLeft }">
                 <slot />
             </div>
         </div>
-    </Portal>
+    </MountingPortal>
 </template>
 <script>
-import { Portal } from '@linusborg/vue-simple-portal';
+//import { Portal } from '@linusborg/vue-simple-portal';
+import { MountingPortal } from "portal-vue";
 
 export default {
     components: {
-        Portal,
+        MountingPortal,
     },
 
     props: {
@@ -27,6 +32,7 @@ export default {
         return {
             cssLeft: '100%',
             overlayOpacity: '0',
+            disabled: false,
         };
     },
 
@@ -61,7 +67,16 @@ export default {
 
             // Delay should be equal css transition
             setTimeout(() => {
-                this.$emit('close');
+                // Vue Portal v2 doesn't destroy mounted node outside of app when it's destroyed.
+                // I need to set disabled="true" for the portal and wait for vue portal logic to execute destruction.
+                // Then I can emit own event "close", which executes destroying of slider.
+                this.disabled = true;
+
+                this.$nextTick(() => {
+                    this.$nextTick(() => {
+                        this.$emit('close');
+                    });
+                });
             }, 200);
         }
     },
