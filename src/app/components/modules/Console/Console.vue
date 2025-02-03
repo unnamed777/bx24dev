@@ -3,7 +3,7 @@
         <Instance
             v-for="instance of instances"
             :key="instance.id"
-            v-show="instance.id === activeInstanceId"
+            v-show="instance.active"
             :instance="instance"
         />
 
@@ -12,20 +12,20 @@
                 <button
                     v-for="instance of instances"
                     class="instance-tab btn btn-sm btn-light mr-1"
-                    :class="{ 'active': instance.id === activeInstanceId }"
-                    @click="activeInstanceId = instance.id"
+                    :class="{ 'active': instance.active }"
+                    @click="setActiveInstance(instance.id)"
                     @contextmenu.prevent="onTabRightClick($event, instance.id)"
-                >{{ instance.id }}</button>
+                >{{ instance.label }}</button>
 
                 <button class="btn btn-sm" @click="add">+</button>
             </div>
         </Portal>
         <MountingPortal
             mountTo="#contextMenuPortalContainer"
-            :disabled="!contextMenuId"
+            :disabled="!contextMenuInstanceId"
         >
             <div
-                v-show="contextMenuId"
+                v-show="contextMenuInstanceId"
                 class="context-menu"
                 :style="{
                     '--top': contextMenuPosition.top + 'px',
@@ -37,15 +37,18 @@
                     <button
                         class="dropdown-item"
                         type="button"
-                    >
-                        Дублировать
-                    </button>
+                        disabled
+                    >Дублировать</button>
                     <button
                         class="dropdown-item"
                         type="button"
-                    >
-                        Закрыть
-                    </button>
+                        @click="renameTab"
+                    >Переименовать</button>
+                    <button
+                        class="dropdown-item"
+                        type="button"
+                        @click="removeTab"
+                    >Закрыть</button>
                 </div>
             </div>
         </MountingPortal>
@@ -73,8 +76,9 @@ export default {
     data() {
         return {
             instances: [],
-            activeInstanceId: null,
-            contextMenuId: null,
+            idGeneratorValue: 0,
+            activeInstanceIndex: null,
+            contextMenuInstanceId: null,
             contextMenuPosition: {
                 top: 0,
                 left: 0,
@@ -100,13 +104,23 @@ export default {
 
     methods: {
         add() {
-            if (this.instances[this.activeInstanceId]) {
-                this.instances[this.activeInstanceId].active = false;
+            if (this.instances[this.activeInstanceIndex]) {
+                this.instances[this.activeInstanceIndex].active = false;
             }
 
-            const id = this.instances.length + 1;
-            this.instances.push({ id, active: true });
-            this.activeInstanceId = id;
+            const id = this.getNewInstanceId();
+
+            this.instances.push({
+                id,
+                active: true,
+                label: id.toString(),
+            });
+
+            this.setActiveInstance(id);
+        },
+
+        getNewInstanceId() {
+            return ++this.idGeneratorValue;
         },
 
         setActiveInstance(id) {
@@ -117,12 +131,12 @@ export default {
                 return;
             }
 
-            if (this.instances[this.activeInstanceId]) {
-                this.instances[this.activeInstanceId].active = false;
+            if (this.instances[this.activeInstanceIndex]) {
+                this.instances[this.activeInstanceIndex].active = false;
             }
 
             this.instances[index].active = true;
-            this.activeInstanceId = this.instances[index].id;
+            this.activeInstanceIndex = index;
         },
 
         initHotkey() {
@@ -134,18 +148,18 @@ export default {
         onHotkey(e) {
             // All hotkeys use cmd/ctrl
             if (
-                this.isMac && e.metaKey
-                && !this.isMac && e.ctrlKey
+                this.isMac && !e.metaKey
+                || !this.isMac && !e.ctrlKey
             ) {
                 return;
             }
 
-            // cmd+1...9
-            if (!e.shiftKey && !e.altKey && e.keyCode >= 49 && e.keyCode <= 57) {
+            // cmd+option+1..9, ctrl+alt+1..9
+            if (!e.shiftKey && e.altKey && e.keyCode >= 49 && e.keyCode <= 57) {
                 e.preventDefault();
 
                 let pos = e.keyCode - 48;
-                let instance = this.instances.filter(Boolean)[pos - 1];
+                let instance = this.instances[pos - 1];
 
                 if (instance) {
                     this.setActiveInstance(instance.id);
@@ -156,7 +170,7 @@ export default {
         },
 
         onTabRightClick(e, instanceId) {
-            this.contextMenuId = instanceId;
+            this.contextMenuInstanceId = instanceId;
 
             this.contextMenuPosition = {
                 top: e.pageY,
@@ -164,14 +178,65 @@ export default {
             };
 
             this.$nextTick(() => {
-                    this.$nextTick(() => {
-                    console.log(this.$refs.contextMenu);
-                    onClickOutside(this.$refs.contextMenu, () => {
-                        console.log('click', this.contextMenuId);
-                        this.contextMenuId = null;
+                this.$nextTick(() => {
+                    // @todo fix error when return to Console
+                    this.contextMenuRemoveClickOutside = onClickOutside(this.$refs.contextMenu, () => {
+                        console.log('click', this.contextMenuInstanceId);
+                        this.hideContextMenu();
                     });
                 });
             });
+        },
+
+        hideContextMenu() {
+            if (!this.contextMenuInstanceId) {
+                return;
+            }
+
+            this.contextMenuInstanceId = null;
+            this.contextMenuRemoveClickOutside();
+        },
+
+        removeTab() {
+            if (!this.contextMenuInstanceId) {
+                console.error('Empty contextMenuInstanceId, nothing to remove');
+                return;
+            }
+
+            const index = this.instances.findIndex(instance => instance.id === this.contextMenuInstanceId);
+            const isActive = this.activeInstanceIndex === index;
+
+            this.instances = [
+                ...this.instances.slice(0, index),
+                ...this.instances.slice(index + 1),
+            ];
+
+            if (isActive) {
+                let activateIndex;
+
+                if (index === 0) {
+                    // If active tab was first, set active next one (right)
+                    activateIndex = index;
+                } else if (index > 0) {
+                    // If active tab wasn't first, set active previous one (left)
+                    activateIndex = index - 1;
+                }
+
+                this.setActiveInstance(this.instances[activateIndex].id);
+            }
+
+            this.hideContextMenu();
+        },
+
+        renameTab() {
+            const index = this.instances.findIndex(instance => instance.id === this.contextMenuInstanceId);
+            const newLabel = prompt('Новый заголовок консоли', this.instances[index].label);
+
+            if (newLabel !== null) {
+                this.instances[index].label = newLabel;
+            }
+
+            this.hideContextMenu();
         },
 
         ...mapMutations({
