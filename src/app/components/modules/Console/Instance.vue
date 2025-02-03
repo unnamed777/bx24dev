@@ -406,6 +406,7 @@ export default {
 
                     e.target.value = e.target.value.substring(0, start) + "\t" + e.target.value.substring(end);
                     e.target.selectionStart = e.target.selectionEnd = start + 1;
+                    e.target.dispatchEvent(new Event('input'));
 
                     break;
 
