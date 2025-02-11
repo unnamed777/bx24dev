@@ -57,7 +57,8 @@ export default class AbstractManager {
         let result = [];
         let uniq = new Set();
 
-        this.hydrateAllInstances();
+        // @todo Check thoroughly because of await
+        await this.hydrateAllInstances();
 
         for (let instance of this.instances) {
             if (!instance) {
