@@ -20,8 +20,8 @@
                 <button class="btn btn-sm" @click="add">+</button>
             </div>
         </Portal>
-        <MountingPortal
-            mountTo="#contextMenuPortalContainer"
+        <Teleport
+            to="#contextMenuPortalContainer"
             :disabled="!contextMenuInstanceId"
         >
             <div
@@ -51,13 +51,13 @@
                     >Закрыть</button>
                 </div>
             </div>
-        </MountingPortal>
+        </Teleport>
     </div>
 </template>
 
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
-import { Portal, MountingPortal } from "portal-vue";
+import { Portal } from "portal-vue";
 import Instance from "components/modules/Console/Instance";
 import { onClickOutside } from "@vueuse/core";
 
@@ -65,7 +65,6 @@ export default {
     components: {
         Instance,
         Portal,
-        MountingPortal,
     },
 
     props: {

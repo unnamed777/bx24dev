@@ -1,7 +1,6 @@
 <template>
-    <MountingPortal
-        mountTo="#sliderPortalContainer"
-        name="primary"
+    <Teleport
+        to="#sliderPortalContainer"
         :disabled="disabled"
     >
         <div class="modal-slider">
@@ -10,17 +9,10 @@
                 <slot />
             </div>
         </div>
-    </MountingPortal>
+    </Teleport>
 </template>
 <script>
-//import { Portal } from '@linusborg/vue-simple-portal';
-import { MountingPortal } from "portal-vue";
-
 export default {
-    components: {
-        MountingPortal,
-    },
-
     props: {
         width: {
             type: Number,

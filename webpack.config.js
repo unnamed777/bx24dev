@@ -38,7 +38,7 @@ const config = {
             components: path.resolve(__dirname, 'src/app/components'),
             mixins: path.resolve(__dirname, 'src/app/mixins'),
             // Required for Vue Portal, because it imports another Vue and creates an error in runtime
-            'vue$': require.resolve('vue/dist/vue.esm.js'),
+            'vue$': 'vue/dist/vue.esm-bundler.js',
         },
         extensions: ['.js', '.vue'],
     },
@@ -56,6 +56,50 @@ const config = {
             {
                 test: /\.scss$/,
                 use: [/*MiniCssExtractPlugin.loader, */'vue-style-loader', 'css-loader', 'sass-loader'],
+            },
+            {
+                test: /\.vue\.(s?[ac]ss)$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: true,
+                            url: false
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: true,
+                            sassOptions: {
+                                quietDeps: true,
+                            },
+                        }
+                    }
+                ],
+            },
+            {
+                test: /(?<!\.vue)\.(s?[ac]ss)$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: true,
+                            url: false
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: true,
+                            sassOptions: {
+                                quietDeps: true,
+                            },
+                        }
+                    }
+                ]
             },
             {
                 test: /\.(png|jpg|jpeg|gif|svg|ico)$/,
