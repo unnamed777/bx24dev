@@ -24,7 +24,10 @@
                     </svg>
                 </a>
             </div>
-            <div class="col-10 pt-3">
+            <div
+                class="col-10 pt-3"
+                :class="contentClass ? [contentClass] : null"
+            >
                 <div class="d-flex">
                     <nav aria-label="breadcrumb" v-if="breadcrumb.length > 0">
                         <ol class="breadcrumb">
@@ -68,6 +71,7 @@ export default {
 
     computed: mapState({
         breadcrumb: state => state.breadcrumb,
+        contentClass: state => state.contentClass,
     }),
 
     async mounted() {
@@ -279,5 +283,14 @@ body .json-formatter-row {
     position: absolute;
     top: var(--top);
     left: var(--left);
+}
+
+.page-content {
+    &--fixed-height {
+        height: 100vh;
+        display: flex;
+        overflow: auto;
+        flex-flow: column nowrap;
+    }
 }
 </style>

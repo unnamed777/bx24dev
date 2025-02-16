@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="flex-grow-1 flex-shrink-1" style="overflow: auto;">
         <Instance
             v-for="instance of instances"
             :key="instance.id"
@@ -94,6 +94,7 @@ export default {
 
     mounted() {
         this.setBreadcrumb(['Консоль']);
+        this.setContentClass('page-content--fixed-height');
         this.add();
         this.initHotkey();
     },
@@ -241,6 +242,7 @@ export default {
 
         ...mapMutations({
             setBreadcrumb: 'setBreadcrumb',
+            setContentClass: 'setContentClass',
         }),
     }
 };

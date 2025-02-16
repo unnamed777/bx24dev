@@ -63,6 +63,9 @@ export default {
     props: {
         response: Object,
     },
+
+    emits: ['changeView'],
+
     data() {
         return {
             body: this.queryCode ? (typeof this.queryCode === 'object' ? JSON.stringify(this.queryCode, null, 2) : this.queryCode) : '',
@@ -142,6 +145,10 @@ export default {
             this.expandLevel = this.maxDepth;
             this.prettyExpanded = true;
             this.jsonFormatter();
+        },
+
+        outputView() {
+            this.$emit('changeView', this.outputView);
         }
     },
 

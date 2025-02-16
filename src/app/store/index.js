@@ -39,6 +39,7 @@ const store = new Vuex.Store({
         breadcrumb: [],
         appData: {},
         scope: [],
+        contentClass: null,
     },
 
     mutations: {
@@ -67,6 +68,10 @@ const store = new Vuex.Store({
                     };
                 }
             });
+        },
+
+        setContentClass(state, payload) {
+            state.contentClass = payload;
         }
     },
 
