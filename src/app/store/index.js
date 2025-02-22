@@ -1,7 +1,7 @@
-import Vue from "vue";
-import Vuex from 'vuex';
-import router from '../router';
-import fieldTypes from './fieldTypes';
+import { createStore } from "vuex";
+
+import router from "../router";
+import fieldTypes from "./fieldTypes";
 import dealFields from "./modules/dealFields";
 import dealStages from "./modules/dealStages";
 import leadFields from "./modules/leadFields";
@@ -14,7 +14,7 @@ import activityFields from "./modules/activityFields";
 import activityOwnerTypes from "./modules/activityOwnerTypes";
 import catalogFields from "./modules/catalogFields";
 import crmCatalogs from "./modules/crmCatalogs";
-import crmSmartProcesses from './modules/crm/smartProcesses';
+import crmSmartProcesses from "./modules/crm/smartProcesses";
 import productSectionFields from "./modules/productSectionFields";
 import productFields from "./modules/productFields";
 import crmStatuses from "./modules/crmStatuses";
@@ -30,16 +30,16 @@ import catalogProductPropertyFields from "./modules/catalog/productPropertyField
 import catalogProductPropertyEnums from "./modules/catalog/productPropertyEnums";
 import catalogProductFields from "./modules/catalog/productFields";
 import catalogSectionFields from "./modules/catalog/sectionFields";
-import console from './modules/console';
+import console from "./modules/console";
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
-    state: {
-        breadcrumb: [],
-        appData: {},
-        scope: [],
-        contentClass: null,
+const store = createStore({
+    state() {
+        return {
+            breadcrumb: [],
+            appData: {},
+            scope: [],
+            contentClass: null,
+        }
     },
 
     mutations: {

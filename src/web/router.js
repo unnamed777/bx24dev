@@ -1,10 +1,7 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHashHistory } from "vue-router";
 import LoginPage from "@web/components/LoginPage.vue";
 import AppPage from "@web/components/AppPage.vue";
 import appRoutes from "@app/router/routes";
-
-Vue.use(VueRouter);
 
 const routes = [
     {
@@ -20,7 +17,7 @@ const routes = [
     },
 ];
 
-const router = new VueRouter({
+const router = createRouter({
     routes
 });
 

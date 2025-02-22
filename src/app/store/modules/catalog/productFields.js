@@ -1,6 +1,5 @@
-import Product from 'lib/entities/Catalog/Product';
-import mixin from '../cachedItemsLoaderMixin';
-import Vue from 'vue';
+import Product from "lib/entities/Catalog/Product";
+import mixin from "../cachedItemsLoaderMixin";
 
 export default {
     namespaced: true,
@@ -14,7 +13,7 @@ export default {
         ...mixin.mutations,
 
         set(state, payload) {
-            Vue.set(state.items, payload.key, payload.items);
+            state.items[payload.key] = payload.items;
         },
     },
 

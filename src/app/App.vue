@@ -43,9 +43,9 @@
 </div>
 </template>
 <script>
-import { mapState } from 'vuex';
-import SidebarMenu from 'components/SidebarMenu/SidebarMenu';
-import { PortalTarget } from 'portal-vue';
+import { mapState } from "vuex";
+import SidebarMenu from "components/SidebarMenu/SidebarMenu";
+import { PortalTarget } from "portal-vue";
 
 export default {
     components: {

@@ -1,9 +1,9 @@
-import Vue from 'vue';
-import App from '@app/App';
-import router from '@app/router';
-import store from '@app/store';
-import browser from 'lib/browser-stub';
-import BX24 from 'lib/BX24';
+import { createApp } from "vue";
+import App from "@app/App";
+import router from "@app/router";
+import store from "@app/store";
+import browser from "lib/browser-stub";
+import BX24 from "lib/BX24";
 import loadInitialData from "@app/etc/loadInitialData";
 
 const getAuthId = () => {
@@ -60,6 +60,31 @@ const initBX24 = (authId, authData) => {
     window.BX24 = BX24;
 };
 
+// @todo refactor
+const resolveRoute = (route, params) => {
+    params.authId = authId;
+
+    return this.$router.resolve({
+        name: route,
+        params: {
+            ...params,
+        },
+    }).route.path;
+};
+
+// @todo refactor
+/**
+ * @param {Object} to
+ */
+const goToRoute = (to) => {
+    if (!to.params) {
+        to.params = {};
+    }
+
+    to.params.authId = authId;
+    this.$router.push(to);
+};
+
 (async () => {
     const authId = getAuthId();
     const authData = await obtainAuthData(authId);
@@ -68,7 +93,21 @@ const initBX24 = (authId, authData) => {
 
     //setTimeout(() => { BX24.expiredTokenHandler(); }, 1000);
 
-    window.app = new Vue({
+    window.app = createApp(App, {
+        mode: 'extension',
+        title: authData.title,
+        portal: authData.portal,
+    });
+
+    window.app.use(router);
+    window.app.use(store);
+
+    window.app.provide('resolveRoute', resolveRoute);
+    window.app.provide('goToRoute', goToRoute);
+
+    window.app.mount('#app');
+
+    /*window.app = new Vue({
         el: '#app',
         router,
         store,
@@ -97,9 +136,6 @@ const initBX24 = (authId, authData) => {
                 }).route.path;
             },
 
-            /**
-             * @param {Object} to
-             */
             goToRoute(to) {
                 if (!to.params) {
                     to.params = {};
@@ -109,5 +145,5 @@ const initBX24 = (authId, authData) => {
                 this.$router.push(to);
             }
         }
-    });
+    });*/
 })();

@@ -1,11 +1,49 @@
-import Vue from 'vue';
-import App from '@web/App';
-import store from '@app/store';
-import router from '@web/router';
+import { createApp } from "vue";
+import App from "@web/App";
+import store from "@app/store";
+import router from "@web/router";
 import channel, { TYPE_REQUEST_ACTIVE_CONNECTIONS, TYPE_REQUEST_AUTH_DATA_BY_UUID } from "@web/etc/channel";
 import { addToActiveConnections } from "@web/etc/storage";
 
-window.app = new Vue({
+// @todo Refactor - use composable
+const resolveRoute = (route, params) => {
+    params.authId = router.currentRoute.params.authId;
+
+    return router.resolve({
+        name: route,
+        params: {
+            ...params,
+        },
+    }).route.path;
+};
+
+// @todo Refactor - use composable
+/**
+ * @param {Object} to
+ * @param {boolean} replace Replace current route in browser history instead of pushing it
+ */
+const goToRoute = (to, replace = false) => {
+    if (!to.params) {
+        to.params = {};
+    }
+
+    to.params.authId = router.currentRoute.params.authId;
+
+    if (replace) {
+        this.$router.replace(to);
+    } else {
+        this.$router.push(to);
+    }
+};
+
+window.app = createApp(App, {
+        authId: null,
+    })
+    .use(store)
+    .use(router)
+    .mount('#app');
+
+/*window.app = new Vue({
     el: '#app',
     router,
     store,
@@ -27,10 +65,6 @@ window.app = new Vue({
             }).route.path;
         },
 
-        /**
-         * @param {Object} to
-         * @param {boolean} replace Replace current route in browser history instead of pushing it
-         */
         goToRoute(to, replace = false) {
             if (!to.params) {
                 to.params = {};
@@ -46,7 +80,7 @@ window.app = new Vue({
             }
         }
     }
-});
+});*/
 
 // Login page asks other app tabs for active connections.
 // Return info if the tab is authorized.

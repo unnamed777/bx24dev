@@ -1,6 +1,6 @@
-import Vue from 'vue';
-import App from '@popup/App';
-import browser from 'lib/browser-stub';
+import { createApp } from "vue";
+import App from "@popup/App";
+import browser from "lib/browser-stub";
 
 /**
  * @param {CreateExtensionInstanceMessagePayload} payload
@@ -140,22 +140,10 @@ const findEntrypoint = async (callerTab) => {
 };
 
 const initPickerApp = (apps) => {
-    window.app = new Vue({
-        el: '#app',
-
-        render: h => h(App, {
-            props: {
-                apps: apps,
-                createExtensionInstance,
-            },
-        }),
-
-        data: {
-        },
-
-        methods: {
-        }
-    });
+    window.app = createApp(App, {
+        apps: apps,
+        createExtensionInstance,
+    }).mount('#app');
 };
 
 (async () => {
