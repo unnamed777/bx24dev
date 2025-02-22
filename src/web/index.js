@@ -1,4 +1,6 @@
 import { createApp } from "vue";
+import PortalVue from "portal-vue";
+
 import App from "@web/App";
 import store from "@app/store";
 import router from "@web/router";
@@ -37,10 +39,13 @@ const goToRoute = (to, replace = false) => {
 };
 
 window.app = createApp(App, {
-        authId: null,
-    })
+    authId: null,
+});
+
+window.app
     .use(store)
     .use(router)
+    .use(PortalVue)
     .mount('#app');
 
 /*window.app = new Vue({

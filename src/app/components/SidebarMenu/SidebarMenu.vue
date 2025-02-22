@@ -1,19 +1,20 @@
 <template>
 <div class="nav flex-column">
-    <SidebarMenuItem
-        v-for="(item, index) in items"
-        v-if="!item.hidden"
-        :item="item"
-        :key="item._id"
-        :ref="`item_${item._id}`"
-        v-on="item.onToggle ? { toggle: item.onToggle } : {}"
-    />
+    <template v-for="(item, index) in items">
+        <SidebarMenuItem
+            v-if="!item.hidden"
+            :item="item"
+            :key="item._id"
+            :ref="`item_${item._id}`"
+            v-on="item.onToggle ? { toggle: item.onToggle } : {}"
+        />
+    </template>
 </div>
 </template>
 
 <script>
-import {mapState, mapActions} from 'vuex';
-import SidebarMenuItem from './Item.vue';
+import {mapState, mapActions} from "vuex";
+import SidebarMenuItem from "./Item.vue";
 
 export default {
     components: {
@@ -311,6 +312,8 @@ export default {
         }),
     },
 
+    inject: ['resolveRoute', 'goToRoute'],
+
     watch: {
         items() {
         },
@@ -336,6 +339,11 @@ export default {
         },
 
         $route(value) {
+            // Do nothing if index page is opened. It will redirect anyway.
+            if (value.name === 'index') {
+                return;
+            }
+
             let path = value.path;
             const item = this.itemsMap.route[path];
 
@@ -352,7 +360,6 @@ export default {
             }
 
             parents = parents.reverse();
-            //console.log('Expand menu', parents);
 
             if (parents.length > 0) {
                 let menuItem = this.$refs[`item_${parents[0]}`][0];
@@ -395,7 +402,7 @@ export default {
             this.loadEntities();
 
             if (this.$router.currentRoute.name !== 'entityList') {
-                this.$root.goToRoute({name: 'entityList'});
+                this.goToRoute({name: 'entityList'});
             }
 
             return {
@@ -407,7 +414,7 @@ export default {
             this.loadCrmCatalogs();
 
             if (this.$router.currentRoute.name !== 'crmCatalogList') {
-                this.$root.goToRoute({name: 'crmCatalogList'});
+                this.goToRoute({name: 'crmCatalogList'});
             }
 
             return {
@@ -431,7 +438,7 @@ export default {
             this.loadSmartProcesses();
 
             /*if (this.$router.currentRoute.name !== 'crmCatalogList') {
-                this.$root.goToRoute({name: 'crmCatalogList'});
+                this.goToRoute({name: 'crmCatalogList'});
             }*/
 
             return {
@@ -440,7 +447,7 @@ export default {
         },
 
         getPath(route, params = {}) {
-            return this.$root.resolveRoute(route, params);
+            return this.resolveRoute(route, params);
         },
 
         rebuildEntitiesMenu() {
@@ -628,15 +635,6 @@ export default {
 
 <style lang="scss">
 .sidebar {
-    /*.sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 100;
-        padding: 48px 0 0;
-        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-    }*/
     position: sticky;
     top: 0;
     z-index: 10;

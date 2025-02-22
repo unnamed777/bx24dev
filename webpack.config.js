@@ -49,14 +49,14 @@ const config = {
                 test: /\.vue$/,
                 loader: 'vue-loader',
             },
-            {
+            /*{
                 test: /\.css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
             {
                 test: /\.scss$/,
-                use: [/*MiniCssExtractPlugin.loader, */'vue-style-loader', 'css-loader', 'sass-loader'],
-            },
+                use: ['vue-style-loader', 'css-loader', 'sass-loader'],
+            },*/
             {
                 test: /\.vue\.(s?[ac]ss)$/,
                 use: [
@@ -163,6 +163,11 @@ const config = {
             ]
         }),
     ],
+
+    performance: {
+        // Get rid of warning "asset size limit"
+        hints: false,
+    },
 };
 
 if (config.mode === 'production') {

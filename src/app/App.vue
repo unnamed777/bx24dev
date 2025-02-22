@@ -74,14 +74,10 @@ export default {
         contentClass: state => state.contentClass,
     }),
 
-    async mounted() {
-        document.title = document.title + ': ' + this.title;
+    inject: ['resolveRoute', 'goToRoute'],
 
-        // index - index page when login from extension
-        // app - index of the app when login from web
-        if (['index', 'app'].includes(this.$route.name)) {
-            this.$root.goToRoute({ name: 'console' }, true);
-        }
+    mounted() {
+        document.title = document.title + ': ' + this.title;
     },
 }
 </script>

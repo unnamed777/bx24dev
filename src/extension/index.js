@@ -1,4 +1,6 @@
 import { createApp } from "vue";
+import PortalVue from "portal-vue";
+
 import App from "@app/App";
 import router from "@app/router";
 import store from "@app/store";
@@ -64,12 +66,12 @@ const initBX24 = (authId, authData) => {
 const resolveRoute = (route, params) => {
     params.authId = authId;
 
-    return this.$router.resolve({
+    return router.resolve({
         name: route,
         params: {
             ...params,
         },
-    }).route.path;
+    }).path;
 };
 
 // @todo refactor
@@ -82,11 +84,13 @@ const goToRoute = (to) => {
     }
 
     to.params.authId = authId;
-    this.$router.push(to);
+    router.push(to);
 };
 
+let authId;
+
 (async () => {
-    const authId = getAuthId();
+    authId = getAuthId();
     const authData = await obtainAuthData(authId);
     initBX24(authId, authData);
     await loadInitialData();
@@ -97,15 +101,16 @@ const goToRoute = (to) => {
         mode: 'extension',
         title: authData.title,
         portal: authData.portal,
+        authId: authId,
     });
 
-    window.app.use(router);
-    window.app.use(store);
-
-    window.app.provide('resolveRoute', resolveRoute);
-    window.app.provide('goToRoute', goToRoute);
-
-    window.app.mount('#app');
+    window.app
+        .use(router)
+        .use(store)
+        .use(PortalVue)
+        .provide('resolveRoute', resolveRoute)
+        .provide('goToRoute', goToRoute)
+        .mount('#app');
 
     /*window.app = new Vue({
         el: '#app',
