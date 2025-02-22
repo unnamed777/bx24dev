@@ -1,18 +1,17 @@
-import AbstractFieldEdit from 'components/modules/Crm/Abstract/AbstractFieldEdit.vue';
-import InvoiceUserField from "lib/entities/Crm/InvoiceUserField";
+import { h } from "vue";
+import AbstractFieldEdit from "@app/components/modules/Crm/Abstract/AbstractFieldEdit.vue";
+import InvoiceUserField from "@lib/entities/Crm/InvoiceUserField";
 
 export default {
     name: 'InvoiceFieldEdit',
 
-    render(h) {
+    render() {
         return h(AbstractFieldEdit, {
-            props: {
-                breadcrumb: ['CRM', 'Счета', 'Поля'],
-                getEndpoint: InvoiceUserField.endpoint,
-                updateEndpoint: InvoiceUserField.updateEndpoint,
-                reloadFieldsAction: 'invoiceFields/forceLoad',
-                listRoute: 'crmInvoiceFields',
-            },
+            breadcrumb: ['CRM', 'Счета', 'Поля'],
+            getEndpoint: InvoiceUserField.endpoint,
+            updateEndpoint: InvoiceUserField.updateEndpoint,
+            reloadFieldsAction: 'invoiceFields/forceLoad',
+            listRoute: 'crmInvoiceFields',
         });
     },
 };

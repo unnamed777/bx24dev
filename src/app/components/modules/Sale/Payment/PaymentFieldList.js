@@ -1,15 +1,14 @@
-import AbstractEntityFieldList from 'components/modules/Sale/AbstractEntityFieldList.vue';
+import { h } from "vue";
+import AbstractEntityFieldList from "@app/components/modules/Sale/AbstractEntityFieldList.vue";
 
 export default {
     name: 'PaymentFieldFields',
 
-    render(h) {
+    render() {
         return h(AbstractEntityFieldList, {
-            props: {
-                breadcrumb: ['Интернет-магазин', 'Оплаты', 'Поля'],
-                loadActionName: 'salePaymentFields/load',
-                getter: ($store) => $store.state.salePaymentFields.items,
-            },
+            breadcrumb: ['Интернет-магазин', 'Оплаты', 'Поля'],
+            loadActionName: 'salePaymentFields/load',
+            getter: ($store) => $store.state.salePaymentFields.items,
         });
     },
 };

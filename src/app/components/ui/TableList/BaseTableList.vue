@@ -61,7 +61,7 @@
     </div>
 </template>
 <script>
-import { MenuIcon, EditIcon, CloseIcon, SettingsIcon } from 'vue-bytesize-icons';
+import { MenuIcon, EditIcon, CloseIcon, SettingsIcon } from '@zhuowenli/vue-feather-icons';
 import ColumnsSlider from './ColumnsSlider';
 import ModalSlider from 'components/ui/ModalSlider';
 

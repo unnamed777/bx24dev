@@ -1,15 +1,14 @@
-import AbstractEntityFieldList from 'components/modules/Sale/AbstractEntityFieldList.vue';
+import { h } from "vue";
+import AbstractEntityFieldList from "@app/components/modules/Sale/AbstractEntityFieldList.vue";
 
 export default {
     name: 'OrderFieldFields',
 
-    render(h) {
+    render() {
         return h(AbstractEntityFieldList, {
-            props: {
-                breadcrumb: ['Интернет-магазин', 'Заказы', 'Поля'],
-                loadActionName: 'saleOrderFields/load',
-                getter: ($store) => $store.state.saleOrderFields.items,
-            },
+            breadcrumb: ['Интернет-магазин', 'Заказы', 'Поля'],
+            loadActionName: 'saleOrderFields/load',
+            getter: ($store) => $store.state.saleOrderFields.items,
         });
     },
 };

@@ -1,22 +1,21 @@
-import AbstractFields from 'components/modules/Crm/Abstract/AbstractFields.vue';
-import CompanyUserField from "lib/entities/Crm/CompanyUserField";
+import { h } from "vue";
+import AbstractFields from "@app/components/modules/Crm/Abstract/AbstractFields.vue";
+import CompanyUserField from "@lib/entities/Crm/CompanyUserField";
 
 export default {
     name: 'CompanyFields',
 
-    render(h) {
+    render() {
         return h(AbstractFields, {
-            props: {
-                load: () => this.$store.dispatch('companyFields/load'),
-                breadcrumb: ['CRM', 'Компании', 'Поля'],
-                b24EditEntity: 'CRM_COMPANY',
-                rawFields: this.$store.state.companyFields.items,
-                addFieldRoute: 'crmCompanyFieldAdd',
-                editFieldRoute: 'crmCompanyFieldEdit',
-                listEndpoint: CompanyUserField.listEndpoint,
-                deleteEndpoint: CompanyUserField.deleteEndpoint,
-                reloadFieldsAction: 'companyFields/reload',
-            },
+            load: () => this.$store.dispatch('companyFields/load'),
+            breadcrumb: ['CRM', 'Компании', 'Поля'],
+            b24EditEntity: 'CRM_COMPANY',
+            rawFields: this.$store.state.companyFields.items,
+            addFieldRoute: 'crmCompanyFieldAdd',
+            editFieldRoute: 'crmCompanyFieldEdit',
+            listEndpoint: CompanyUserField.listEndpoint,
+            deleteEndpoint: CompanyUserField.deleteEndpoint,
+            reloadFieldsAction: 'companyFields/reload',
         });
     },
 };

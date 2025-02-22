@@ -55,7 +55,7 @@
 import FormattedTableList from 'components/ui/TableList/FormattedTableList';
 import ColumnsSlider from './ColumnsSlider';
 import ModalSlider from 'components/ui/ModalSlider';
-import { SettingsIcon } from 'vue-bytesize-icons';
+import { SettingsIcon } from '@zhuowenli/vue-feather-icons';
 
 export default {
     components: {

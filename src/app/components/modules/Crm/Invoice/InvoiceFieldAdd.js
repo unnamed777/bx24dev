@@ -1,16 +1,15 @@
-import AbstractFieldAdd from 'components/modules/Crm/Abstract/AbstractFieldAdd.vue';
+import { h } from "vue";
+import AbstractFieldAdd from "@app/components/modules/Crm/Abstract/AbstractFieldAdd.vue";
 
 export default {
     name: 'InvoiceFieldAdd',
 
-    render(h) {
+    render() {
         return h(AbstractFieldAdd, {
-            props: {
-                breadcrumb: ['CRM', 'Счета', 'Поля', 'Добавить'],
-                addEndpoint: 'crm.invoice.userfield.add',
-                reloadFieldsAction: 'invoiceFields/forceLoad',
-                listRoute: 'crmInvoiceFields',
-            },
+            breadcrumb: ['CRM', 'Счета', 'Поля', 'Добавить'],
+            addEndpoint: 'crm.invoice.userfield.add',
+            reloadFieldsAction: 'invoiceFields/forceLoad',
+            listRoute: 'crmInvoiceFields',
         });
     },
 };

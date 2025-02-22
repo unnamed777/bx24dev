@@ -1,16 +1,15 @@
-import AbstractFieldAdd from 'components/modules/Crm/Abstract/AbstractFieldAdd.vue';
+import { h } from "vue";
+import AbstractFieldAdd from "@app/components/modules/Crm/Abstract/AbstractFieldAdd.vue";
 
 export default {
     name: 'ContactFieldAdd',
 
-    render(h) {
+    render() {
         return h(AbstractFieldAdd, {
-            props: {
-                breadcrumb: ['CRM', 'Контакты', 'Поля', 'Добавить'],
-                addEndpoint: 'crm.contacts.userfield.add',
-                reloadFieldsAction: 'contactFields/forceLoad',
-                listRoute: 'crmContactFields',
-            },
+            breadcrumb: ['CRM', 'Контакты', 'Поля', 'Добавить'],
+            addEndpoint: 'crm.contacts.userfield.add',
+            reloadFieldsAction: 'contactFields/forceLoad',
+            listRoute: 'crmContactFields',
         });
     },
 };

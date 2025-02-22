@@ -1,18 +1,17 @@
-import AbstractFieldEdit from 'components/modules/Crm/Abstract/AbstractFieldEdit.vue';
-import ContactUserField from "lib/entities/Crm/ContactUserField";
+import { h } from "vue";
+import AbstractFieldEdit from "@app/components/modules/Crm/Abstract/AbstractFieldEdit.vue";
+import ContactUserField from "@lib/entities/Crm/ContactUserField";
 
 export default {
     name: 'ContactFieldEdit',
 
-    render(h) {
+    render() {
         return h(AbstractFieldEdit, {
-            props: {
-                breadcrumb: ['CRM', 'Контакты', 'Поля'],
-                getEndpoint: ContactUserField.endpoint,
-                updateEndpoint: ContactUserField.updateEndpoint,
-                reloadFieldsAction: 'contactFields/forceLoad',
-                listRoute: 'crmContactFields',
-            },
+            breadcrumb: ['CRM', 'Контакты', 'Поля'],
+            getEndpoint: ContactUserField.endpoint,
+            updateEndpoint: ContactUserField.updateEndpoint,
+            reloadFieldsAction: 'contactFields/forceLoad',
+            listRoute: 'crmContactFields',
         });
     },
 };

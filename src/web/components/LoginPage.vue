@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { StarIcon, CloseIcon } from 'vue-bytesize-icons';
+import { StarIcon, CloseIcon } from '@zhuowenli/vue-feather-icons';
 import AuthItem from '@web/components/AuthItem';
 import BX24 from "lib/BX24";
 import channel, { TYPE_REQUEST_ACTIVE_CONNECTIONS } from "@web/etc/channel";

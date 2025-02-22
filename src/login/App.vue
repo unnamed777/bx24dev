@@ -84,7 +84,7 @@
 
 <script>
 import browser from 'webextension-polyfill';
-import { StarIcon, CloseIcon } from 'vue-bytesize-icons';
+import { StarIcon, CloseIcon } from '@zhuowenli/vue-feather-icons';
 import AuthItem from './components/AuthItem';
 
 export default {

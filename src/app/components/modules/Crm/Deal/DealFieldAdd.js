@@ -1,16 +1,15 @@
-import AbstractFieldAdd from 'components/modules/Crm/Abstract/AbstractFieldAdd.vue';
+import { h } from "vue";
+import AbstractFieldAdd from "@app/components/modules/Crm/Abstract/AbstractFieldAdd.vue";
 
 export default {
     name: 'DealFieldAdd',
 
-    render(h) {
+    render() {
         return h(AbstractFieldAdd, {
-            props: {
-                breadcrumb: ['CRM', 'Сделки', 'Поля', 'Добавить'],
-                addEndpoint: 'crm.deal.userfield.add',
-                reloadFieldsAction: 'dealFields/forceLoad',
-                listRoute: 'crmDealFields',
-            },
+            breadcrumb: ['CRM', 'Сделки', 'Поля', 'Добавить'],
+            addEndpoint: 'crm.deal.userfield.add',
+            reloadFieldsAction: 'dealFields/forceLoad',
+            listRoute: 'crmDealFields',
         });
     },
 };
