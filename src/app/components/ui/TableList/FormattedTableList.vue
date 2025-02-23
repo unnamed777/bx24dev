@@ -4,20 +4,15 @@
         :items="preparedItems"
         :rowActions="rowActions"
     >
-        <template v-for="(_, slot) in $slots">
-            <template :slot="slot">
-              <slot :name="slot"></slot>
-            </template>
-        </template>
-
-        <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="slotProps">
-            <slot :name="slot" v-bind="slotProps" />
+        <!-- Pass slots through -->
+        <template v-for="(_, name) in $slots" v-slot:[name]="slotProps">
+            <slot :name="name" v-bind="slotProps" />
         </template>
     </BaseTableList>
 </template>
 <script>
-import BaseTableList from './BaseTableList';
-import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
+import BaseTableList from "@app/components/ui/TableList/BaseTableList";
+import preloadFieldTypeValuesMixin from "@app/mixins/preloadFieldTypeValuesMixin";
 
 export default {
     components: {

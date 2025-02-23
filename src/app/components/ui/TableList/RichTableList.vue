@@ -5,7 +5,7 @@
             :items="items"
             :rowActions="rowActionsLocal"
         >
-            <template v-slot:header-column="slotProps">
+            <template #header-column="slotProps">
                 <div class="header-column__container">
                     <div class="header-column__content">
                         {{ slotProps.column.label }}
@@ -52,10 +52,10 @@
     </div>
 </template>
 <script>
-import FormattedTableList from 'components/ui/TableList/FormattedTableList';
-import ColumnsSlider from './ColumnsSlider';
-import ModalSlider from 'components/ui/ModalSlider';
-import { SettingsIcon } from '@zhuowenli/vue-feather-icons';
+import { SettingsIcon } from "@zhuowenli/vue-feather-icons";
+import FormattedTableList from "@app/components/ui/TableList/FormattedTableList";
+import ColumnsSlider from "@app/components/ui/TableList/ColumnsSlider";
+import ModalSlider from "@app/components/ui/ModalSlider";
 
 export default {
     components: {
