@@ -21,11 +21,6 @@
 
 <script>
 export default {
-    model: {
-        prop: 'value',
-        event: 'change',
-    },
-
     props: {
         options: [Object, Array],
         groups: {
@@ -34,7 +29,7 @@ export default {
                 return [];
             }
         },
-        value: [String, Number],
+        modelValue: [String, Number],
         extra: Object,
         search: {
             type: Boolean,
@@ -48,6 +43,8 @@ export default {
             },
         }
     },
+
+    emits: ['update:modelValue'],
 
     computed: {
         currentOptions() {
@@ -84,17 +81,18 @@ export default {
 
         currentValue: {
             get() {
-                return this.value;
+                return this.modelValue;
             },
 
             set(newValue) {
-                this.$emit('change', newValue);
+                console.log('emit');
+                this.$emit('update:modelValue', newValue);
             }
         }
     },
 
     watch: {
-        value() {
+        modelValue() {
             // To update select2 when model is changed from outside
             if ($(this.$refs['select']).hasClass("select2-hidden-accessible")) {
                 setTimeout(() => $(this.$refs['select']).select2(this.finalSelect2Options), 10);
@@ -113,7 +111,7 @@ export default {
 
         $(this.$refs['select'])
             .select2(this.finalSelect2Options)
-            .on('change', (e) => this.$emit('change', $(e.currentTarget).val()));
+            .on('change', (e) => this.$emit('update:modelValue', $(e.currentTarget).val()));
     },
 
     beforeDestroy() {

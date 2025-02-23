@@ -1,18 +1,18 @@
 <template>
-<form v-on:submit.prevent>
-    <FilterItem
-        v-for="(filterItem, index) of filter"
-        v-model="filter[index]"
-        :fields="fields"
-        :key="index"
-    />
-</form>
+    <form v-on:submit.prevent>
+        <FilterItem
+            v-for="(filterItem, index) of filter"
+            v-model="filter[index]"
+            :fields="fields"
+            :key="index"
+        />
+    </form>
 </template>
 
 <script>
-import FilterItem from './Item.vue';
-import isNil from 'lodash-es/isNil';
-import preloadFieldTypeValuesMixin from 'mixins/preloadFieldTypeValuesMixin';
+import FilterItem from "./Item.vue";
+import isNil from "lodash-es/isNil";
+import preloadFieldTypeValuesMixin from "mixins/preloadFieldTypeValuesMixin";
 
 export default {
     components: {
@@ -25,6 +25,8 @@ export default {
         fields: Object
     },
 
+    emits: ['change', 'submit'],
+
     data() {
         return {
             filter: [{code: null}],
@@ -33,19 +35,22 @@ export default {
     },
 
     watch: {
-        filter() {
-            const lastItem = this.filter[this.filter.length - 1];
+        filter: {
+            handler() {
+                const lastItem = this.filter[this.filter.length - 1];
 
-            if (!isNil(lastItem.code) || (!isNil(lastItem.value) && lastItem.value !== '')) {
-                this.addNewItem();
-            }
+                if (!isNil(lastItem.code) || (!isNil(lastItem.value) && lastItem.value !== '')) {
+                    this.addNewItem();
+                }
 
-            const resultFilter = this.buildFilter();
+                const resultFilter = this.buildFilter();
 
-            this.$emit('change', {
-                filter: resultFilter,
-                preview: this.compileFilterPreview(resultFilter),
-            });
+                this.$emit('change', {
+                    filter: resultFilter,
+                    preview: this.compileFilterPreview(resultFilter),
+                });
+            },
+            deep: true,
         },
 
         fields() {
@@ -108,6 +113,7 @@ export default {
             return resultFilter;
         },
 
+        // @todo Method seems to be unused, event `submit` as well
         send() {
             const resultFilter = this.buildFilter();
             this.$emit('submit', resultFilter);

@@ -2,17 +2,12 @@
 <div class="filter-item form-group row">
     <!-- Don't use <label>, it has an issue with focus on select2 search input -->
     <div class="col-6 mb-2">
-        <template>
-            <BaseSelect
-                :options="fieldsSorted"
-                :search="true"
-                :optionTemplate="optionFieldSelect2Template"
-                v-model="code"
-            />
-        </template>
-        <!--<template v-else>
-            <a href="#" v-on:click.prevent="editMode = true">{{ fields[code].label }}</a>
-        </template>-->
+        <BaseSelect
+            :options="fieldsSorted"
+            :search="true"
+            :optionTemplate="optionFieldSelect2Template"
+            v-model="code"
+        />
     </div>
     <div class="col-6 position-relative">
         <template v-if="code">
@@ -36,13 +31,13 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
-import BaseSelect from 'components/ui/BaseSelect';
-import DefaultValue from './DefaultValue.vue';
-import EnumValue from './EnumValue.vue';
-import UserValue from './UserValue.vue';
-import CrmStatusValue from './CrmStatusValue.vue';
-import optionFieldSelect2TemplateMixin from 'mixins/optionFieldSelect2TemplateMixin';
+import {mapGetters} from "vuex";
+import BaseSelect from "components/ui/BaseSelect.vue";
+import DefaultValue from "./DefaultValue.vue";
+import EnumValue from "./EnumValue.vue";
+import UserValue from "./UserValue.vue";
+import CrmStatusValue from "./CrmStatusValue.vue";
+import optionFieldSelect2TemplateMixin from "mixins/optionFieldSelect2TemplateMixin";
 
 export default {
     components: {
@@ -57,18 +52,15 @@ export default {
         optionFieldSelect2TemplateMixin
     ],
 
-    model: {
-        prop: 'item',
-        event: 'change',
-    },
-
     props: {
         fields: {
             type: [Object],
             default: () => { return {}; },
         },
-        item: Object,
+        modelValue: Object,
     },
+
+    emits: ['update:modelValue'],
 
     data() {
         return {
@@ -140,7 +132,7 @@ export default {
 
     watch: {
         // For dirty attempt to reset form
-        'item.code'(value) {
+        'modelValue.code'(value) {
             if (value === null) {
                 this.code = null;
                 this.values = [{operator: '', value: null}];
@@ -161,7 +153,7 @@ export default {
 
     methods: {
         notify() {
-            this.$emit('change', {
+            this.$emit('update:modelValue', {
                 code: this.code,
                 // Maybe I need to make a deep copy
                 values: this.values,

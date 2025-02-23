@@ -12,15 +12,12 @@
 
 <script>
 export default {
-    model: {
-        prop: 'value',
-        event: 'change',
-    },
-
     props: {
-        value: [String, Number],
+        modelValue: [String, Number],
         field: Object,
     },
+
+    emits: ['update:modelValue', 'keydown', 'keyup', 'keypress'],
 
     computed: {
         readOnly() {
@@ -29,11 +26,11 @@ export default {
 
         currentValue: {
             get() {
-                return this.value;
+                return this.modelValue;
             },
 
             set(newValue) {
-                this.$emit('change', newValue);
+                this.$emit('update:modelValue', newValue);
             }
         }
     },

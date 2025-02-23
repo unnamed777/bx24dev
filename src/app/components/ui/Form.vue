@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import BaseInput from 'components/ui/BaseInput';
-import BaseSelect from 'components/ui/BaseSelect';
+import BaseInput from "components/ui/BaseInput";
+import BaseSelect from "components/ui/BaseSelect";
 
 export default {
     components: {
@@ -45,7 +45,7 @@ export default {
     },
 
     props: {
-        model: Object,
+        modelValue: Object,
         fields: Array,
         ui: {
             type: Object,
@@ -95,9 +95,11 @@ export default {
         },
     },
 
+    emits: ['update:modelValue'],
+
     data() {
         return {
-            values: { ...this.model },
+            values: { ...this.modelValue },
         };
     },
 
@@ -131,7 +133,7 @@ export default {
 
         local: {
             get() {
-                return this.model;
+                return this.modelValue;
             }
         },
 
@@ -159,7 +161,7 @@ export default {
 
     watch: {
         values(newValue) {
-            this.$emit('change', newValue);
+            this.$emit('update:modelValue', newValue);
         }
     },
 }

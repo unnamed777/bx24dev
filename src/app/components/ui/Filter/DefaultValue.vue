@@ -1,20 +1,13 @@
 <template>
     <div class="filter-item-value input-group">
         <Operators v-model="operator" />
-        <input type="text" class="form-control form-control-sm" v-model="value">
+        <input type="text" class="form-control form-control-sm" v-model="value"/>
     </div>
-    <!--<BaseOperatorValue v-model="complexValue">
-        <template v-slot:default="slotProps">
-            {{ slotProps }}
-            <input type="text" class="form-control form-control-sm" v-model="slotProps.value">
-        </template>
-    </BaseOperatorValue>-->
 </template>
 
 <script>
-import modelMixin from './modelMixin';
-import Operators from './Operators';
-//import BaseOperatorValue from './BaseOperatorValue';
+import modelMixin from "./modelMixin";
+import Operators from "./Operators";
 
 export default {
     components: {
@@ -25,13 +18,7 @@ export default {
         modelMixin
     ],
 
-    model: {
-        prop: 'complexValue',
-        event: 'change',
-    },
-
     props: {
-        complexValue: Object,
         field: Object,
         extra: Object,
     },
@@ -50,7 +37,7 @@ export default {
     },
 
     mounted() {
-        $(this.$el.querySelector('.dropdown-toggle')).dropdown();
+        //$(this.$refs['el'].querySelector('.dropdown-toggle'))?.dropdown();
     },
 }
 </script>

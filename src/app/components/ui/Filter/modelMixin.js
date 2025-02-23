@@ -1,26 +1,23 @@
 export default {
-    model: {
-        prop: 'complexValue',
-        event: 'change',
-    },
-
     props: {
-        complexValue: Object,
+        modelValue: Object,
         field: Object,
         extra: Object,
     },
 
+    emits: ['update:modelValue'],
+
     data() {
         return {
-            operator: this.complexValue.operator,
-            value: this.complexValue.value,
+            operator: this.modelValue.operator,
+            value: this.modelValue.value,
         };
     },
 
     watch: {
-        complexValue() {
-            this.value = this.complexValue.value;
-            this.operator = this.complexValue.operator;
+        modelValue() {
+            this.value = this.modelValue.value;
+            this.operator = this.modelValue.operator;
         },
 
         operator() {
@@ -37,7 +34,7 @@ export default {
 
     methods: {
         notify() {
-            this.$emit('change', {
+            this.$emit('update:modelValue', {
                 value: this.value,
                 operator: this.operator,
             });
