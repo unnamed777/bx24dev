@@ -53,8 +53,12 @@ const findEntrypoint = async (callerTab) => {
         || /\/crm\/lead\/details\//i.test(callerTab.url) !== false
         || /\/crm\/type\/\d+\/details\//i.test(callerTab.url) !== false
     ) {
-        console.log('*.bitrix24.ru app');
         // App's page or a page that supports placements
+
+        // @todo won't work if app uses history pushState or real navigation
+        // @todo Workaround: search for iframes and sibling forms
+
+        console.log('*.bitrix24.ru app');
         let frames = await browser.webNavigation.getAllFrames({ tabId: callerTab.id });
 
         for (let frame of frames) {
@@ -62,11 +66,14 @@ const findEntrypoint = async (callerTab) => {
                 continue;
             }
 
+            const frameUrl = new URL(frame.url);
             let appName = null;
 
             if (/\/marketplace\/app\//i.test(callerTab.url) !== false) {
                 appName = callerTab.title;
             } else {
+                // Try to get type of placement
+                // @todo won't work on b24jssdk
                 let result = (await browser.scripting.executeScript({
                     target: {
                         tabId: callerTab.id,
@@ -118,6 +125,7 @@ const findEntrypoint = async (callerTab) => {
                     portal: /\/\/(.*?)\//gi.exec(callerTab.url)[1],
                     appUrl: frame.url,
                     appName: appName,
+                    appSid: frameUrl.searchParams?.get('APP_SID'),
                 },
             });
         }

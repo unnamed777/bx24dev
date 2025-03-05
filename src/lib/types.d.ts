@@ -18,6 +18,7 @@ interface BasicTokenProviderData {
 }
 
 interface SessionAppProviderData extends BasicTokenProviderData {
+    appSid: string;
 }
 
 interface FullOAuthProviderData extends BasicTokenProviderData {
@@ -49,7 +50,7 @@ interface TokenAuthProviderData {
 }
 
 interface B24ApplicationAuthorization {
-    accessToken: string,
+    access_token: string,
     domain: string,
     expires_in: number,
     member_id: string,

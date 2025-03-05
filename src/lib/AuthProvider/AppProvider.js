@@ -2,11 +2,12 @@ import { alert, getExposedPromise } from 'lib/functions';
 import browser from 'lib/browser-stub';
 
 export default class AppProvider {
-    constructor({ tabId, frameId, instanceId, instance, messageListener, appName }) {
+    constructor({ tabId, frameId, instanceId, instance, messageListener, appName, appSid }) {
         this.tabId = tabId;
         this.frameId = frameId;
         this.instanceId = instanceId;
         this.appName = appName;
+        this.appSid = appSid;
         this.authError = null;
         this.messageListener = messageListener;
     }
@@ -42,6 +43,7 @@ export default class AppProvider {
         this.messageListener.subscribe(`AppProvider_${this.instanceId}:authRefreshed`, this.onAuthRefreshed.bind(this));
         let result;
 
+        /** @var {Tab} */
         const callerTab = (await browser.tabs.get(this.tabId));
 
         // if Manager didn't pass appName, get current tab title
@@ -49,7 +51,8 @@ export default class AppProvider {
             this.appName = callerTab.title;
         }
 
-        this.domain = (new URL(callerTab.url)).hostname;
+        const callerTabUrl = new URL(callerTab.url);
+        this.domain = callerTab.hostname;
         this.appUrl = (await browser.webNavigation.getFrame({ tabId: this.tabId, frameId: this.frameId })).url;
         this.type = 'oauth';
         console.log('instanceId', this.instanceId);
@@ -80,10 +83,10 @@ export default class AppProvider {
                     tabId: this.tabId,
                     frameIds: [this.frameId],
                 },
-                args: [this.instanceId],
+                args: [this.instanceId, callerTabUrl.origin, this.appSid],
                 // Inject a code to inject a code to run a code. Inception.jpg
                 // @todo Try to get rid of this and use ExecutionWorld MAIN
-                func: (instanceId) => {
+                func: (instanceId, origin, appSid) => {
                     // 1. In content page context subscribe to custom event to receive auth data
                     // 2. Add a script `pc_app_provider` to the page in page context to get access to page global variables.
                     // 3. `pc_app_provider` call bx24 api and emit custom event with auth data
@@ -126,6 +129,8 @@ export default class AppProvider {
                     let script = document.createElement('script');
                     script.src = chrome.runtime.getURL('tab/helpers/pc_app_provider.js');
                     script.dataset.instanceId = instanceId;
+                    script.dataset.origin = origin;
+                    script.dataset.appSid = appSid;
                     //script.onload = function() { this.remove(); };
                     (document.head || document.documentElement).appendChild(script);
                     script = null;
