@@ -1,5 +1,6 @@
-import qs from 'qs';
-import { sleep } from 'lib/functions';
+import qs from "qs";
+import { sleep } from "lib/functions";
+import md5 from "md5";
 
 export default {
     TYPE_WEBHOOK: 'webhook',
@@ -152,6 +153,7 @@ export default {
         let items = [];
         let limit = options.limit || null;
         let response;
+        let previousResultHash;
 
         while (true) {
             let timeStart = (new Date).getTime();
@@ -165,7 +167,7 @@ export default {
             let currentStepItems;
 
             if (options.getter) {
-                // For modern modules like "sale"
+                // For module "sale"
                 currentStepItems = options.getter(response);
             } else {
                 currentStepItems = response.result;
@@ -178,9 +180,21 @@ export default {
                 break;
             }
 
+            // Correct response
             if (!response.next) {
                 break;
             }
+
+            // Protection for infinite loop.
+            // Some methods return `next` even on last page (like `catalog.productPropertyEnum.list`),
+            // or if `total` was calculated incorrectly.
+            let resultHash = md5(JSON.stringify(response.result));
+
+            if (resultHash === previousResultHash) {
+                break;
+            }
+
+            previousResultHash = resultHash;
 
             data.start = response.next;
 

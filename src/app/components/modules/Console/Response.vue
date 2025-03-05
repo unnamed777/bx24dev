@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="mb-2">
-            <div class="btn-group btn-group-sm btn-group-toggle">
+            <div class="btn-group btn-group-sm btn-group-toggle mr-2">
                 <label
                     v-for="key of ['pretty', 'json', 'table']"
                     class="btn btn-light"
@@ -19,7 +19,7 @@
 
             <template v-if="outputView === 'pretty'">
                 <button
-                    class="btn btn-sm btn-light"
+                    class="btn btn-sm btn-light mr-1"
                     :title="'Правый клик – -1 уровень глубины'"
                     @mouseup="collapse"
                     @contextmenu.prevent
