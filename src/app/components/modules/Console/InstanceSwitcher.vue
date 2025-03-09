@@ -3,6 +3,8 @@ import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 
 import { Portal } from "portal-vue";
 import { onClickOutside } from "@vueuse/core";
 
+const emit = defineEmits(['add', 'remove', 'rename', 'setActive']);
+
 const instances = defineModel();
 
 let idGeneratorValue = 0;
@@ -12,37 +14,8 @@ onMounted(() => {
     initHotkey();
 });
 
-const add = () => {
-    const id = getNewInstanceId();
-
-    const newInstance = {
-        id,
-        active: false,
-        label: id.toString(),
-    };
-
-    instances.value.push(newInstance);
-    setActive(id);
-};
-
-const getNewInstanceId = () => {
-    return ++idGeneratorValue;
-};
-
 const setActive = (id) => {
-    const index = instances.value.findIndex(instance => instance.id === id);
-
-    if (index === -1) {
-        console.warn('Instance %d not found', id);
-        return;
-    }
-
-    if (instances.value[activeInstanceIndex]) {
-        instances.value[activeInstanceIndex].active = false;
-    }
-
-    instances.value[index].active = true;
-    activeInstanceIndex = index;
+    emit('setActive', id);
 };
 
 const getIndex = (id) => {
@@ -126,33 +99,7 @@ const hideContextMenu = () => {
 };
 
 const remove = () => {
-    if (!contextMenuInstanceId.value) {
-        console.error('Empty contextMenuInstanceId, nothing to remove');
-        return;
-    }
-
-    const index = getIndex(contextMenuInstanceId);
-    const isActive = activeInstanceIndex === index;
-
-    instances.value = [
-        ...instances.value.slice(0, index),
-        ...instances.value.slice(index + 1),
-    ];
-
-    if (isActive) {
-        let activateIndex;
-
-        if (index === 0) {
-            // If active tab was first, set active next one (right)
-            activateIndex = index;
-        } else if (index > 0) {
-            // If active tab wasn't first, set active previous one (left)
-            activateIndex = index - 1;
-        }
-
-        setActive(instances.value[activateIndex].id);
-    }
-
+    emit('remove', contextMenuInstanceId.value);
     hideContextMenu();
 };
 
@@ -172,9 +119,16 @@ const renamingActiveId = ref(null);
 const buttonRefs = ref([]);
 
 const activateRenaming = (id) => {
-    buttonRefs.value[id].focus();
+    const button = buttonRefs.value[id];
+
+    button.focus();
     renamingActiveId.value = id;
-    window.getSelection().selectAllChildren(buttonRefs.value[id]);
+
+    const range = document.createRange();
+    range.setStart(button.firstChild, 0);
+    range.setEnd(button.firstChild, button.firstChild.length);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
 };
 
 const doneRenaming = () => {
@@ -182,7 +136,11 @@ const doneRenaming = () => {
         return;
     }
 
-    instances.value[getIndex(renamingActiveId.value)].label = buttonRefs.value[renamingActiveId.value].innerText;
+    emit('rename', {
+        id: renamingActiveId.value,
+        label: buttonRefs.value[renamingActiveId.value].innerText.trim(),
+    });
+
     renamingActiveId.value = null;
 };
 
@@ -196,29 +154,41 @@ const cancelRenaming = () => {
     renamingActiveId.value = null;
 };
 
-defineExpose({
-    add,
-});
+const visibleIndex = (index, instance) => {
+    const visibleIndex = index + 1;
+
+    if (instance.label && visibleIndex.toString() !== instance.label) {
+        return visibleIndex;
+    }
+
+    if (instance.method) {
+        return visibleIndex;
+    }
+
+    return null;
+};
 </script>
 
 <template>
     <Portal to="breadcrumbAfter">
         <div class="d-flex align-self-start ml-2 mt-n2">
             <button
-                v-for="instance of instances"
+                v-for="(instance, index) of instances"
                 class="instance-tab btn btn-sm btn-light mr-1"
                 :class="{ 'active': instance.active }"
+                :title=" index < 10 ? (isMac ? `⌘ ⌥ ` : 'Ctrl+Alt+') + `${index + 1}` : null"
                 :contenteditable="renamingActiveId === instance.id ? true : null"
                 :ref="(el) => { buttonRefs[instance.id] = el; }"
+                :data-visibleIndex="visibleIndex(index, instance)"
                 @click="setActive(instance.id)"
                 @dblclick="activateRenaming(instance.id)"
                 @contextmenu.prevent="onRightClick($event, instance.id)"
                 @keydown.enter.prevent="doneRenaming()"
                 @keydown.esc.prevent="cancelRenaming()"
                 @blur="doneRenaming()"
-            >{{ instance.label }}</button>
+            >{{ instance.label || instance.method || instance.id }}</button>
 
-            <button class="btn btn-sm" @click="add">+</button>
+            <button class="btn btn-sm" @click="emit('add')">+</button>
         </div>
     </Portal>
 
@@ -245,7 +215,7 @@ defineExpose({
                     class="dropdown-item"
                     type="button"
                     @click="onContextMenuRename"
-                >Переименовать</button>
+                >Переименовать<span class="text-secondary ml-4" style="opacity: 0.5; margin-right: -0.75rem;">Дв. клик</span></button>
                 <button
                     class="dropdown-item"
                     type="button"
@@ -255,3 +225,17 @@ defineExpose({
         </div>
     </Teleport>
 </template>
+
+<style lang="scss" scoped>
+.instance-tab {
+    &[data-visibleIndex] {
+        &::before {
+            display: inline-block;
+            opacity: 0.5;
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+            content: attr(data-visibleIndex);
+        }
+    }
+}
+</style>

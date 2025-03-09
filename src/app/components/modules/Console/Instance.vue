@@ -15,7 +15,7 @@
         >
             <div class="left-column-top">
                 <div v-if="expertMode" class="d-flex">
-                    <div class="btn-group btn-group-sm btn-group-toggle mb-2 mr-2">
+                    <div class="btn-group btn-group-sm btn-group-toggle mr-2">
                         <label
                             v-for="key of ['JSON', 'GET', 'POST']"
                             class="btn btn-light"
@@ -184,6 +184,8 @@ export default {
         instance: Object,
     },
 
+    emits: ['methodChange'],
+
     data() {
         let inputMode = window.localStorage.getItem('console/inputMode') || 'js/json';
         let showManual = window.localStorage.getItem('console/showManual') === 'true';
@@ -292,6 +294,10 @@ export default {
 
         useJsonBody(newValue) {
             window.localStorage.setItem('console/useJsonBody', newValue);
+        },
+
+        method() {
+            this.$emit('methodChange', this.method);
         }
     },
 
