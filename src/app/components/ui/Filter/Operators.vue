@@ -63,9 +63,5 @@ export default {
             }
         },
     },
-
-    mounted() {
-        $(this.$el.querySelector('.dropdown-toggle')).dropdown();
-    },
 }
 </script>

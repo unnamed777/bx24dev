@@ -20,6 +20,8 @@ export default {
         }
     },
 
+    emits: ['change'],
+
     data() {
         return {
             //selectedNow: [],
