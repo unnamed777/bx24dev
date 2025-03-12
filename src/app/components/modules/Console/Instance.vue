@@ -25,6 +25,7 @@
                                 type="radio"
                                 v-model="httpMethod"
                                 autocomplete="off"
+                                spellcheck="false"
                                 :value="key"
                             />
                             {{ key }}
@@ -71,6 +72,7 @@
                     <textarea
                         class="form-control textarea-data"
                         rows="10"
+                        spellcheck="false"
                         v-model="body"
                         @keydown="onKeyPress"
                     >
