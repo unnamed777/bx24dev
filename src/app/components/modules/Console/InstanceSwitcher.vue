@@ -82,7 +82,6 @@ const onRightClick = (e, instanceId) => {
         nextTick(() => {
             // @todo fix error when return to Console from another page
             contextMenuRemoveClickOutside = onClickOutside(contextMenuElement, () => {
-                console.log('click', contextMenuInstanceId);
                 hideContextMenu();
             });
         });
