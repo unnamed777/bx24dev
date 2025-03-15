@@ -20,7 +20,8 @@
             <template v-if="outputView === 'pretty'">
                 <button
                     class="btn btn-sm btn-light mr-1"
-                    :title="'Правый клик – -1 уровень глубины'"
+                    :title="'Свернуть один уровень\nПравый клик – свернуть всё'"
+                    @focus="$event.target.blur()"
                     @mouseup="collapse"
                     @contextmenu.prevent
                 >
@@ -29,7 +30,8 @@
 
                 <button
                     class="btn btn-sm btn-light"
-                    :title="'Правый клик – +1 уровень глубины'"
+                    :title="'Развернуть один уровень\nПравый клик – развернуть всё'"
+                    @focus="$event.target.blur()"
                     @mouseup="expand"
                     @contextmenu.prevent
                 >
@@ -219,12 +221,12 @@ export default {
         },
 
         expand(e) {
-            this.expandLevel = e.button === 2 ? Math.min(this.maxDepth, this.expandLevel + 1) : this.maxDepth;
+            this.expandLevel = e.button === 2 ? this.maxDepth : Math.min(this.maxDepth, this.expandLevel + 1) ;
             this.jsonFormatter();
         },
 
         collapse(e) {
-            this.expandLevel = e.button === 2 ? Math.max(1, this.expandLevel - 1) : 1;
+            this.expandLevel = e.button === 2 ? 1 : Math.max(1, this.expandLevel - 1) ;
             this.jsonFormatter();
         },
 
