@@ -42,7 +42,7 @@
         <div v-show="outputView === 'pretty'" ref="output_pretty"></div>
         <pre v-if="outputView === 'json'">{{ outputJson }}</pre>
         <div v-if="outputView === 'table'">
-            <table v-if="outputTable" class="table table-sm table-hover">
+            <table v-if="outputTable" class="response-table-view table table-sm table-hover">
                 <thead>
                     <tr>
                         <th v-for="column of outputTable.columns">{{ column }}</th>
@@ -146,7 +146,7 @@ export default {
 
                 for (let [field, data] of Object.entries(obj)) {
                     items.push({
-                        null: field,
+                        '#': field,
                     ...data
                     });
                 }
@@ -157,6 +157,10 @@ export default {
             }
 
             let columns = Object.keys(items[0]);
+
+            if (columns[0] === 'null') {
+                columns[0] = '#';
+            }
 
             return {
                 columns,
@@ -252,3 +256,14 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.response-table-view {
+    thead tr {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        box-shadow: 3px 2px 3px rgba(0,0,0,0.1);
+    }
+}
+</style>
