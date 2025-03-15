@@ -50,7 +50,17 @@
                 </thead>
                 <tbody>
                     <tr v-for="item of outputTable.items">
-                        <td v-for="column of outputTable.columns">{{ print(item[column]) }}</td>
+                        <td v-for="column of outputTable.columns">
+                            <template v-if="!(column in item)">
+                                <span class="text-secondary" style="opacity: 0.2;" title="Запись не имеет этого поля">—</span>
+                            </template>
+                            <template v-else-if="item[column] && typeof item[column] === 'object'">
+                                <div v-html="renderObjectValue(item[column])"></div>
+                            </template>
+                            <template v-else>
+                                {{ print(item[column]) }}
+                            </template>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -156,11 +166,14 @@ export default {
                 return null;
             }
 
-            let columns = Object.keys(items[0]);
+            // Collect all possible keys (columns)
+            let itemAllFields = new Set();
 
-            if (columns[0] === 'null') {
-                columns[0] = '#';
+            for (let item of items) {
+                itemAllFields = itemAllFields.union(new Set(Object.keys(item)));
             }
+
+            let columns = Array.from(itemAllFields);
 
             return {
                 columns,
@@ -252,6 +265,18 @@ export default {
             }
 
             return value;
+        },
+
+        renderObjectValue(value) {
+            const formatter = new JSONFormatter(value, 10, {
+                animateOpen: false,
+                animateClose: false,
+            });
+
+            const wrapper = document.createElement('div');
+            wrapper.append(formatter.render());
+
+            return wrapper.innerHTML;
         }
     },
 };
