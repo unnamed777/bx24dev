@@ -59,6 +59,31 @@
 <script>
 import JSONFormatter from "json-formatter-js";
 
+// Disable toggling of node when text is selected
+if (!JSONFormatter.prototype.customOnMouseUp) {
+    const toggleOpen = JSONFormatter.prototype.toggleOpen;
+    const render = JSONFormatter.prototype.render;
+
+    // Remove default behavior. The handler is assigned in the render method
+    JSONFormatter.prototype.toggleOpen = () => {};
+
+    JSONFormatter.prototype.customOnMouseUp = function (e) {
+        // If text was selected during pressing the mouse button, do nothing
+        if (document.getSelection().type === 'Range') {
+            return;
+        }
+
+        // Otherwise, toggle node
+        toggleOpen.call(this);
+    };
+
+    JSONFormatter.prototype.render = function () {
+        let element = render.call(this);
+        element.querySelector('a.json-formatter-toggler-link')?.addEventListener('mouseup', this.customOnMouseUp.bind(this));
+        return element;
+    };
+}
+
 export default {
     props: {
         response: Object,
