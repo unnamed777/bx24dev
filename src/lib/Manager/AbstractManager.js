@@ -229,7 +229,6 @@ export default class AbstractManager {
     async onMessageRememberAuth(payload, sender, sendResponse) {
         console.log('AbstractManager.onMessageRememberAuth()');
         const instance = this.instances[payload.payload.authId];
-        console.log(instance);
 
         if (instance.provider.getCredentials === undefined) {
             throw new Error('Provider doesn\'t have reusable credentials');
