@@ -1,22 +1,23 @@
 <template>
-    <select ref="select" class="form-control form-control-sm" v-model="currentValue">
-        <option
-            v-for="option of currentNoGroupOptions"
-            :key="option.value || option.label"
-            :value="option.value"
-        >{{ option.label }}</option>
+    <div>
+        <select ref="select" class="form-control form-control-sm" v-model="currentValue">
+            <option
+                v-for="option of currentNoGroupOptions"
+                :key="option.value || option.label"
+                :value="option.value"
+            >{{ option.label }}</option>
 
-        <template v-for="group of groups">
-            <optgroup v-if="currentGroupOptions[group.code]" :label="group.label">
-                <option
-                    v-for="option of currentGroupOptions[group.code]"
-                    :key="option.value || option.label"
-                    :value="option.value"
-                >{{ option.label }}</option>
-            </optgroup>
-        </template>
-    </select>
-    <!--<v-select :options="currentOptions" v-model="currentValue"/>-->
+            <template v-for="group of groups">
+                <optgroup v-if="currentGroupOptions[group.code]" :label="group.label">
+                    <option
+                        v-for="option of currentGroupOptions[group.code]"
+                        :key="option.value || option.label"
+                        :value="option.value"
+                    >{{ option.label }}</option>
+                </optgroup>
+            </template>
+        </select>
+    </div>
 </template>
 
 <script>
@@ -114,7 +115,7 @@ export default {
             .on('change', (e) => this.$emit('update:modelValue', $(e.currentTarget).val()));
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         $(this.$refs['select']).select2('destroy').off('change');
     },
 

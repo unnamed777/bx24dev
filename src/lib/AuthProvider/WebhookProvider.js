@@ -27,8 +27,9 @@ export default class WebhookProvider {
         provider.appName = serializedData.appName;
         provider.domain = serializedData.domain;
         provider.type = serializedData.type;
-        provider.authData = serializedData.authData;
+        provider.auth = serializedData.auth;
         provider.credentials = serializedData.credentials;
+        instance.auth = provider.auth;
 
         return provider;
     }
@@ -37,7 +38,7 @@ export default class WebhookProvider {
         let result = /^.*:\/\/([^\/]+)\/rest\/([0-9]+)\/([^\/]+)(?:\/?|\/.+)?$$/.exec(this.credentials.url);
 
         // Seems to be inconsistent with others. Use credentials?
-        this.authData = {
+        this.auth = {
             url: result[0],
             domain: result[1],
             userId: result[2],
@@ -45,10 +46,10 @@ export default class WebhookProvider {
         };
 
         this.appName = 'Webhook';
-        this.domain = this.authData.domain;
+        this.domain = this.auth.domain;
         this.type = 'webhook';
 
-        return this.authData;
+        return this.auth;
     }
 
     async refresh() {
@@ -72,7 +73,7 @@ export default class WebhookProvider {
             appName: this.appName,
             domain: this.domain,
             type: this.type,
-            authData: this.authData,
+            auth: this.auth,
             credentials: this.credentials,
         };
     }

@@ -28,7 +28,7 @@ interface WebhookAuthProviderData {
     appName: string,
     domain: string,
     type: string,
-    authData: {
+    auth: {
         url: string,
         domain: string,
         userId: string,
