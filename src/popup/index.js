@@ -47,6 +47,7 @@ const findEntrypoint = async (callerTab) => {
         providerName = 'grabOauth';
     } else if (
         /\/marketplace\/app\//i.test(callerTab.url) !== false
+        || /\/devops\/placement\//i.test(callerTab.url) !== false
         || /\/crm\/deal\/details\//i.test(callerTab.url) !== false
         || /\/crm\/contact\/details\//i.test(callerTab.url) !== false
         || /\/crm\/company\/details\//i.test(callerTab.url) !== false
@@ -69,7 +70,10 @@ const findEntrypoint = async (callerTab) => {
             const frameUrl = new URL(frame.url);
             let appName = null;
 
-            if (/\/marketplace\/app\//i.test(callerTab.url) !== false) {
+            if (
+                /\/marketplace\/app\//i.test(callerTab.url) !== false
+                || /\/devops\/placement\//i.test(callerTab.url) !== false
+            ) {
                 appName = callerTab.title;
             } else {
                 // Try to get type of placement
@@ -93,7 +97,7 @@ const findEntrypoint = async (callerTab) => {
                     world: browser.scripting.ExecutionWorld.MAIN,
                 }));
 
-                if (result[0]) {
+                if (result[0] && result[0].result) {
                     let placementInfo = result[0].result;
 
                     switch (placementInfo.placement) {
