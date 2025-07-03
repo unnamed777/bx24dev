@@ -53,6 +53,7 @@ export function getFieldLabel(field) {
 
 export async function alert(message) {
     console.log('Show alert: %s', message);
+    console.trace();
     const activeTab = (await browser.tabs.query({ active: true }))[0];
 
     browser.scripting.executeScript({

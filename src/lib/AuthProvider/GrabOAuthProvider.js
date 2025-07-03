@@ -37,7 +37,8 @@ export default class GrabOAuthProvider extends AbstractOAuthProvider {
                     frameIds: [this.frameId],
                 },
                 func: () => {
-                    let appName = document.querySelector('#pagetitle .ui-side-panel-wrap-title-name').innerHTML.trim();
+                    // Old design || design 2025
+                    let appName = (document.querySelector('#pagetitle .ui-side-panel-wrap-title-name') || document.querySelector('#pagetitle')).innerHTML.trim();
                     let appUrl = document.querySelector('input[name="APPLICATION_URL_HANDLER"]').value;
                     let clientId = document.querySelector('input[name="APPLICATION_DATA_CLIENT_ID"]').value;
                     let clientSecret = document.querySelector('input[name="APPLICATION_DATA_CLIENT_SECRET"]').value;
