@@ -256,7 +256,14 @@ export default {
         availableMethods() {
             let methods = [...methodsByScope.general];
 
-            for (let item of this.scope) {
+            // Replace legacy 'tasks' with modern 'task' if it is in scope to
+            // simplify filtering of the methods
+            let scope = [
+                ...this.scope.filter(item => item !== 'tasks'),
+                ...(this.scope.includes('tasks') ? ['task'] : []),
+            ];
+
+            for (let item of scope) {
                 if (!methodsByScope[item]) {
                     continue;
                 }
