@@ -6,6 +6,11 @@ export default {
     TYPE_WEBHOOK: 'webhook',
     TYPE_OAUTH: 'oauth',
 
+    API_URL_PART: {
+        2: '',
+        3: 'api/',
+    },
+
     setAuth(type, auth) {
         this.type = type;
         this.auth = auth;
@@ -28,7 +33,18 @@ export default {
         let httpMethod;
         let useJson = false;
 
-        if (options.method) {
+        const apiVersion = method.slice(0, 3) === 'v3:' ? 3 : 2;
+
+        if (apiVersion === 3) {
+            // Restore method name
+            method = method.slice(3);
+        }
+
+        if (apiVersion === 3) {
+            // v3 requires JSON
+            httpMethod = 'POST';
+            useJson = true;
+        } else if (options.method) {
             if (options.method === 'JSON') {
                 httpMethod = 'POST';
                 useJson = true;
@@ -43,9 +59,9 @@ export default {
 
         // @todo refactor
         if (this.type === this.TYPE_WEBHOOK) {
-            url = `${this.auth.url}/${method}`;
+            url = `${this.auth.url}/${this.API_URL_PART[apiVersion]}${method}`;
         } else {
-            url = `https://${this.auth.domain}/rest/${method}.json`;
+            url = `https://${this.auth.domain}/rest/${this.API_URL_PART[apiVersion]}${method}`;
         }
 
         const requestParams = {

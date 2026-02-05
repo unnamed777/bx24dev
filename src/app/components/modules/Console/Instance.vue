@@ -260,8 +260,10 @@ export default {
             // simplify filtering of the methods
             let scope = [
                 ...this.scope.filter(item => item !== 'tasks'),
-                ...(this.scope.includes('tasks') ? ['task'] : []),
+                ...(this.scope.includes('tasks') && !this.scope.includes('task') ? ['task'] : []),
             ];
+
+            console.log(scope);
 
             for (let item of scope) {
                 if (!methodsByScope[item]) {

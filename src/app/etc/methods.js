@@ -629,6 +629,13 @@ const methods = {
         'tasks.task.startwatch',
         'tasks.task.stopwatch',
         'tasks.task.update',
+        'v3:tasks.task.add',
+        'v3:tasks.task.update',
+        'v3:tasks.task.delete',
+        'v3:tasks.task.file.attach',
+        'v3:tasks.task.get',
+        'v3:tasks.task.chat.message.send',
+        'v3:tasks.task.access.get',
     ],
     'sale': [
         'sale.basketItem.getFieldsCatalogProduct',
